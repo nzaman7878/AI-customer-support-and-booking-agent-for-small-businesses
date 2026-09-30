@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: ai-customer-support-agent-api
+    runtime: node
+    plan: starter
+    region: oregon
+    buildCommand: npm install && npm run build --workspace=packages/shared && npm run build --workspace=apps/backend
+    startCommand: node apps/backend/dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false
+      - key: MONGODB_DB_NAME
+        value: ai_customer_agent
+      - key: MONGODB_VECTOR_INDEX_NAME
+        value: default_vector_index
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: WHATSAPP_ACCESS_TOKEN
+        sync: false
+      - key: WHATSAPP_PHONE_NUMBER_ID
+        sync: false
+      - key: WHATSAPP_WEBHOOK_VERIFY_TOKEN
+        value: ai_agent_verify_token_123

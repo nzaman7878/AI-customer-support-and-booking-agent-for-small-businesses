@@ -10,8 +10,9 @@ export async function triageNode(state: AgentStateType): Promise<Partial<AgentSt
   // 1. Sentiment & Escalation Detection
   const upsetKeywords = [
     'angry', 'upset', 'furious', 'horrible', 'terrible', 'worst', 
-    'charged twice', 'double charged', 'scam', 'refund immediately', 
-    'speak to human', 'human agent', 'manager', 'lawyer', 'call me right now'
+    'charged twice', 'double charged', 'billed twice', 'billed my card twice', 'fraud',
+    'scam', 'refund immediately', 'speak to human', 'human agent', 'real human', 
+    'human person', 'talk to a human', 'talk to human', 'manager', 'lawyer', 'call me right now', 'complaint'
   ];
 
   let sentiment: CustomerSentiment = 'neutral';
@@ -35,6 +36,24 @@ export async function triageNode(state: AgentStateType): Promise<Partial<AgentSt
 
   if (requiresHumanTakeover) {
     detectedIntent = 'escalation';
+  } else if (
+    text.includes('policy') || 
+    text.includes('how much') || 
+    text.includes('cost') || 
+    text.includes('price') || 
+    text.includes('fee') || 
+    text.includes('pricing') || 
+    text.includes('discount') || 
+    text.includes('refund') || 
+    text.includes('hours') || 
+    text.includes('parking') || 
+    text.includes('insurance') || 
+    text.includes('are you open') ||
+    text.includes('what happens') ||
+    text.includes('if i cancel')
+  ) {
+    detectedIntent = 'inquiry';
+    thoughts.push(`[Triage] Intent classified as: inquiry (Knowledge RAG query)`);
   } else if (text.includes('reschedule') || text.includes('change time') || text.includes('move appointment')) {
     detectedIntent = 'reschedule';
     thoughts.push(`[Triage] Intent classified as: reschedule`);
@@ -45,7 +64,6 @@ export async function triageNode(state: AgentStateType): Promise<Partial<AgentSt
     text.includes('book') || 
     text.includes('appointment') || 
     text.includes('schedule') || 
-    text.includes('consultation') || 
     text.includes('slot') ||
     text.includes('reserve')
   ) {

@@ -11,7 +11,8 @@
     "test:rag": "tsx src/evals/testRag.ts",
     "test:agent": "tsx src/evals/testAgent.ts",
     "test:booking": "tsx src/evals/testBooking.ts",
-    "test:channels": "tsx src/evals/testChannels.ts"
+    "test:channels": "tsx src/evals/testChannels.ts",
+    "test:evals": "tsx src/evals/evalRunner.ts"
   },
   "dependencies": {
     "@ai-agent/shared": "*",
