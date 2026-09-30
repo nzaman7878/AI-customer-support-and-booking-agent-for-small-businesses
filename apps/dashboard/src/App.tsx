@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   Bot, 
   Calendar, 
   BookOpen, 
@@ -26,6 +26,7 @@ import {
   X,
   Play
 } from 'lucide-react';
+import ChatWidget from './components/ChatWidget.js';
 
 interface SystemHealth {
   status: string;
@@ -637,6 +638,9 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {/* Omnichannel Floating Customer Chat Widget */}
+      <ChatWidget />
     </div>
   );
 }
