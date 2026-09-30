@@ -4,23 +4,60 @@
   :root {
     --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
+
+    /* Stitch Design System: Obsidian Autonomous Command */
+    --color-obsidian-void: #030712;
+    --color-obsidian-surface: #0f131d;
+    --color-obsidian-container: #1c1f2a;
+    --color-obsidian-high: #262a35;
+    --color-obsidian-border: #1e293b;
+    --color-obsidian-border-active: #334155;
+
+    --color-electric-indigo: #6366f1;
+    --color-indigo-glow: #818cf8;
+    --color-emerald-nominal: #10b981;
+    --color-amber-warning: #f59e0b;
+    --color-rose-critical: #f43f5e;
   }
 
   body {
     font-family: var(--font-sans);
-    background-color: #030712;
-    color: #f3f4f6;
+    background-color: var(--color-obsidian-void);
+    color: #dfe2f1;
   }
+}
+
+/* Glassmorphism & Micro-elevations */
+.glass-panel {
+  background: rgba(15, 19, 29, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(30, 41, 59, 0.8);
+}
+
+.glass-card {
+  background: rgba(28, 31, 42, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(51, 65, 85, 0.5);
+}
+
+.glow-indigo {
+  box-shadow: 0 0 24px -4px rgba(99, 102, 241, 0.25);
+}
+
+.glow-emerald {
+  box-shadow: 0 0 20px -4px rgba(16, 185, 129, 0.3);
 }
 
 /* Custom premium scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(3, 7, 18, 0.8);
 }
 
 ::-webkit-scrollbar-thumb {

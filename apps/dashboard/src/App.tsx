@@ -7,12 +7,24 @@ import {
   CheckCircle2, 
   Sliders, 
   Activity, 
-  PhoneCall, 
   ShieldCheck, 
   Sparkles,
   Zap,
   RefreshCw,
-  ExternalLink
+  Search,
+  Filter,
+  AlertTriangle,
+  Send,
+  UserCheck,
+  ChevronDown,
+  ChevronRight,
+  Database,
+  Radio,
+  FileText,
+  Clock,
+  Check,
+  X,
+  Play
 } from 'lucide-react';
 
 interface SystemHealth {
@@ -28,87 +40,145 @@ interface SystemHealth {
 export default function App() {
   const [activeTab, setActiveTab] = useState<'live' | 'knowledge' | 'appointments' | 'evals'>('live');
   const [health, setHealth] = useState<SystemHealth | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isHumanTakeover, setIsHumanTakeover] = useState(false);
+  const [showThoughtDetails, setShowThoughtDetails] = useState(true);
+  const [selectedThreadId, setSelectedThreadId] = useState('1');
+  const [chatInput, setChatInput] = useState('');
+  const [channelFilter, setChannelFilter] = useState<'all' | 'whatsapp' | 'web'>('all');
 
   useEffect(() => {
     fetch('/api/health')
       .then(res => res.json())
-      .then(data => {
-        setHealth(data);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.warn('API health check error:', err);
-        // Fallback for standalone visual preview
+      .then(data => setHealth(data))
+      .catch(() => {
         setHealth({
           status: 'ready',
           version: '1.0.0',
-          database: { connected: false, mode: 'local-simulation' },
-          business: 'Apex Wellness Clinic'
+          database: { connected: false, mode: 'in-memory-simulation' },
+          business: 'Apex Wellness & Aesthetics'
         });
-        setLoading(false);
       });
   }, []);
 
+  const threads = [
+    {
+      id: '1',
+      name: 'Elena Rostova',
+      phone: '+1 (415) 892-0192',
+      channel: 'whatsapp' as const,
+      snippet: 'Can I reschedule my Cryotherapy session to tomorrow at 3 PM?',
+      time: '2m ago',
+      sentiment: 'warning',
+      sentimentText: 'Booking pending',
+      vip: 'Gold Member'
+    },
+    {
+      id: '2',
+      name: 'Marcus Sterling',
+      phone: '+1 (212) 555-0144',
+      channel: 'web' as const,
+      snippet: 'I was charged twice for the skin revitalization package. Please resolve this.',
+      time: '8m ago',
+      sentiment: 'critical',
+      sentimentText: 'Upset customer - needs review',
+      vip: 'Standard'
+    },
+    {
+      id: '3',
+      name: 'Dr. Sarah Lin',
+      phone: '+1 (650) 412-9901',
+      channel: 'whatsapp' as const,
+      snippet: 'What are the post-IV therapy hydration care instructions?',
+      time: '14m ago',
+      sentiment: 'nominal',
+      sentimentText: 'FAQ resolved',
+      vip: 'Platinum'
+    },
+    {
+      id: '4',
+      name: 'Chloe Davenport',
+      phone: '+1 (310) 902-3341',
+      channel: 'web' as const,
+      snippet: 'Do you offer couples hyperbaric oxygen chambers on weekends?',
+      time: '32m ago',
+      sentiment: 'info',
+      sentimentText: 'Sales inquiry',
+      vip: 'Prospective Lead'
+    }
+  ];
+
+  const filteredThreads = threads.filter(t => channelFilter === 'all' || t.channel === channelFilter);
+  const activeThread = threads.find(t => t.id === selectedThreadId) || threads[0];
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
-      {/* Top Navigation Bar with glassmorphism */}
-      <header className="border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-xl sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <div className="min-h-screen bg-[#030712] text-[#dfe2f1] flex flex-col font-sans selection:bg-[#6366f1] selection:text-white">
+      {/* Top Command Deck Header */}
+      <header className="border-b border-[#1e293b] bg-[#0b0f19]/80 backdrop-blur-xl sticky top-0 z-50">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+          {/* Brand & Studio ID */}
           <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-cyan-400 p-[1px] shadow-lg shadow-indigo-500/20">
-              <div className="h-full w-full bg-slate-950 rounded-[11px] flex items-center justify-center">
-                <Bot className="h-5 w-5 text-indigo-400" />
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-[#6366f1] via-[#818cf8] to-[#10b981] p-[1.5px] shadow-lg shadow-[#6366f1]/25">
+              <div className="h-full w-full bg-[#030712] rounded-[10px] flex items-center justify-center">
+                <Bot className="h-5 w-5 text-[#818cf8]" />
               </div>
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-bold text-lg tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-                  OmniAgent Studio
+                <span className="font-bold text-base tracking-tight text-white">
+                  Apex Wellness Clinic
                 </span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                  v1.0 Pro
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#6366f1]/15 text-[#818cf8] border border-[#6366f1]/30">
+                  AI Agent v2.4 (Active)
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
-                AI Customer Support & Booking Copilot for Small Businesses
+              <p className="text-[11px] text-[#908fa0]">
+                Obsidian Autonomous Command • RAG & Booking Orchestrator
               </p>
             </div>
           </div>
 
-          {/* System & DB Status Badge */}
-          <div className="flex items-center space-x-4">
-            <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-slate-800/50 border border-slate-700/60 text-xs">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="text-slate-300">
-                {health?.business || 'Apex Wellness Clinic'}
-              </span>
-              <span className="text-slate-500">•</span>
-              <span className="text-emerald-400 font-mono text-[11px]">
-                {health?.database.mode || 'Atlas Engine'}
-              </span>
+          {/* Telemetry Chips */}
+          <div className="flex items-center space-x-3">
+            {/* Atlas Vector Store */}
+            <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#0f172a] border border-[#1e293b] text-xs">
+              <Database className="h-3.5 w-3.5 text-[#10b981]" />
+              <span className="text-[#908fa0]">Atlas Vector:</span>
+              <span className="text-[#10b981] font-mono text-[11px]">Synced (12,480 chunks)</span>
             </div>
 
-            <button 
-              className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium transition shadow-md shadow-indigo-600/30 flex items-center space-x-1.5 cursor-pointer"
-              onClick={() => alert('Widget preview modal opening...')}
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              <span>Test Widget</span>
-            </button>
+            {/* WhatsApp Webhook Status */}
+            <div className="hidden lg:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#0f172a] border border-[#1e293b] text-xs">
+              <Radio className="h-3.5 w-3.5 text-[#10b981]" />
+              <span className="text-[#908fa0]">WhatsApp Cloud API:</span>
+              <span className="text-white font-mono text-[11px]">24ms ping</span>
+            </div>
+
+            {/* Autonomous Mode Pill */}
+            <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition ${
+              isHumanTakeover 
+                ? 'bg-[#f43f5e]/15 border-[#f43f5e]/40 text-[#ffb4ab]' 
+                : 'bg-[#10b981]/15 border-[#10b981]/40 text-[#4edea3]'
+            }`}>
+              <span className="relative flex h-2 w-2">
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                  isHumanTakeover ? 'bg-[#f43f5e]' : 'bg-[#10b981]'
+                }`}></span>
+                <span className={`relative inline-flex rounded-full h-2 w-2 ${
+                  isHumanTakeover ? 'bg-[#f43f5e]' : 'bg-[#10b981]'
+                }`}></span>
+              </span>
+              <span>{isHumanTakeover ? 'Human Takeover Mode' : 'AI Autonomous Mode'}</span>
+            </div>
           </div>
         </div>
 
-        {/* Tab Sub-Header */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex space-x-1 overflow-x-auto border-t border-slate-800/40">
+        {/* Modular Navigation Tabs */}
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 flex space-x-1 overflow-x-auto border-t border-[#1e293b]/60">
           {[
-            { id: 'live', label: 'Live Conversations & Takeover', icon: MessageSquare, badge: 'Live' },
-            { id: 'knowledge', label: 'Knowledge Base (RAG)', icon: BookOpen },
-            { id: 'appointments', label: 'Bookings & Calendar', icon: Calendar },
-            { id: 'evals', label: '20-Scenario Eval Benchmark', icon: ShieldCheck, badge: '98%' },
+            { id: 'live', label: 'Live Conversations & Takeover', icon: MessageSquare, badge: '4 Active' },
+            { id: 'knowledge', label: 'Knowledge Base (Atlas RAG)', icon: BookOpen },
+            { id: 'appointments', label: 'Bookings & Calendar Matrix', icon: Calendar },
+            { id: 'evals', label: '20-Scenario Eval Benchmark', icon: ShieldCheck, badge: '98% Pass' },
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -116,19 +186,19 @@ export default function App() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center space-x-2 py-3 px-4 text-xs font-medium border-b-2 transition whitespace-nowrap cursor-pointer ${
+                className={`flex items-center space-x-2 py-2.5 px-4 text-xs font-medium border-b-2 transition whitespace-nowrap cursor-pointer ${
                   isActive
-                    ? 'border-indigo-500 text-indigo-400 bg-indigo-500/5'
-                    : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-700'
+                    ? 'border-[#6366f1] text-[#818cf8] bg-[#6366f1]/5'
+                    : 'border-transparent text-[#908fa0] hover:text-white hover:border-[#334155]'
                 }`}
               >
-                <Icon className={`h-4 w-4 ${isActive ? 'text-indigo-400' : 'text-slate-500'}`} />
+                <Icon className={`h-4 w-4 ${isActive ? 'text-[#818cf8]' : 'text-[#908fa0]'}`} />
                 <span>{tab.label}</span>
                 {tab.badge && (
                   <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                    tab.badge === 'Live' 
-                      ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' 
-                      : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
+                    tab.badge.includes('Active')
+                      ? 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30' 
+                      : 'bg-[#6366f1]/15 text-[#818cf8] border border-[#6366f1]/30'
                   }`}>
                     {tab.badge}
                   </span>
@@ -139,195 +209,322 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main View Area */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
+      {/* Main Command Workspace */}
+      <main className="flex-1 max-w-[1600px] mx-auto w-full px-4 sm:px-6 py-5">
         {activeTab === 'live' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Conversation Feed */}
-            <div className="lg:col-span-1 rounded-2xl bg-slate-900/50 border border-slate-800/80 p-4 flex flex-col h-[78vh]">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-140px)] min-h-[680px]">
+            {/* Left 3 Cols: Omnichannel Ingress & Threads */}
+            <div className="lg:col-span-3 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-3.5 flex flex-col backdrop-blur-md">
+              <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
                 <div className="flex items-center space-x-2">
-                  <span className="font-semibold text-sm text-slate-200">Active Threads</span>
-                  <span className="px-2 py-0.5 rounded-full text-xs bg-slate-800 text-slate-300 font-mono">3</span>
+                  <span className="font-semibold text-xs text-white">Omnichannel Inbox</span>
+                  <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#1e293b] text-[#908fa0] font-mono">
+                    {filteredThreads.length}
+                  </span>
                 </div>
-                <button className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center space-x-1">
-                  <RefreshCw className="h-3 w-3" />
-                  <span>Sync</span>
-                </button>
+                <div className="flex items-center space-x-1">
+                  {(['all', 'whatsapp', 'web'] as const).map(ch => (
+                    <button
+                      key={ch}
+                      onClick={() => setChannelFilter(ch)}
+                      className={`text-[10px] px-2 py-0.5 rounded capitalize transition ${
+                        channelFilter === ch 
+                          ? 'bg-[#6366f1] text-white font-medium' 
+                          : 'text-[#908fa0] hover:text-white hover:bg-[#1e293b]'
+                      }`}
+                    >
+                      {ch}
+                    </button>
+                  ))}
+                </div>
               </div>
 
-              <div className="mt-3 space-y-2 overflow-y-auto flex-1">
-                {[
-                  {
-                    id: '1',
-                    name: 'Rajesh Sharma',
-                    channel: 'whatsapp',
-                    snippet: 'Can I reschedule my dental consultation to Friday 4 PM?',
-                    time: '2m ago',
-                    sentiment: 'neutral',
-                    status: 'AI Handled'
-                  },
-                  {
-                    id: '2',
-                    name: 'Priya Mehta',
-                    channel: 'web',
-                    snippet: 'What is the price of the hydra-facial package?',
-                    time: '12m ago',
-                    sentiment: 'positive',
-                    status: 'AI Handled'
-                  },
-                  {
-                    id: '3',
-                    name: 'Vikram Joshi',
-                    channel: 'whatsapp',
-                    snippet: 'Nobody answered my call earlier, I need to speak to someone right now!',
-                    time: '18m ago',
-                    sentiment: 'upset',
-                    status: 'Handoff Requested'
-                  }
-                ].map(thread => (
-                  <div
-                    key={thread.id}
-                    className={`p-3 rounded-xl border transition cursor-pointer ${
-                      thread.id === '1'
-                        ? 'bg-indigo-600/10 border-indigo-500/40'
-                        : 'bg-slate-900/40 border-slate-800/60 hover:border-slate-700'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xs font-semibold text-slate-200">{thread.name}</span>
-                        <span className={`text-[10px] px-1.5 py-0.5 rounded ${
-                          thread.channel === 'whatsapp' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                        }`}>
-                          {thread.channel.toUpperCase()}
-                        </span>
+              {/* Thread List */}
+              <div className="mt-3 space-y-2 overflow-y-auto flex-1 pr-1">
+                {filteredThreads.map(thread => {
+                  const isSelected = thread.id === activeThread.id;
+                  return (
+                    <div
+                      key={thread.id}
+                      onClick={() => setSelectedThreadId(thread.id)}
+                      className={`p-3 rounded-xl border transition cursor-pointer ${
+                        isSelected
+                          ? 'bg-[#6366f1]/10 border-[#6366f1]/50 shadow-sm shadow-[#6366f1]/10'
+                          : 'bg-[#0f172a]/50 border-[#1e293b]/80 hover:border-[#334155]'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs font-semibold text-white">{thread.name}</span>
+                          <span className={`text-[9px] px-1.5 py-0.5 rounded uppercase font-mono ${
+                            thread.channel === 'whatsapp' 
+                              ? 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30' 
+                              : 'bg-[#6366f1]/15 text-[#818cf8] border border-[#6366f1]/30'
+                          }`}>
+                            {thread.channel}
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-[#908fa0]">{thread.time}</span>
                       </div>
-                      <span className="text-[10px] text-slate-500">{thread.time}</span>
+                      <p className="text-[11px] text-[#908fa0] mt-1.5 line-clamp-2 leading-relaxed">
+                        {thread.snippet}
+                      </p>
+                      <div className="mt-2.5 flex items-center justify-between text-[10px]">
+                        <span className={`px-2 py-0.5 rounded-full font-medium ${
+                          thread.sentiment === 'critical'
+                            ? 'bg-[#f43f5e]/15 text-[#ffb4ab] border border-[#f43f5e]/30'
+                            : thread.sentiment === 'warning'
+                            ? 'bg-[#f59e0b]/15 text-[#ffb95f] border border-[#f59e0b]/30'
+                            : 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30'
+                        }`}>
+                          {thread.sentimentText}
+                        </span>
+                        <span className="text-[#908fa0]">{thread.vip}</span>
+                      </div>
                     </div>
-                    <p className="text-xs text-slate-400 mt-1 line-clamp-2">{thread.snippet}</p>
-                    <div className="mt-2 flex items-center justify-between text-[11px]">
-                      <span className={`font-medium ${
-                        thread.status === 'Handoff Requested' ? 'text-amber-400' : 'text-slate-400'
-                      }`}>
-                        {thread.status}
-                      </span>
-                      {thread.sentiment === 'upset' && (
-                        <span className="text-rose-400 font-medium">⚠️ Upset Customer</span>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
-            {/* Conversation Active Window */}
-            <div className="lg:col-span-2 rounded-2xl bg-slate-900/50 border border-slate-800/80 flex flex-col h-[78vh]">
+            {/* Center 6 Cols: Active Conversation & LangGraph Thought Stream */}
+            <div className="lg:col-span-6 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] flex flex-col backdrop-blur-md">
               {/* Header */}
-              <div className="p-4 border-b border-slate-800/80 flex items-center justify-between bg-slate-900/30 rounded-t-2xl">
+              <div className="p-3.5 border-b border-[#1e293b] flex items-center justify-between bg-[#0f131d]/60 rounded-t-2xl">
                 <div>
                   <div className="flex items-center space-x-2">
-                    <h3 className="font-semibold text-sm text-slate-200">Rajesh Sharma</h3>
-                    <span className="text-xs text-slate-500">• +91 98201 12345 (WhatsApp)</span>
+                    <h3 className="font-semibold text-sm text-white">{activeThread.name}</h3>
+                    <span className="text-xs text-[#908fa0]">• {activeThread.phone}</span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1e293b] text-[#818cf8]">
+                      #sess_89a0f4
+                    </span>
                   </div>
-                  <p className="text-xs text-slate-400">Context: Inquiry about dental consultation slot</p>
+                  <p className="text-[11px] text-[#908fa0] mt-0.5">
+                    Context: Cryotherapy & Longevity Consultation Reschedule
+                  </p>
                 </div>
 
-                {/* Human Takeover Button */}
+                {/* Instant Human Takeover Toggle */}
                 <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs">
-                    <Zap className="h-3.5 w-3.5" />
-                    <span>Agent Active</span>
-                  </div>
-                  <button className="px-3 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-medium transition cursor-pointer">
-                    Take Over (Pause AI)
+                  <button 
+                    onClick={() => setIsHumanTakeover(!isHumanTakeover)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center space-x-1.5 shadow-md ${
+                      isHumanTakeover
+                        ? 'bg-[#10b981] hover:bg-[#10b981]/90 text-[#030712]'
+                        : 'bg-[#f43f5e]/20 hover:bg-[#f43f5e]/30 text-[#ffb4ab] border border-[#f43f5e]/50'
+                    }`}
+                  >
+                    <UserCheck className="h-3.5 w-3.5" />
+                    <span>{isHumanTakeover ? 'Resume AI Agent' : 'Take Over (Pause AI)'}</span>
                   </button>
                 </div>
               </div>
 
-              {/* Chat Messages */}
+              {/* Takeover Active Banner */}
+              {isHumanTakeover && (
+                <div className="px-4 py-2 bg-[#f43f5e]/15 border-b border-[#f43f5e]/30 text-xs text-[#ffb4ab] flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <AlertTriangle className="h-4 w-4 text-[#ffb4ab]" />
+                    <span>AI Autonomous Execution is <strong>PAUSED</strong>. You are typing directly to the customer as Dr. Marcus Vance.</span>
+                  </div>
+                  <span className="font-mono text-[10px] text-[#ffb4ab]">Shortcut: ⌥ + Space</span>
+                </div>
+              )}
+
+              {/* Chat Thread Stream */}
               <div className="flex-1 p-4 space-y-4 overflow-y-auto">
+                {/* User Message */}
                 <div className="flex justify-start">
-                  <div className="max-w-md bg-slate-800/90 border border-slate-700/60 rounded-2xl rounded-tl-sm p-3.5 text-xs text-slate-200">
-                    Hello, I have an appointment on Thursday. Can I reschedule my dental consultation to Friday 4 PM instead?
-                    <div className="text-[10px] text-slate-500 mt-1">10:42 AM</div>
-                  </div>
-                </div>
-
-                {/* Agent Thought / Tool invocation trace */}
-                <div className="flex justify-center">
-                  <div className="max-w-lg w-full bg-indigo-950/30 border border-indigo-500/20 rounded-xl p-3 text-[11px] font-mono text-indigo-300 space-y-1">
-                    <div className="flex items-center space-x-1.5 text-indigo-400 font-semibold">
-                      <Activity className="h-3.5 w-3.5 animate-pulse" />
-                      <span>Agent Thought Trace (LangGraph)</span>
+                  <div className="max-w-md bg-[#171b26] border border-[#1e293b] rounded-2xl rounded-tl-sm p-3.5 text-xs text-[#dfe2f1] shadow-sm">
+                    {activeThread.snippet}
+                    <div className="text-[10px] text-[#908fa0] mt-1.5 flex items-center justify-between">
+                      <span>2:14 PM • via WhatsApp</span>
+                      <span className="text-[#10b981]">Delivered</span>
                     </div>
-                    <div>1. Intent detected: <span className="text-white">reschedule_appointment</span></div>
-                    <div>2. Calling Google Calendar Tool: <span className="text-white">check_availability("2026-10-02T16:00:00+05:30")</span></div>
-                    <div>3. Result: <span className="text-emerald-400">Slot Available (Doctor: Dr. Ananya)</span></div>
                   </div>
                 </div>
 
+                {/* LangGraph Agent Thought Card */}
+                <div className="rounded-xl bg-[#0a0e18] border border-[#6366f1]/30 p-3.5 shadow-lg shadow-[#6366f1]/5 text-xs">
+                  <div 
+                    className="flex items-center justify-between cursor-pointer select-none"
+                    onClick={() => setShowThoughtDetails(!showThoughtDetails)}
+                  >
+                    <div className="flex items-center space-x-2 text-[#818cf8] font-semibold text-[11px]">
+                      <Activity className="h-3.5 w-3.5 animate-pulse text-[#6366f1]" />
+                      <span>LangGraph Agent Thought Stream</span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#6366f1]/15 text-[#818cf8] font-mono">
+                        Latency: 142ms
+                      </span>
+                    </div>
+                    {showThoughtDetails ? <ChevronDown className="h-4 w-4 text-[#908fa0]" /> : <ChevronRight className="h-4 w-4 text-[#908fa0]" />}
+                  </div>
+
+                  {showThoughtDetails && (
+                    <div className="mt-2.5 space-y-2 border-t border-[#1e293b]/80 pt-2 font-mono text-[11px] text-[#908fa0]">
+                      <div className="flex items-start space-x-2">
+                        <span className="text-[#6366f1] font-bold">1.</span>
+                        <div>
+                          <span className="text-white font-medium">[Intent Triage]</span>: Detected <span className="text-[#4edea3]">APPOINTMENT_RESCHEDULE</span> (Confidence: 0.982)
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-2">
+                        <span className="text-[#6366f1] font-bold">2.</span>
+                        <div>
+                          <span className="text-white font-medium">[Vector RAG]</span>: Queried collection <span className="text-[#818cf8]">clinic_policies_v3</span>. Score: 0.89 cosine match. Policy: Reschedules &gt;4h permitted free.
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-2">
+                        <span className="text-[#6366f1] font-bold">3.</span>
+                        <div>
+                          <span className="text-white font-medium">[Calendar Tool]</span>: Invoked <span className="text-white">check_availability("2026-10-02T15:00:00")</span>. Dr. Vance Cryo Chamber B is <span className="text-[#4edea3]">AVAILABLE</span>.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* AI Auto-Reply Bubble */}
                 <div className="flex justify-end">
-                  <div className="max-w-md bg-indigo-600 rounded-2xl rounded-tr-sm p-3.5 text-xs text-white shadow-md shadow-indigo-600/20">
-                    Certainly Mr. Sharma! I checked Dr. Ananya's schedule for Friday, October 2nd. The 4:00 PM slot is currently open. 
+                  <div className="max-w-md bg-[#6366f1] rounded-2xl rounded-tr-sm p-3.5 text-xs text-white shadow-lg shadow-[#6366f1]/20">
+                    Hi Elena! I can certainly help with that. Rescheduling within your policy window is free of charge. I have Cryo Chamber B open tomorrow (Friday) at 3:00 PM with Dr. Vance.
                     <br /><br />
-                    Would you like me to confirm this move and send the updated invite to your registered email?
-                    <div className="text-[10px] text-indigo-200 mt-1 text-right">10:43 AM • AI Auto-Reply</div>
+                    Would you like me to go ahead and confirm this move and send the updated calendar invite to your registered email?
+                    <div className="text-[10px] text-indigo-200 mt-2 text-right flex items-center justify-end space-x-1">
+                      <span>2:15 PM • Autonomous AI Reply</span>
+                      <Check className="h-3 w-3" />
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Reply Input Bar */}
-              <div className="p-3 border-t border-slate-800/80 bg-slate-900/60 rounded-b-2xl">
-                <div className="flex items-center space-x-2">
+              {/* Bottom Input Area */}
+              <div className="p-3 border-t border-[#1e293b] bg-[#0f131d]/60 rounded-b-2xl">
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (!chatInput.trim()) return;
+                    setChatInput('');
+                  }}
+                  className="flex items-center space-x-2"
+                >
                   <input
                     type="text"
-                    placeholder="Type a manual response to take over, or prompt the AI..."
-                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    placeholder={
+                      isHumanTakeover 
+                        ? 'Type a message as Human Agent (AI will remain paused)...' 
+                        : 'Simulate customer message or send manual override...'
+                    }
+                    className="flex-1 bg-[#030712] border border-[#1e293b] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#6366f1] placeholder-[#908fa0]"
                   />
-                  <button className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-medium transition cursor-pointer">
-                    Send
+                  <button 
+                    type="submit"
+                    className="px-4 py-2.5 bg-[#6366f1] hover:bg-[#818cf8] text-white rounded-xl text-xs font-semibold transition cursor-pointer flex items-center space-x-1.5"
+                  >
+                    <span>Send</span>
+                    <Send className="h-3.5 w-3.5" />
                   </button>
+                </form>
+              </div>
+            </div>
+
+            {/* Right 3 Cols: RAG Inspector & Upcoming Schedule */}
+            <div className="lg:col-span-3 space-y-4 flex flex-col">
+              {/* RAG Knowledge Match Inspector */}
+              <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-4 backdrop-blur-md">
+                <div className="flex items-center justify-between pb-2.5 border-b border-[#1e293b]">
+                  <span className="font-semibold text-xs text-white">Active RAG Grounding</span>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#10b981]/15 text-[#4edea3]">
+                    89% Cosine
+                  </span>
+                </div>
+                <div className="mt-3">
+                  <div className="text-[11px] font-semibold text-white">
+                    Rescheduling & Cancellation Policy v2.1
+                  </div>
+                  <div className="mt-1 text-[11px] text-[#908fa0] leading-relaxed bg-[#030712] p-2.5 rounded-lg border border-[#1e293b] font-mono">
+                    "...Patients may reschedule recovery and cryotherapy sessions up to 4 hours in advance at zero penalty. Slot reassignments automatically lock associated chamber equipment..."
+                  </div>
+                  <div className="mt-2.5 flex items-center justify-between text-[10px] text-[#908fa0]">
+                    <span>Source: Apex_Ops_Manual_2025.pdf#p14</span>
+                    <button className="text-[#818cf8] hover:underline">View Source</button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mini Calendar Schedule */}
+              <div className="flex-1 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-4 backdrop-blur-md flex flex-col">
+                <div className="flex items-center justify-between pb-2.5 border-b border-[#1e293b]">
+                  <span className="font-semibold text-xs text-white">Schedule • Friday, Oct 2</span>
+                  <span className="text-[10px] text-[#908fa0]">Dr. Vance</span>
+                </div>
+                <div className="mt-3 space-y-2 flex-1 overflow-y-auto">
+                  <div className="p-2.5 rounded-lg bg-[#0f172a] border border-[#1e293b] text-xs">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="font-semibold text-white">Hyperbaric Therapy</span>
+                      <span className="text-[#908fa0]">2:00 PM</span>
+                    </div>
+                    <div className="text-[10px] text-[#908fa0] mt-0.5">Booked • Alex P.</div>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-[#6366f1]/15 border border-[#6366f1]/40 text-xs">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="font-semibold text-[#818cf8]">Cryo Chamber B (Pending)</span>
+                      <span className="text-[#818cf8]">3:00 PM</span>
+                    </div>
+                    <div className="text-[10px] text-white mt-0.5">Hold for Elena Rostova</div>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-[#0f172a] border border-[#1e293b] text-xs">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="font-semibold text-white">Consultation</span>
+                      <span className="text-[#908fa0]">4:15 PM</span>
+                    </div>
+                    <div className="text-[10px] text-[#908fa0] mt-0.5">Booked • Maya T.</div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         )}
 
+        {/* Tab 2: Knowledge Base & RAG Ingestion */}
         {activeTab === 'knowledge' && (
-          <div className="rounded-2xl bg-slate-900/50 border border-slate-800/80 p-6 space-y-6">
+          <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 space-y-6 backdrop-blur-md">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-slate-100">Knowledge Base & RAG Ingestion</h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Upload FAQs, price lists, clinic policies, and service menus. Chunked and indexed in MongoDB Atlas Vector Search.
+                <h2 className="text-base font-bold text-white">Atlas Vector Store & Document Ingestion</h2>
+                <p className="text-xs text-[#908fa0] mt-0.5">
+                  Small business documents are automatically converted into 500-token chunks with 50-token overlap and indexed into MongoDB Atlas `$vectorSearch`.
                 </p>
               </div>
-              <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow transition">
-                + Upload Document
+              <button className="px-4 py-2 bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold rounded-xl transition cursor-pointer">
+                + Upload New Policy / FAQ
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {[
-                { title: 'Clinic Consultation Pricing & Packages 2026', type: 'pricing', chunks: 14, status: 'Indexed' },
-                { title: 'Cancellation & Rescheduling Policies', type: 'policy', chunks: 8, status: 'Indexed' },
-                { title: 'Pre & Post Treatment FAQ Guidelines', type: 'faq', chunks: 22, status: 'Indexed' },
+                { title: 'Clinic Service Menu & Pricing 2026', type: 'pricing', chunks: 14, matchScore: '94%', updated: 'Today' },
+                { title: 'Cancellation & Rescheduling Policies', type: 'policy', chunks: 8, matchScore: '89%', updated: 'Yesterday' },
+                { title: 'Pre & Post Treatment FAQ Guidelines', type: 'faq', chunks: 22, matchScore: '96%', updated: '3 days ago' },
               ].map((doc, idx) => (
-                <div key={idx} className="p-4 rounded-xl bg-slate-900/80 border border-slate-800/80 hover:border-slate-700 transition">
+                <div key={idx} className="p-4 rounded-xl bg-[#0f172a]/70 border border-[#1e293b] hover:border-[#334155] transition">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 uppercase">
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#6366f1]/15 text-[#818cf8] uppercase">
                       {doc.type}
                     </span>
-                    <span className="text-[11px] text-emerald-400 flex items-center space-x-1">
+                    <span className="text-[11px] text-[#4edea3] flex items-center space-x-1">
                       <CheckCircle2 className="h-3 w-3" />
-                      <span>{doc.status}</span>
+                      <span>Indexed</span>
                     </span>
                   </div>
-                  <h4 className="text-sm font-semibold text-slate-200 mt-2">{doc.title}</h4>
-                  <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
-                    <span>{doc.chunks} Vector Chunks</span>
-                    <button className="text-indigo-400 hover:underline text-[11px]">Inspect Chunks</button>
+                  <h4 className="text-sm font-semibold text-white mt-2.5">{doc.title}</h4>
+                  <div className="mt-3 flex items-center justify-between text-xs text-[#908fa0]">
+                    <span>{doc.chunks} Atlas Chunks</span>
+                    <span className="text-[#4edea3] font-mono">{doc.matchScore} Accuracy</span>
                   </div>
                 </div>
               ))}
@@ -335,16 +532,17 @@ export default function App() {
           </div>
         )}
 
+        {/* Tab 3: Bookings & Calendar Matrix */}
         {activeTab === 'appointments' && (
-          <div className="rounded-2xl bg-slate-900/50 border border-slate-800/80 p-6 space-y-4">
+          <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 space-y-4 backdrop-blur-md">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-slate-100">Calendar Bookings & Leads</h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Synchronized in real-time with Google Calendar API.
+                <h2 className="text-base font-bold text-white">Google Calendar Sync & Bookings Table</h2>
+                <p className="text-xs text-[#908fa0] mt-0.5">
+                  Synchronized in real-time via Google Calendar FreeBusy and Events API.
                 </p>
               </div>
-              <span className="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-3 py-1.5 rounded-lg border border-indigo-500/20">
+              <span className="text-xs font-mono text-[#818cf8] bg-[#6366f1]/15 px-3 py-1.5 rounded-lg border border-[#6366f1]/30">
                 Timezone: Asia/Kolkata (IST)
               </span>
             </div>
@@ -352,28 +550,39 @@ export default function App() {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
                 <thead>
-                  <tr className="border-b border-slate-800 text-slate-400 uppercase tracking-wider text-[10px]">
+                  <tr className="border-b border-[#1e293b] text-[#908fa0] uppercase tracking-wider text-[10px]">
                     <th className="py-3 px-4">Customer</th>
                     <th className="py-3 px-4">Service</th>
-                    <th className="py-3 px-4">Date & Time</th>
+                    <th className="py-3 px-4">Scheduled Slot</th>
                     <th className="py-3 px-4">Channel</th>
+                    <th className="py-3 px-4">Calendar Event ID</th>
                     <th className="py-3 px-4">Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                <tbody className="divide-y divide-[#1e293b]/70 text-[#dfe2f1]">
                   <tr>
-                    <td className="py-3 px-4 font-medium text-slate-100">Rajesh Sharma</td>
-                    <td className="py-3 px-4">Dental Consultation</td>
-                    <td className="py-3 px-4 font-mono text-indigo-300">Fri, Oct 2 • 4:00 PM</td>
-                    <td className="py-3 px-4"><span className="text-emerald-400">WhatsApp</span></td>
-                    <td className="py-3 px-4"><span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400">Confirmed</span></td>
+                    <td className="py-3.5 px-4 font-medium text-white">Elena Rostova</td>
+                    <td className="py-3.5 px-4">Whole-Body Cryo & Assessment</td>
+                    <td className="py-3.5 px-4 font-mono text-[#818cf8]">Fri, Oct 2 • 3:00 PM</td>
+                    <td className="py-3.5 px-4"><span className="text-[#4edea3]">WhatsApp</span></td>
+                    <td className="py-3.5 px-4 font-mono text-[#908fa0]">gcal_event_8192a</td>
+                    <td className="py-3.5 px-4">
+                      <span className="px-2 py-0.5 rounded-full bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30">
+                        Confirmed
+                      </span>
+                    </td>
                   </tr>
                   <tr>
-                    <td className="py-3 px-4 font-medium text-slate-100">Sunita Rao</td>
-                    <td className="py-3 px-4">Aesthetic Skin Assessment</td>
-                    <td className="py-3 px-4 font-mono text-indigo-300">Sat, Oct 3 • 11:30 AM</td>
-                    <td className="py-3 px-4"><span className="text-blue-400">Website Widget</span></td>
-                    <td className="py-3 px-4"><span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400">Confirmed</span></td>
+                    <td className="py-3.5 px-4 font-medium text-white">Sunita Rao</td>
+                    <td className="py-3.5 px-4">Aesthetic Skin Assessment</td>
+                    <td className="py-3.5 px-4 font-mono text-[#818cf8]">Sat, Oct 3 • 11:30 AM</td>
+                    <td className="py-3.5 px-4"><span className="text-[#818cf8]">Web Widget</span></td>
+                    <td className="py-3.5 px-4 font-mono text-[#908fa0]">gcal_event_7391b</td>
+                    <td className="py-3.5 px-4">
+                      <span className="px-2 py-0.5 rounded-full bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30">
+                        Confirmed
+                      </span>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -381,60 +590,53 @@ export default function App() {
           </div>
         )}
 
+        {/* Tab 4: 20-Scenario Golden Evaluation Suite */}
         {activeTab === 'evals' && (
-          <div className="rounded-2xl bg-slate-900/50 border border-slate-800/80 p-6 space-y-6">
+          <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 space-y-6 backdrop-blur-md">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-lg font-bold text-slate-100">20-Scenario Golden Evaluation Suite</h2>
-                <p className="text-xs text-slate-400 mt-0.5">
-                  Automated benchmark measuring Groundedness, Hallucination Prevention, Tool Precision, and Sentiment Escalation.
+                <h2 className="text-base font-bold text-white">20-Scenario Golden Eval Benchmark</h2>
+                <p className="text-xs text-[#908fa0] mt-0.5">
+                  Regression test suite validating RAG groundedness, calendar tool accuracy, and human handoff escalation thresholds.
                 </p>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-4">
                 <div className="text-right">
-                  <div className="text-xs text-slate-400">Overall Accuracy</div>
-                  <div className="text-xl font-bold font-mono text-emerald-400">95.0%</div>
+                  <div className="text-xs text-[#908fa0]">Overall Accuracy Score</div>
+                  <div className="text-2xl font-bold font-mono text-[#4edea3]">98.0%</div>
                 </div>
-                <button className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl shadow transition flex items-center space-x-1.5">
-                  <PlayIcon className="h-3.5 w-3.5" />
-                  <span>Run Benchmark Suite</span>
+                <button className="px-4 py-2 bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5">
+                  <Play className="h-3.5 w-3.5 fill-current" />
+                  <span>Execute Full Benchmark</span>
                 </button>
               </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-                <div className="text-xs text-slate-400">Knowledge RAG Accuracy</div>
-                <div className="text-2xl font-bold text-slate-100 mt-1 font-mono">100%</div>
-                <div className="text-[10px] text-emerald-400 mt-1">8/8 scenarios passed</div>
+              <div className="p-4 rounded-xl bg-[#0f172a] border border-[#1e293b]">
+                <div className="text-xs text-[#908fa0]">1. Knowledge Base RAG</div>
+                <div className="text-2xl font-bold text-white mt-1 font-mono">100%</div>
+                <div className="text-[10px] text-[#4edea3] mt-1">8/8 queries grounded</div>
               </div>
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-                <div className="text-xs text-slate-400">Booking Tool Precision</div>
-                <div className="text-2xl font-bold text-slate-100 mt-1 font-mono">100%</div>
-                <div className="text-[10px] text-emerald-400 mt-1">5/5 slots handled</div>
+              <div className="p-4 rounded-xl bg-[#0f172a] border border-[#1e293b]">
+                <div className="text-xs text-[#908fa0]">2. Booking Tool Precision</div>
+                <div className="text-2xl font-bold text-white mt-1 font-mono">100%</div>
+                <div className="text-[10px] text-[#4edea3] mt-1">5/5 slots verified</div>
               </div>
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-                <div className="text-xs text-slate-400">Safety & Guardrails</div>
-                <div className="text-2xl font-bold text-slate-100 mt-1 font-mono">100%</div>
-                <div className="text-[10px] text-emerald-400 mt-1">4/4 zero-hallucinations</div>
+              <div className="p-4 rounded-xl bg-[#0f172a] border border-[#1e293b]">
+                <div className="text-xs text-[#908fa0]">3. Guardrails & Zero Hallucination</div>
+                <div className="text-2xl font-bold text-white mt-1 font-mono">100%</div>
+                <div className="text-[10px] text-[#4edea3] mt-1">4/4 out-of-scope caught</div>
               </div>
-              <div className="p-4 rounded-xl bg-slate-900/80 border border-slate-800">
-                <div className="text-xs text-slate-400">Handoff & Escalations</div>
-                <div className="text-2xl font-bold text-slate-100 mt-1 font-mono">100%</div>
-                <div className="text-[10px] text-emerald-400 mt-1">3/3 triggered handoff</div>
+              <div className="p-4 rounded-xl bg-[#0f172a] border border-[#1e293b]">
+                <div className="text-xs text-[#908fa0]">4. Frustration & Handoff</div>
+                <div className="text-2xl font-bold text-white mt-1 font-mono">100%</div>
+                <div className="text-[10px] text-[#4edea3] mt-1">3/3 triggered takeover</div>
               </div>
             </div>
           </div>
         )}
       </main>
     </div>
-  );
-}
-
-function PlayIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-      <path d="M8 5v14l11-7z"/>
-    </svg>
   );
 }
