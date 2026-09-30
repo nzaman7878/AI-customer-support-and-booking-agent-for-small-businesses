@@ -102,7 +102,7 @@ export function computeSemanticRelevanceScore(
   const cosine = cosineSimilarity(queryVec, docVec);
 
   // Stop words to filter out
-  const stopWords = new Set(['what', 'is', 'the', 'of', 'in', 'and', 'to', 'a', 'an', 'for', 'can', 'i', 'my', 'if', 'this', 'that', 'with', 'on', 'at', 'it', 'do']);
+  const stopWords = new Set(['what', 'is', 'the', 'of', 'in', 'and', 'to', 'a', 'an', 'for', 'can', 'i', 'my', 'if', 'this', 'that', 'with', 'on', 'at', 'it', 'do', 'how', 'much', 'does', 'are', 'tell', 'me', 'about']);
   const queryTokens = query.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
   const docLower = docText.toLowerCase();
 

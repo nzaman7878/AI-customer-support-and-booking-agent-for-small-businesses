@@ -3,6 +3,7 @@ import cors from 'cors';
 import { config } from './config/index.js';
 import { connectToDatabase, isDbConnected } from './db/mongo.js';
 import ragRouter from './routes/rag.js';
+import chatRouter from './routes/chat.js';
 import { seedClinicKnowledgeBase } from './services/seedKnowledge.js';
 
 const app = express();
@@ -16,8 +17,9 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// RAG and Knowledge Base API
+// RAG and Agent Chat APIs
 app.use('/api', ragRouter);
+app.use('/api', chatRouter);
 
 // Health Check Endpoint
 app.get('/api/health', (req: Request, res: Response) => {
