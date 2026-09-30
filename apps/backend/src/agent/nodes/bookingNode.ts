@@ -1,5 +1,6 @@
 import { AgentStateType } from '../state.js';
 import { config } from '../../config/index.js';
+import { checkAvailableSlots } from '../../services/bookingService.js';
 
 export async function bookingNode(state: AgentStateType): Promise<Partial<AgentStateType>> {
   const lastMessage = state.messages[state.messages.length - 1];
@@ -8,12 +9,9 @@ export async function bookingNode(state: AgentStateType): Promise<Partial<AgentS
 
   thoughts.push(`[Booking Engine] Invoking booking workflow for intent: ${state.detectedIntent}`);
 
-  // Default proposed slots
-  const availableSlots = [
-    { time: '2:00 PM', iso: '2026-10-02T14:00:00+05:30', doctor: 'Dr. Marcus Vance', chamber: 'Chamber A' },
-    { time: '3:30 PM', iso: '2026-10-02T15:30:00+05:30', doctor: 'Dr. Marcus Vance', chamber: 'Cryo Suite B' },
-    { time: '4:15 PM', iso: '2026-10-02T16:15:00+05:30', doctor: 'Dr. Ananya Ray', chamber: 'Aesthetics 1' },
-  ];
+  // Query live slots for Friday
+  const openSlots = await checkAvailableSlots('2026-10-02');
+  const availableSlots = openSlots.slice(0, 3);
 
   let finalResponse = '';
 
