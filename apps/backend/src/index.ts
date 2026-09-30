@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { config } from './config/index.js';
 import { connectToDatabase, isDbConnected } from './db/mongo.js';
+import ragRouter from './routes/rag.js';
+import { seedClinicKnowledgeBase } from './services/seedKnowledge.js';
 
 const app = express();
 
@@ -13,6 +15,9 @@ app.use(cors({
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
+
+// RAG and Knowledge Base API
+app.use('/api', ragRouter);
 
 // Health Check Endpoint
 app.get('/api/health', (req: Request, res: Response) => {
@@ -34,13 +39,15 @@ app.get('/', (req: Request, res: Response) => {
   res.json({
     message: 'AI Customer Support & Booking Agent API Gateway is live',
     docs: '/api/health',
-    phase: 'Phase 1 initialized'
+    phase: 'Phase 3 active: RAG & Vector Store Operational'
   });
 });
 
 // Start Server
 async function startServer() {
   await connectToDatabase();
+  // Seed initial clinic knowledge documents into RAG
+  await seedClinicKnowledgeBase();
 
   const server = app.listen(config.port, () => {
     console.log(`=======================================================`);
@@ -48,6 +55,7 @@ async function startServer() {
     console.log(`📡 Port: http://localhost:${config.port}`);
     console.log(`🩺 Health check: http://localhost:${config.port}/api/health`);
     console.log(`🏬 Business Target: ${config.business.name}`);
+    console.log(`🧠 RAG & Atlas Vector Search: Active`);
     console.log(`=======================================================`);
   });
 
