@@ -15,7 +15,8 @@
     "test:evals": "tsx src/evals/evalRunner.ts",
     "test:business": "tsx src/evals/testBusinessConfig.ts",
     "test:reminders": "tsx src/evals/testRemindersAndWebhooks.ts",
-    "test:analytics": "tsx src/evals/testAnalytics.ts"
+    "test:analytics": "tsx src/evals/testAnalytics.ts",
+    "test:voice": "tsx src/evals/testMultilingualVoice.ts"
   },
   "dependencies": {
     "@ai-agent/shared": "*",

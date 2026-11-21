@@ -30,6 +30,8 @@ export default function ChatWidget() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showThoughts, setShowThoughts] = useState(true);
+  const [selectedLang, setSelectedLang] = useState<'en' | 'hi' | 'es' | 'fr'>('en');
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'm1',
@@ -38,6 +40,29 @@ export default function ChatWidget() {
     }
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const handleVoiceInput = async () => {
+    setIsTranscribing(true);
+    try {
+      const audioMarker = selectedLang === 'hi' ? 'simulated_hindi' : (selectedLang === 'es' ? 'simulated_spanish' : 'simulated_voice');
+      const res = await fetch('/api/voice/transcribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          audioBase64: audioMarker,
+          languageHint: selectedLang
+        })
+      });
+      const data = await res.json();
+      if (data.transcription) {
+        setInput(data.transcription);
+      }
+    } catch (err) {
+      console.error('Voice transcription error:', err);
+    } finally {
+      setIsTranscribing(false);
+    }
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -148,12 +173,31 @@ export default function ChatWidget() {
               </div>
             </div>
 
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-1.5 rounded-lg text-[#908fa0] hover:text-white hover:bg-[#1e293b] transition"
-            >
-              <X className="h-4 w-4" />
-            </button>
+            <div className="flex items-center space-x-2">
+              {/* Language Selector Pills */}
+              <div className="flex bg-[#030712] p-0.5 rounded-lg border border-[#1e293b] text-[9px] font-mono">
+                {(['en', 'hi', 'es', 'fr'] as const).map(lang => (
+                  <button
+                    key={lang}
+                    onClick={() => setSelectedLang(lang)}
+                    className={`px-1.5 py-0.5 rounded uppercase transition cursor-pointer ${
+                      selectedLang === lang
+                        ? 'bg-[#6366f1] text-white font-bold'
+                        : 'text-[#908fa0] hover:text-white'
+                    }`}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-1.5 rounded-lg text-[#908fa0] hover:text-white hover:bg-[#1e293b] transition"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </div>
 
           {/* Messages Stream */}
@@ -269,6 +313,12 @@ export default function ChatWidget() {
 
           {/* Bottom Input Dock */}
           <div className="p-3 border-t border-[#1e293b] bg-[#0f131d]/90">
+            {isTranscribing && (
+              <div className="mb-2 px-3 py-1.5 rounded-lg bg-[#6366f1]/15 border border-[#6366f1]/30 text-[10px] text-[#818cf8] flex items-center space-x-2 animate-pulse">
+                <Mic className="h-3 w-3 text-[#f43f5e]" />
+                <span>Transcribing incoming voice note with STT...</span>
+              </div>
+            )}
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -280,9 +330,24 @@ export default function ChatWidget() {
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask about treatments, pricing, or book a slot..."
+                placeholder={selectedLang === 'hi' ? 'Kuch bhi poochein ya book karein...' : (selectedLang === 'es' ? 'Pregunte o reserve una cita...' : 'Ask about treatments, pricing, or book a slot...')}
                 className="flex-1 bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-[#908fa0] focus:outline-none focus:border-[#6366f1]"
               />
+
+              <button
+                type="button"
+                onClick={handleVoiceInput}
+                disabled={isTranscribing || isLoading}
+                title="Speak / Voice Note Transcription"
+                className={`p-2.5 rounded-xl border transition cursor-pointer ${
+                  isTranscribing
+                    ? 'bg-[#f43f5e]/20 border-[#f43f5e] text-[#f43f5e] animate-pulse'
+                    : 'bg-[#1e293b] hover:bg-[#334155] border-[#1e293b] text-[#dfe2f1]'
+                }`}
+              >
+                <Mic className="h-3.5 w-3.5" />
+              </button>
+
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}

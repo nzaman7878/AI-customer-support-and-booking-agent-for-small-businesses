@@ -258,6 +258,19 @@ ai-customer-support-agent/
 
 ---
 
+### Phase 12: Multilingual Translation Engine & Voice Note Audio Transcription
+- **Goal**: Support multi-language interactions (English, Hindi/Hinglish, Spanish, French, German, Arabic) and WhatsApp voice notes via Speech-to-Text (STT) and automated query translation.
+- **Deliverables**:
+  - `apps/backend/src/services/transcriptionService.ts`: Audio transcription pipeline converting incoming voice notes/audio clips into text with automatic language detection and vernacular handling.
+  - `apps/backend/src/services/translationService.ts`: Detects language of incoming customer messages and translates RAG knowledge responses back into the customer's native language.
+  - `apps/backend/src/routes/voice.ts`: REST endpoints for voice transcription (`POST /api/voice/transcribe`) and translation preview (`POST /api/voice/translate`).
+  - Update `apps/backend/src/routes/whatsapp.ts`: Process incoming WhatsApp `audio` / `voice` messages automatically, transcribe them to text, and pass to the LangGraph agent.
+  - Update Chat Widget (`apps/dashboard/src/components/ChatWidget.tsx` and `apps/widget/src/Widget.tsx`) with Voice Input mic toggle and Language selector.
+  - Automated test suite `apps/backend/src/evals/testMultilingualVoice.ts`.
+- **Git Commit**: `feat(voice): implement multilingual translation engine and whatsapp voice note transcription pipeline`
+
+---
+
 ## 5. Verification Checklist
 
 1. [x] MongoDB Atlas connection and `$vectorSearch` vector index configured.
@@ -275,3 +288,5 @@ ai-customer-support-agent/
 13. [x] Real-time CRM webhook dispatcher firing on booking and lead capture events.
 14. [x] Conversion metrics, deflection percentage and ROI calculated dynamically.
 15. [x] Appointments and leads exported via RFC 4180 compliant CSV stream.
+16. [x] Audio voice note transcription pipeline processing audio inputs.
+17. [x] Multilingual detection and translation replying in customer's detected language.

@@ -11,7 +11,8 @@ import {
   Sparkles,
   Phone,
   Clock,
-  Check
+  Check,
+  Mic
 } from 'lucide-react';
 
 export interface WidgetProps {
@@ -46,6 +47,7 @@ export default function StandaloneWidget({
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showThoughts, setShowThoughts] = useState(true);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [activeConfig, setActiveConfig] = useState({
     name: businessName,
     primaryColor,
@@ -168,6 +170,26 @@ export default function StandaloneWidget({
       ]);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleVoiceInput = async () => {
+    setIsTranscribing(true);
+    try {
+      const base = apiUrl || window.location.origin;
+      const res = await fetch(`${base}/api/voice/transcribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ audioBase64: 'simulated_voice' })
+      });
+      const data = await res.json();
+      if (data.transcription) {
+        setInput(data.transcription);
+      }
+    } catch (err) {
+      console.error('Widget voice error:', err);
+    } finally {
+      setIsTranscribing(false);
     }
   };
 
@@ -534,6 +556,25 @@ export default function StandaloneWidget({
                   outline: 'none'
                 }}
               />
+              <button
+                type="button"
+                onClick={handleVoiceInput}
+                disabled={isTranscribing || isLoading}
+                title="Voice Note Input"
+                style={{
+                  padding: '10px',
+                  borderRadius: '12px',
+                  background: isTranscribing ? 'rgba(244, 63, 94, 0.2)' : '#1e293b',
+                  border: isTranscribing ? '1px solid #f43f5e' : '1px solid #1e293b',
+                  color: isTranscribing ? '#f43f5e' : '#dfe2f1',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <Mic size={16} />
+              </button>
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}

@@ -1,5 +1,7 @@
 import { config } from '../config/index.js';
 import { runAgent } from '../agent/graph.js';
+import { transcribeAudio } from '../services/transcriptionService.js';
+import { detectLanguage, translateResponse } from '../services/translationService.js';
 
 export interface WhatsAppMessagePayload {
   from: string; // Customer phone number (e.g. "919820112345")
@@ -95,12 +97,23 @@ export async function processWhatsAppWebhook(body: any): Promise<{ handled: bool
     const from = message.from; // Phone number
     const customerName = contact?.profile?.name || 'WhatsApp Customer';
 
-    // Extract text from text message or interactive button reply
+    // Extract text from text message, interactive button reply, or audio voice note
     let text = '';
+    let isVoiceNote = false;
+
     if (message.type === 'text') {
       text = message.text?.body || '';
     } else if (message.type === 'interactive') {
       text = message.interactive?.button_reply?.title || message.interactive?.list_reply?.title || '';
+    } else if (message.type === 'audio' || message.type === 'voice') {
+      isVoiceNote = true;
+      const transcription = await transcribeAudio({
+        audioBase64: message.audio?.data || message.voice?.data,
+        audioUrl: message.audio?.link || message.voice?.link,
+        mimeType: message.audio?.mime_type || message.voice?.mime_type
+      });
+      text = transcription.text;
+      console.log(`[WhatsApp Webhook] 🎙️ Transcribed voice note from ${customerName}: "${text}"`);
     }
 
     if (!text) {
@@ -109,6 +122,9 @@ export async function processWhatsAppWebhook(body: any): Promise<{ handled: bool
 
     console.log(`[WhatsApp Webhook] Received message from ${customerName} (${from}): "${text}"`);
 
+    // Detect language of incoming query
+    const detected = detectLanguage(text);
+
     // Run LangGraph Agent
     const conversationId = `wa_${from}`;
     const agentState = await runAgent(text, conversationId, 'whatsapp', {
@@ -116,12 +132,22 @@ export async function processWhatsAppWebhook(body: any): Promise<{ handled: bool
       phone: from
     });
 
+    // Translate reply back into the customer's native language if non-English
+    let replyToSend = agentState.finalResponse;
+    if (detected.code !== 'en') {
+      replyToSend = await translateResponse(replyToSend, detected.code);
+    }
+
+    if (isVoiceNote) {
+      replyToSend = `🎙️ *Voice Note Received & Transcribed:*\n"${text}"\n\n${replyToSend}`;
+    }
+
     // Send reply back to customer on WhatsApp
-    await sendWhatsAppMessage(from, agentState.finalResponse);
+    await sendWhatsAppMessage(from, replyToSend);
 
     return {
       handled: true,
-      reply: agentState.finalResponse
+      reply: replyToSend
     };
   } catch (error: any) {
     console.error('[WhatsApp Webhook] Processing error:', error);

@@ -29,6 +29,9 @@ Freelancers and agencies sell this system to small businesses because it deliver
 - **Omnichannel Support**:
   - **Universal Website Embed**: Single copy-paste `<script>` tag deployable on any CMS.
   - **WhatsApp Cloud API**: Official Meta Graph API webhook supporting text replies and interactive quick-reply buttons.
+- **Multilingual Vernacular & Voice Note Transcription Engine**:
+  - Ingests incoming WhatsApp voice notes (`audio/ogg`) and Web mic recordings with Speech-to-Text (STT) transcription.
+  - Automatically detects language and responds in the customer's native tongue (English, Hindi/Hinglish, Spanish, French, German, Arabic).
 - **Automated Reminder & CRM Webhook Engine**:
   - Outbound webhooks (`appointment.created`, `appointment.cancelled`, `lead.captured`) with HMAC SHA-256 signatures for Zapier, Make, HubSpot, and Slack.
   - Multi-channel notification lifecycle: instant booking confirmation, 24-hour reminder, and 2-hour reminder via WhatsApp/Email with cancellation detection.
