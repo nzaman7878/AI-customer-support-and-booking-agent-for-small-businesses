@@ -13,7 +13,8 @@
     "test:booking": "tsx src/evals/testBooking.ts",
     "test:channels": "tsx src/evals/testChannels.ts",
     "test:evals": "tsx src/evals/evalRunner.ts",
-    "test:business": "tsx src/evals/testBusinessConfig.ts"
+    "test:business": "tsx src/evals/testBusinessConfig.ts",
+    "test:reminders": "tsx src/evals/testRemindersAndWebhooks.ts"
   },
   "dependencies": {
     "@ai-agent/shared": "*",

@@ -106,3 +106,12 @@ export async function insertCalendarEvent(
 export function getCachedAppointments(): Appointment[] {
   return activeAppointments;
 }
+
+export function cancelCalendarEvent(appointmentId: string): Appointment | null {
+  const apt = activeAppointments.find(a => a.id === appointmentId || a.calendarEventId === appointmentId);
+  if (apt) {
+    apt.status = 'cancelled';
+    return apt;
+  }
+  return null;
+}

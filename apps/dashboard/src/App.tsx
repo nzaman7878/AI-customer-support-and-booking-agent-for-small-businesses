@@ -25,7 +25,11 @@ import {
   Code2,
   Copy,
   ExternalLink,
-  Layers
+  Layers,
+  Bell,
+  Zap,
+  RefreshCw,
+  Trash2
 } from 'lucide-react';
 import ChatWidget from './components/ChatWidget.js';
 
@@ -106,6 +110,14 @@ export default function App() {
   const [copiedEmbed, setCopiedEmbed] = useState(false);
   const [activePresetTab, setActivePresetTab] = useState<'wordpress' | 'shopify' | 'squarespace' | 'html'>('html');
 
+  // Reminders & Webhook state
+  const [webhookLogs, setWebhookLogs] = useState<any[]>([]);
+  const [reminderLogs, setReminderLogs] = useState<any[]>([]);
+  const [webhookUrl, setWebhookUrl] = useState('https://hooks.zapier.com/hooks/catch/omniagent/demo');
+  const [isScanningReminders, setIsScanningReminders] = useState(false);
+  const [isTestingWebhook, setIsTestingWebhook] = useState(false);
+  const [webhookToast, setWebhookToast] = useState<string | null>(null);
+
   // Initial Data Fetch
   const loadData = () => {
     fetch('/api/health')
@@ -154,6 +166,75 @@ export default function App() {
         if (d.leads) setLeads(d.leads);
       })
       .catch(() => {});
+
+    fetch('/api/webhooks/logs')
+      .then(r => r.json())
+      .then(d => {
+        if (d.logs) setWebhookLogs(d.logs);
+      })
+      .catch(() => {});
+
+    fetch('/api/reminders/logs')
+      .then(r => r.json())
+      .then(d => {
+        if (d.logs) setReminderLogs(d.logs);
+      })
+      .catch(() => {});
+  };
+
+  const handleScanReminders = async () => {
+    setIsScanningReminders(true);
+    try {
+      const res = await fetch('/api/reminders/scan', { method: 'POST' });
+      const data = await res.json();
+      setWebhookToast(`Scanned ${data.scannedCount} slots • Dispatched ${data.remindersDispatched} reminders`);
+      setTimeout(() => setWebhookToast(null), 3000);
+      loadData();
+    } catch (err: any) {
+      console.error('Scan error:', err);
+    } finally {
+      setIsScanningReminders(false);
+    }
+  };
+
+  const handleTestWebhook = async () => {
+    setIsTestingWebhook(true);
+    try {
+      const res = await fetch('/api/webhooks/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event: 'lead.captured' })
+      });
+      const data = await res.json();
+      if (data.log) {
+        setWebhookToast(`Dispatched test event: ${data.log.event} (${data.log.status})`);
+        setTimeout(() => setWebhookToast(null), 3000);
+      }
+      loadData();
+    } catch (err: any) {
+      console.error('Test webhook error:', err);
+    } finally {
+      setIsTestingWebhook(false);
+    }
+  };
+
+  const handleCancelAppointment = async (id: string) => {
+    if (!confirm('Are you sure you want to cancel this appointment and release the Google Calendar slot?')) return;
+    try {
+      const res = await fetch(`/api/appointments/${id}/cancel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason: 'Admin dashboard manual cancellation' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setWebhookToast(`Cancelled appointment ${id}. Slot released!`);
+        setTimeout(() => setWebhookToast(null), 3000);
+        loadData();
+      }
+    } catch (err: any) {
+      console.error('Cancel appointment error:', err);
+    }
   };
 
   const handleSelectPreset = async (presetKey: string) => {
@@ -684,69 +765,192 @@ export default function App() {
 
         {/* Tab 3: Appointments & Calendar Matrix */}
         {activeTab === 'appointments' && (
-          <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 space-y-4 backdrop-blur-md">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-bold text-white">Google Calendar Sync & Bookings Table</h2>
-                <p className="text-xs text-[#908fa0] mt-0.5">
-                  Synchronized in real-time via Google Calendar FreeBusy and Events API.
-                </p>
+          <div className="space-y-6">
+            <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 space-y-4 backdrop-blur-md">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-bold text-white">Google Calendar Sync & Bookings Table</h2>
+                  <p className="text-xs text-[#908fa0] mt-0.5">
+                    Synchronized in real-time via Google Calendar FreeBusy and Events API.
+                  </p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="text-xs font-mono text-[#818cf8] bg-[#6366f1]/15 px-3 py-1.5 rounded-lg border border-[#6366f1]/30">
+                    Timezone: Asia/Kolkata (IST)
+                  </span>
+                </div>
               </div>
-              <span className="text-xs font-mono text-[#818cf8] bg-[#6366f1]/15 px-3 py-1.5 rounded-lg border border-[#6366f1]/30">
-                Timezone: Asia/Kolkata (IST)
-              </span>
-            </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-[#1e293b] text-[#908fa0] uppercase tracking-wider text-[10px]">
-                    <th className="py-3 px-4">Customer</th>
-                    <th className="py-3 px-4">Service</th>
-                    <th className="py-3 px-4">Scheduled Slot</th>
-                    <th className="py-3 px-4">Phone / Email</th>
-                    <th className="py-3 px-4">Calendar Event ID</th>
-                    <th className="py-3 px-4">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#1e293b]/70 text-[#dfe2f1]">
-                  {appointments.map(apt => (
-                    <tr key={apt.id}>
-                      <td className="py-3.5 px-4 font-medium text-white">{apt.customerName}</td>
-                      <td className="py-3.5 px-4">{apt.serviceName}</td>
-                      <td className="py-3.5 px-4 font-mono text-[#818cf8]">
-                        {new Date(apt.startTime).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                      </td>
-                      <td className="py-3.5 px-4 text-[#908fa0]">{apt.customerPhone || apt.customerEmail}</td>
-                      <td className="py-3.5 px-4 font-mono text-[#908fa0] text-[11px]">{apt.calendarEventId}</td>
-                      <td className="py-3.5 px-4">
-                        <span className="px-2 py-0.5 rounded-full bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30 text-[10px]">
-                          {apt.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Leads Section */}
-            <div className="mt-8 pt-6 border-t border-[#1e293b]">
-              <h3 className="text-sm font-bold text-white mb-3">Captured Leads & Inquiries</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {leads.map(lead => (
-                  <div key={lead.id} className="p-3.5 rounded-xl bg-[#0f172a] border border-[#1e293b] text-xs">
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold text-white">{lead.name}</span>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#10b981]/15 text-[#4edea3]">
-                        {lead.source.toUpperCase()}
-                      </span>
-                    </div>
-                    <div className="text-[11px] text-[#818cf8] mt-1 font-medium">{lead.interest}</div>
-                    <div className="text-[11px] text-[#908fa0] mt-1">{lead.summary}</div>
-                    <div className="mt-2 text-[10px] text-[#908fa0]">Contact: {lead.phone || lead.email}</div>
+              {webhookToast && (
+                <div className="p-3 rounded-xl bg-[#10b981]/15 border border-[#10b981]/40 text-[#4edea3] text-xs flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle2 className="h-4 w-4" />
+                    <span>{webhookToast}</span>
                   </div>
-                ))}
+                </div>
+              )}
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-[#1e293b] text-[#908fa0] uppercase tracking-wider text-[10px]">
+                      <th className="py-3 px-4">Customer</th>
+                      <th className="py-3 px-4">Service</th>
+                      <th className="py-3 px-4">Scheduled Slot</th>
+                      <th className="py-3 px-4">Phone / Email</th>
+                      <th className="py-3 px-4">Calendar Event ID</th>
+                      <th className="py-3 px-4">Status</th>
+                      <th className="py-3 px-4 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#1e293b]/70 text-[#dfe2f1]">
+                    {appointments.map(apt => (
+                      <tr key={apt.id}>
+                        <td className="py-3.5 px-4 font-medium text-white">{apt.customerName}</td>
+                        <td className="py-3.5 px-4">{apt.serviceName}</td>
+                        <td className="py-3.5 px-4 font-mono text-[#818cf8]">
+                          {new Date(apt.startTime).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </td>
+                        <td className="py-3.5 px-4 text-[#908fa0]">{apt.customerPhone || apt.customerEmail}</td>
+                        <td className="py-3.5 px-4 font-mono text-[#908fa0] text-[11px]">{apt.calendarEventId}</td>
+                        <td className="py-3.5 px-4">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] ${
+                            apt.status === 'cancelled'
+                              ? 'bg-[#f43f5e]/15 text-[#ffb4ab] border border-[#f43f5e]/30'
+                              : 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30'
+                          }`}>
+                            {apt.status}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-right">
+                          {apt.status !== 'cancelled' ? (
+                            <button
+                              onClick={() => handleCancelAppointment(apt.id)}
+                              className="text-[10px] px-2 py-1 rounded bg-[#f43f5e]/10 text-[#ffb4ab] hover:bg-[#f43f5e]/20 border border-[#f43f5e]/30 transition cursor-pointer"
+                            >
+                              Cancel Slot
+                            </button>
+                          ) : (
+                            <span className="text-[10px] text-[#908fa0] italic">Slot Freed</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Leads Section */}
+              <div className="mt-6 pt-6 border-t border-[#1e293b]">
+                <h3 className="text-sm font-bold text-white mb-3">Captured High-Intent Leads</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {leads.map(lead => (
+                    <div key={lead.id} className="p-3.5 rounded-xl bg-[#0f172a] border border-[#1e293b] text-xs">
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-white">{lead.name}</span>
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#10b981]/15 text-[#4edea3]">
+                          {lead.source.toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-[#818cf8] mt-1 font-medium">{lead.interest}</div>
+                      <div className="text-[11px] text-[#908fa0] mt-1">{lead.summary}</div>
+                      <div className="mt-2 text-[10px] text-[#908fa0]">Contact: {lead.phone || lead.email}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Outbound CRM Webhooks & Multi-Channel Reminder Engine Section */}
+            <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 space-y-5 backdrop-blur-md">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#1e293b]">
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <Zap className="h-4 w-4 text-[#f59e0b]" />
+                    <h2 className="text-base font-bold text-white">Outbound CRM Webhooks & Reminder Lifecycle</h2>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#f59e0b]/15 text-[#fbbf24] border border-[#f59e0b]/30">
+                      HMAC SHA-256
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#908fa0] mt-0.5">
+                    Fires real-time lead and booking payloads to HubSpot, Zapier, Make, or Slack, and schedules automated 24h & 2h WhatsApp reminders.
+                  </p>
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={handleScanReminders}
+                    disabled={isScanningReminders}
+                    className="px-3.5 py-1.5 bg-[#0f172a] hover:bg-[#1e293b] border border-[#1e293b] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
+                  >
+                    <RefreshCw className={`h-3.5 w-3.5 ${isScanningReminders ? 'animate-spin text-[#818cf8]' : 'text-[#908fa0]'}`} />
+                    <span>Scan Reminders (24h/2h)</span>
+                  </button>
+
+                  <button
+                    onClick={handleTestWebhook}
+                    disabled={isTestingWebhook}
+                    className="px-3.5 py-1.5 bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5 shadow-md shadow-[#6366f1]/20"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                    <span>{isTestingWebhook ? 'Firing Payload...' : 'Test Webhook Dispatch'}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+                {/* Left 5 Cols: Config & Active Target */}
+                <div className="lg:col-span-5 rounded-xl bg-[#0f172a]/60 border border-[#1e293b] p-4 space-y-3">
+                  <div className="text-xs font-semibold text-white flex items-center justify-between">
+                    <span>Connected CRM Webhook Endpoint</span>
+                    <span className="text-[10px] font-mono text-[#10b981] bg-[#10b981]/15 px-2 py-0.5 rounded">ACTIVE</span>
+                  </div>
+                  <div className="rounded-lg bg-[#030712] border border-[#1e293b] p-2.5 font-mono text-[11px] text-[#818cf8] break-all">
+                    {webhookUrl}
+                  </div>
+                  <div className="text-[11px] text-[#908fa0]">
+                    Subscribed Events:
+                    <span className="font-mono text-white ml-1">appointment.created, appointment.cancelled, lead.captured, reminder.sent</span>
+                  </div>
+                  <div className="pt-2 border-t border-[#1e293b] flex items-center justify-between text-[11px]">
+                    <span className="text-[#908fa0]">Security Auth:</span>
+                    <span className="font-mono text-[#4edea3]">X-OmniAgent-Signature</span>
+                  </div>
+                </div>
+
+                {/* Right 7 Cols: Outbound Webhook Delivery Audit Log */}
+                <div className="lg:col-span-7 rounded-xl bg-[#0f172a]/60 border border-[#1e293b] p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="text-xs font-semibold text-white flex items-center space-x-1.5">
+                      <Activity className="h-3.5 w-3.5 text-[#10b981]" />
+                      <span>Live Delivery Audit Log</span>
+                    </div>
+                    <span className="text-[10px] text-[#908fa0] font-mono">
+                      {webhookLogs.length} events logged
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    {webhookLogs.slice(0, 5).map((log, idx) => (
+                      <div key={log.id || idx} className="p-2.5 rounded-lg bg-[#030712] border border-[#1e293b] flex items-center justify-between text-[11px]">
+                        <div>
+                          <div className="flex items-center space-x-2">
+                            <span className="font-mono text-[#818cf8] font-bold">{log.event}</span>
+                            <span className="px-1.5 py-0.2 rounded text-[9px] bg-[#10b981]/15 text-[#4edea3] font-mono">
+                              HTTP {log.statusCode || 200}
+                            </span>
+                          </div>
+                          <div className="text-[10px] text-[#908fa0] mt-0.5 font-mono">
+                            {new Date(log.timestamp).toLocaleTimeString()} • Latency: {log.latencyMs}ms
+                          </div>
+                        </div>
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-[#1e293b] text-[#dfe2f1] font-mono capitalize">
+                          {log.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

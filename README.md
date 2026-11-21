@@ -29,6 +29,9 @@ Freelancers and agencies sell this system to small businesses because it deliver
 - **Omnichannel Support**:
   - **Universal Website Embed**: Single copy-paste `<script>` tag deployable on any CMS.
   - **WhatsApp Cloud API**: Official Meta Graph API webhook supporting text replies and interactive quick-reply buttons.
+- **Automated Reminder & CRM Webhook Engine**:
+  - Outbound webhooks (`appointment.created`, `appointment.cancelled`, `lead.captured`) with HMAC SHA-256 signatures for Zapier, Make, HubSpot, and Slack.
+  - Multi-channel notification lifecycle: instant booking confirmation, 24-hour reminder, and 2-hour reminder via WhatsApp/Email with cancellation detection.
 - **Admin Control Room**:
   - Live session monitor with **Instant Human Takeover Toggle** (`⌥ + Space`).
   - Document Manager: Upload custom policies and FAQs with instant re-indexing.

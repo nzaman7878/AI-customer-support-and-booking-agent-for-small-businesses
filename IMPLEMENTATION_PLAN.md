@@ -234,6 +234,19 @@ ai-customer-support-agent/
 
 ---
 
+### Phase 10: Multi-Channel Automated Appointment Reminders & Lead CRM Webhook Dispatcher
+- **Goal**: Build an automated notification and appointment lifecycle reminder engine that fires instant booking confirmations, 24h/2h upcoming slot reminders, and dispatches real-time lead webhooks to external CRMs (HubSpot, Zapier, Make, Slack).
+- **Deliverables**:
+  - `apps/backend/src/services/reminderService.ts`: Automated background scheduler scanning upcoming appointments, calculating reminder windows (24h prior, 2h prior), and dispatching multi-channel alerts (WhatsApp / Email).
+  - `apps/backend/src/services/webhookDispatcher.ts`: Real-time outbound webhook engine firing `appointment.created`, `appointment.cancelled`, and `lead.captured` events with HMAC signatures and retry logic.
+  - `apps/backend/src/routes/reminders.ts`: REST endpoints for manual trigger test (`POST /api/reminders/trigger`), webhook endpoint configuration (`POST /api/webhooks/config`), and webhook delivery audit log (`GET /api/webhooks/logs`).
+  - Wire appointment creation in `apps/backend/src/agent/nodes.ts` and `apps/backend/src/routes/appointments.ts` to trigger instant CRM webhook and schedule reminders.
+  - Dashboard integration: Live Webhook & Reminder Dispatch Activity feed with 1-click test simulation.
+  - Automated test suite `apps/backend/src/evals/testRemindersAndWebhooks.ts`.
+- **Git Commit**: `feat(reminders): implement automated multi-channel appointment reminder engine and crm webhook dispatcher`
+
+---
+
 ## 5. Verification Checklist
 
 1. [x] MongoDB Atlas connection and `$vectorSearch` vector index configured.
@@ -247,3 +260,5 @@ ai-customer-support-agent/
 9. [x] 20-question eval suite runs and outputs measurable accuracy score (>90% - achieved 100%).
 10. [x] Standalone Shadow DOM `widget.js` built and served from API for universal website embedding.
 11. [x] Dynamic business white-labeling allows switching clinic/salon/real estate configurations instantly.
+12. [x] Multi-channel appointment reminders (24h/2h) dispatching with cancellation handling.
+13. [x] Real-time CRM webhook dispatcher firing on booking and lead capture events.

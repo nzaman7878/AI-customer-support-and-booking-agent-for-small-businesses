@@ -36,6 +36,7 @@ export interface Appointment {
   status: AppointmentStatus;
   notes?: string;
   calendarEventId?: string;
+  assignedDoctor?: string;
   createdAt: string;
 }
 

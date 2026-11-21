@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { Appointment, Lead } from '@ai-agent/shared';
 import { getDb, isDbConnected } from '../db/mongo.js';
 import { getFreeBusySlots, insertCalendarEvent, getCachedAppointments, CalendarSlot } from '../integrations/googleCalendar.js';
+import { sendImmediateBookingConfirmation } from './reminderService.js';
+import { dispatchWebhookEvent } from './webhookDispatcher.js';
 
 export const CreateAppointmentSchema = z.object({
   customerName: z.string().min(2, 'Name is required'),
@@ -71,6 +73,23 @@ export async function createBooking(
     }
   }
 
+  // Trigger Immediate Confirmation Notification & Outbound CRM Webhook
+  try {
+    await sendImmediateBookingConfirmation(appointment);
+    await dispatchWebhookEvent('appointment.created', {
+      appointmentId: appointment.id,
+      customerName: appointment.customerName,
+      customerEmail: appointment.customerEmail,
+      customerPhone: appointment.customerPhone,
+      serviceName: appointment.serviceName,
+      startTime: appointment.startTime,
+      endTime: appointment.endTime,
+      assignedDoctor: appointment.assignedDoctor
+    });
+  } catch (notifErr: any) {
+    console.error('[BookingService] Notification/webhook error:', notifErr.message);
+  }
+
   return {
     success: true,
     appointment,
@@ -96,6 +115,22 @@ export async function registerLead(input: z.infer<typeof CreateLeadSchema>): Pro
     } catch (err: any) {
       console.error('[BookingService] Mongo save lead error:', err.message);
     }
+  }
+
+  // Dispatch Outbound CRM Webhook for newly captured lead
+  try {
+    await dispatchWebhookEvent('lead.captured', {
+      id: newLead.id,
+      name: newLead.name,
+      phone: newLead.phone,
+      email: newLead.email,
+      source: newLead.source,
+      interest: newLead.interest,
+      summary: newLead.summary,
+      createdAt: newLead.createdAt
+    });
+  } catch (err: any) {
+    console.error('[BookingService] Lead webhook dispatch error:', err.message);
   }
 
   return newLead;
