@@ -23,7 +23,7 @@ export interface ChatMessage {
   };
 }
 
-export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
+export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed' | 'pending_payment';
 
 export interface Appointment {
   id: string;
@@ -37,7 +37,30 @@ export interface Appointment {
   notes?: string;
   calendarEventId?: string;
   assignedDoctor?: string;
+  depositAmount?: number;
+  paymentId?: string;
+  paymentStatus?: 'unpaid' | 'paid' | 'refunded';
+  receiptUrl?: string;
   createdAt: string;
+}
+
+export interface PaymentTransaction {
+  id: string;
+  appointmentId: string;
+  customerName: string;
+  customerEmail: string;
+  customerPhone: string;
+  amount: number;
+  currency: string;
+  provider: 'razorpay' | 'stripe';
+  status: 'created' | 'paid' | 'failed' | 'refunded';
+  paymentLinkId: string;
+  paymentLinkUrl: string;
+  paymentId?: string;
+  signature?: string;
+  receiptNumber?: string;
+  createdAt: string;
+  paidAt?: string;
 }
 
 export interface Lead {

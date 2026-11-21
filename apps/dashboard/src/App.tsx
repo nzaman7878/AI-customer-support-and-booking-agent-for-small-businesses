@@ -34,7 +34,8 @@ import {
   BarChart3,
   Download,
   DollarSign,
-  PieChart
+  PieChart,
+  CreditCard
 } from 'lucide-react';
 import ChatWidget from './components/ChatWidget.js';
 
@@ -127,6 +128,9 @@ export default function App() {
   const [analyticsData, setAnalyticsData] = useState<any>(null);
   const [analyticsTopics, setAnalyticsTopics] = useState<any[]>([]);
 
+  // Payment Transactions state
+  const [transactions, setTransactions] = useState<any[]>([]);
+
   // Initial Data Fetch
   const loadData = () => {
     fetch('/api/health')
@@ -203,6 +207,31 @@ export default function App() {
         if (d.logs) setReminderLogs(d.logs);
       })
       .catch(() => {});
+
+    fetch('/api/payments/transactions')
+      .then(r => r.json())
+      .then(d => {
+        if (d.transactions) setTransactions(d.transactions);
+      })
+      .catch(() => {});
+  };
+
+  const handleSimulatePayment = async (paymentLinkId: string) => {
+    try {
+      const res = await fetch('/api/payments/simulate-success', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ paymentLinkId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setWebhookToast(`Deposit verified! Slot confirmed & locked. Receipt: ${data.result.transaction.receiptNumber}`);
+        setTimeout(() => setWebhookToast(null), 3500);
+        loadData();
+      }
+    } catch (err) {
+      console.error('Payment error:', err);
+    }
   };
 
   const handleScanReminders = async () => {
@@ -841,9 +870,11 @@ export default function App() {
                           <span className={`px-2 py-0.5 rounded-full text-[10px] ${
                             apt.status === 'cancelled'
                               ? 'bg-[#f43f5e]/15 text-[#ffb4ab] border border-[#f43f5e]/30'
-                              : 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30'
+                              : (apt.status === 'pending_payment'
+                                ? 'bg-[#f59e0b]/15 text-[#fbbf24] border border-[#f59e0b]/30'
+                                : 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30')
                           }`}>
-                            {apt.status}
+                            {apt.status === 'pending_payment' ? 'Deposit Pending' : apt.status}
                           </span>
                         </td>
                         <td className="py-3.5 px-4 text-right">
@@ -881,6 +912,70 @@ export default function App() {
                       <div className="mt-2 text-[10px] text-[#908fa0]">Contact: {lead.phone || lead.email}</div>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* Deposit Payments & Gateway Ledger Section */}
+              <div className="mt-6 pt-6 border-t border-[#1e293b] space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <CreditCard className="h-4 w-4 text-[#10b981]" />
+                    <h3 className="text-sm font-bold text-white">Deposit Collection & Payment Gateways</h3>
+                    <span className="px-2 py-0.5 rounded text-[10px] bg-[#10b981]/15 text-[#4edea3] font-mono">
+                      Razorpay & Stripe
+                    </span>
+                  </div>
+                  <span className="text-[11px] text-[#908fa0]">
+                    Auto-Confirmation on Paid Deposit
+                  </span>
+                </div>
+
+                <div className="overflow-x-auto rounded-xl border border-[#1e293b] bg-[#030712]">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-[#1e293b] text-[#908fa0] uppercase tracking-wider text-[10px] bg-[#0b0f19]">
+                        <th className="py-2.5 px-3">Transaction</th>
+                        <th className="py-2.5 px-3">Customer</th>
+                        <th className="py-2.5 px-3">Deposit</th>
+                        <th className="py-2.5 px-3">Gateway</th>
+                        <th className="py-2.5 px-3">Status</th>
+                        <th className="py-2.5 px-3 text-right">Receipt / Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#1e293b]/60 text-[#dfe2f1]">
+                      {transactions.slice(0, 4).map(tx => (
+                        <tr key={tx.id}>
+                          <td className="py-2.5 px-3 font-mono text-[11px] text-[#818cf8]">{tx.id}</td>
+                          <td className="py-2.5 px-3 font-medium text-white">{tx.customerName}</td>
+                          <td className="py-2.5 px-3 font-mono font-semibold text-[#10b981]">
+                            {tx.currency} {tx.amount.toLocaleString()}
+                          </td>
+                          <td className="py-2.5 px-3 uppercase text-[10px] font-mono text-[#908fa0]">{tx.provider}</td>
+                          <td className="py-2.5 px-3">
+                            <span className={`px-2 py-0.5 rounded text-[9px] font-mono uppercase ${
+                              tx.status === 'paid'
+                                ? 'bg-[#10b981]/20 text-[#4edea3] border border-[#10b981]/30'
+                                : 'bg-[#f59e0b]/20 text-[#fbbf24] border border-[#f59e0b]/30'
+                            }`}>
+                              {tx.status}
+                            </span>
+                          </td>
+                          <td className="py-2.5 px-3 text-right">
+                            {tx.status === 'paid' ? (
+                              <span className="text-[10px] font-mono text-[#818cf8]">{tx.receiptNumber}</span>
+                            ) : (
+                              <button
+                                onClick={() => handleSimulatePayment(tx.paymentLinkId)}
+                                className="text-[10px] px-2 py-0.5 rounded bg-[#10b981]/15 text-[#4edea3] hover:bg-[#10b981]/30 border border-[#10b981]/40 transition cursor-pointer"
+                              >
+                                Simulate Payment
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

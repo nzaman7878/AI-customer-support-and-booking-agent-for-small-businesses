@@ -271,6 +271,18 @@ ai-customer-support-agent/
 
 ---
 
+### Phase 13: Automated Payment Links & Deposit Collection Engine (Razorpay & Stripe Integration, Instant Receipt Generation & Booking Confirmation Lock)
+- **Goal**: Prevent customer no-shows by collecting upfront token deposits (e.g. ₹500 or $50) via Razorpay and Stripe. Generate dynamic payment links in the chat stream / WhatsApp, verify payment webhooks with HMAC signatures, automatically lock the Google Calendar slot upon successful payment, and issue digital receipts.
+- **Deliverables**:
+  - `apps/backend/src/services/paymentService.ts`: Payment gateway abstraction supporting Razorpay (India/UPI) and Stripe (Global/Cards), payment link generation, cryptographic webhook signature verification, and digital receipt generation.
+  - `apps/backend/src/routes/payments.ts`: REST API for creating payment links (`POST /api/payments/create-link`), receiving payment webhooks (`POST /api/payments/webhook`), and transaction history (`GET /api/payments/transactions`).
+  - Update `apps/backend/src/services/bookingService.ts`: Support `status: 'pending_payment'` appointments that convert to `'confirmed'` upon payment webhook confirmation.
+  - Update `apps/dashboard/src/App.tsx`: Add Payment Ledger & Deposit settings to Bookings view with live payment status tags (`Paid`, `Pending`, `Refunded`).
+  - Automated test suite `apps/backend/src/evals/testPayments.ts`.
+- **Git Commit**: `feat(payments): implement automated deposit collection, razorpay stripe webhook verification and digital receipts`
+
+---
+
 ## 5. Verification Checklist
 
 1. [x] MongoDB Atlas connection and `$vectorSearch` vector index configured.
@@ -290,3 +302,5 @@ ai-customer-support-agent/
 15. [x] Appointments and leads exported via RFC 4180 compliant CSV stream.
 16. [x] Audio voice note transcription pipeline processing audio inputs.
 17. [x] Multilingual detection and translation replying in customer's detected language.
+18. [x] Razorpay and Stripe deposit payment links generated for slot reservations.
+19. [x] Cryptographic payment webhook verification locking calendar slot and issuing digital receipts.

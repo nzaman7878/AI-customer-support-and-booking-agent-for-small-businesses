@@ -35,6 +35,9 @@ Freelancers and agencies sell this system to small businesses because it deliver
 - **Automated Reminder & CRM Webhook Engine**:
   - Outbound webhooks (`appointment.created`, `appointment.cancelled`, `lead.captured`) with HMAC SHA-256 signatures for Zapier, Make, HubSpot, and Slack.
   - Multi-channel notification lifecycle: instant booking confirmation, 24-hour reminder, and 2-hour reminder via WhatsApp/Email with cancellation detection.
+- **Automated Payment Links & Deposit Collection Engine**:
+  - Dynamically creates token deposit links (Razorpay for UPI/Cards & Stripe for Global cards) to eliminate no-shows.
+  - Verifies cryptographic payment webhooks with HMAC-SHA256 signatures, locks the Google Calendar slot, and dispatches official digital receipts.
 - **Admin Control Room**:
   - Live session monitor with **Instant Human Takeover Toggle** (`⌥ + Space`).
   - Document Manager: Upload custom policies and FAQs with instant re-indexing.
