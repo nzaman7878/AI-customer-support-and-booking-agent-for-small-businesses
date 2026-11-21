@@ -38,6 +38,7 @@ import {
   CreditCard
 } from 'lucide-react';
 import ChatWidget from './components/ChatWidget.js';
+import SelfServicePortal from './components/SelfServicePortal.js';
 
 interface BusinessConfig {
   id: string;
@@ -130,6 +131,10 @@ export default function App() {
 
   // Payment Transactions state
   const [transactions, setTransactions] = useState<any[]>([]);
+
+  // Self-Service Portal state
+  const [selectedPortalAppointmentId, setSelectedPortalAppointmentId] = useState<string | null>(null);
+  const [showPortalModal, setShowPortalModal] = useState<boolean>(false);
 
   // Initial Data Fetch
   const loadData = () => {
@@ -879,12 +884,25 @@ export default function App() {
                         </td>
                         <td className="py-3.5 px-4 text-right">
                           {apt.status !== 'cancelled' ? (
-                            <button
-                              onClick={() => handleCancelAppointment(apt.id)}
-                              className="text-[10px] px-2 py-1 rounded bg-[#f43f5e]/10 text-[#ffb4ab] hover:bg-[#f43f5e]/20 border border-[#f43f5e]/30 transition cursor-pointer"
-                            >
-                              Cancel Slot
-                            </button>
+                            <div className="flex items-center justify-end space-x-2">
+                              <button
+                                onClick={() => {
+                                  setSelectedPortalAppointmentId(apt.id);
+                                  setShowPortalModal(true);
+                                }}
+                                className="text-[10px] px-2.5 py-1 rounded-lg bg-[#6366f1]/15 text-[#818cf8] hover:bg-[#6366f1]/25 border border-[#6366f1]/30 transition cursor-pointer flex items-center space-x-1"
+                                title="Open Client Self-Service Rescheduling Portal"
+                              >
+                                <ExternalLink className="h-3 w-3" />
+                                <span>Portal</span>
+                              </button>
+                              <button
+                                onClick={() => handleCancelAppointment(apt.id)}
+                                className="text-[10px] px-2 py-1 rounded bg-[#f43f5e]/10 text-[#ffb4ab] hover:bg-[#f43f5e]/20 border border-[#f43f5e]/30 transition cursor-pointer"
+                              >
+                                Cancel Slot
+                              </button>
+                            </div>
                           ) : (
                             <span className="text-[10px] text-[#908fa0] italic">Slot Freed</span>
                           )}
@@ -1636,6 +1654,18 @@ export default function App() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Self-Service Rescheduling & Magic-Link Portal Modal */}
+      {showPortalModal && selectedPortalAppointmentId && (
+        <SelfServicePortal
+          appointmentId={selectedPortalAppointmentId}
+          onClose={() => {
+            setShowPortalModal(false);
+            setSelectedPortalAppointmentId(null);
+          }}
+          onAppointmentUpdated={loadData}
+        />
       )}
 
       {/* Omnichannel Floating Customer Chat Widget */}

@@ -17,7 +17,8 @@
     "test:reminders": "tsx src/evals/testRemindersAndWebhooks.ts",
     "test:analytics": "tsx src/evals/testAnalytics.ts",
     "test:voice": "tsx src/evals/testMultilingualVoice.ts",
-    "test:payments": "tsx src/evals/testPayments.ts"
+    "test:payments": "tsx src/evals/testPayments.ts",
+    "test:portal": "tsx src/evals/testSelfServicePortal.ts"
   },
   "dependencies": {
     "@ai-agent/shared": "*",

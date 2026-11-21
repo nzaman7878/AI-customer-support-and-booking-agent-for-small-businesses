@@ -283,6 +283,17 @@ ai-customer-support-agent/
 
 ---
 
+### Phase 14: Interactive Visual Rescheduling & Self-Service Portal (Magic-Link Token Access, 1-Click Calendar Swap & Automatic Refund/Credit Handling)
+- **Goal**: Provide a frictionless, white-labeled client self-service portal accessible via secure Magic Link tokens. Allows customers to view their confirmed booking, browse real-time open slots from Google Calendar, swap slots with 1-click policy validation (>4h window check), or cancel with deposit credit issuance.
+- **Deliverables**:
+  - `apps/backend/src/services/selfServicePortal.ts`: Cryptographic Magic-Link token generator (`generatePortalToken`), token validation, slot swap atomic updates on Google Calendar, and cancellation policy checks.
+  - `apps/backend/src/routes/portal.ts`: REST endpoints to verify magic-link token (`GET /api/portal/verify`), swap appointment slot (`POST /api/portal/reschedule`), and request cancellation (`POST /api/portal/cancel`).
+  - `apps/dashboard/src/components/SelfServicePortal.tsx`: Branded modal & self-service client dashboard allowing interactive slot picking, live reschedule confirmation, and cancellation credit receipts.
+  - Automated test suite `apps/backend/src/evals/testSelfServicePortal.ts`.
+- **Git Commit**: `feat(portal): implement interactive self-service rescheduling portal and magic-link slot swap engine`
+
+---
+
 ## 5. Verification Checklist
 
 1. [x] MongoDB Atlas connection and `$vectorSearch` vector index configured.
@@ -304,3 +315,5 @@ ai-customer-support-agent/
 17. [x] Multilingual detection and translation replying in customer's detected language.
 18. [x] Razorpay and Stripe deposit payment links generated for slot reservations.
 19. [x] Cryptographic payment webhook verification locking calendar slot and issuing digital receipts.
+20. [x] Cryptographic Magic-Link tokens generated and validated for appointment management.
+21. [x] 1-click self-service rescheduling swapping Google Calendar slots with policy compliance.
