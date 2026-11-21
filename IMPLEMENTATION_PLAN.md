@@ -294,6 +294,17 @@ ai-customer-support-agent/
 
 ---
 
+### Phase 15: Post-Service Automated Review & Feedback Funnel (Google Reviews Booster + CSAT / NPS Automation)
+- **Goal**: Automatically collect post-service patient satisfaction via WhatsApp/SMS survey, route 4-5 star promoters to the clinic's public Google Maps review link, and divert 1-3 star detractors into a private resolution queue to shield the business's public reputation.
+- **Deliverables**:
+  - `apps/backend/src/services/feedbackService.ts`: Post-visit survey dispatcher, promoter/detractor smart routing, Google Maps deep-link generation, and CSAT / Net Promoter Score (NPS) mathematical engine.
+  - `apps/backend/src/routes/feedback.ts`: REST API endpoints for survey triggering (`POST /api/feedback/trigger/:appointmentId`), customer rating submission (`POST /api/feedback/submit`), click-through tracking (`POST /api/feedback/track-google-click/:id`), grievance resolution (`POST /api/feedback/resolve/:id`), and overview metrics (`GET /api/feedback/overview`).
+  - `apps/dashboard/src/App.tsx`: "Reputation & Google Reviews" dashboard tab featuring live CSAT & NPS gauges, dual-routing explanation, simulated inbound rating sandbox, and customer grievance recovery feed.
+  - Automated test suite `apps/backend/src/evals/testFeedbackFunnel.ts`.
+- **Git Commit**: `feat(reviews): implement automated review funnel, google maps booster and csat nps intelligence`
+
+---
+
 ## 5. Verification Checklist
 
 1. [x] MongoDB Atlas connection and `$vectorSearch` vector index configured.
@@ -317,3 +328,5 @@ ai-customer-support-agent/
 19. [x] Cryptographic payment webhook verification locking calendar slot and issuing digital receipts.
 20. [x] Cryptographic Magic-Link tokens generated and validated for appointment management.
 21. [x] 1-click self-service rescheduling swapping Google Calendar slots with policy compliance.
+22. [x] Post-visit survey dispatches via WhatsApp with 1-5 star rating prompt.
+23. [x] Promoters (4-5★) routed to Google Maps review deep-link; detractors (1-3★) shielded into private care manager queue.

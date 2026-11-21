@@ -5,7 +5,9 @@ export type WebhookEventType =
   | 'appointment.created' 
   | 'appointment.cancelled' 
   | 'lead.captured' 
-  | 'reminder.sent';
+  | 'reminder.sent'
+  | 'appointment.feedback_requested'
+  | 'feedback.detractor_alert';
 
 export interface WebhookLogEntry {
   id: string;

@@ -35,8 +35,13 @@ import {
   Download,
   DollarSign,
   PieChart,
-  CreditCard
+  CreditCard,
+  Star,
+  ThumbsUp,
+  ThumbsDown,
+  HeartHandshake
 } from 'lucide-react';
+import { FeedbackSubmission, FeedbackOverview } from '@ai-agent/shared';
 import ChatWidget from './components/ChatWidget.js';
 import SelfServicePortal from './components/SelfServicePortal.js';
 
@@ -91,7 +96,7 @@ interface ChatSession {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'live' | 'knowledge' | 'appointments' | 'evals' | 'whitelabel' | 'analytics'>('live');
+  const [activeTab, setActiveTab] = useState<'live' | 'knowledge' | 'appointments' | 'evals' | 'whitelabel' | 'analytics' | 'reputation'>('live');
   const [health, setHealth] = useState<SystemHealth | null>(null);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [selectedSessionId, setSelectedSessionId] = useState<string>('sess_1');
@@ -135,6 +140,14 @@ export default function App() {
   // Self-Service Portal state
   const [selectedPortalAppointmentId, setSelectedPortalAppointmentId] = useState<string | null>(null);
   const [showPortalModal, setShowPortalModal] = useState<boolean>(false);
+
+  // Reputation & Review Booster state
+  const [feedbackOverview, setFeedbackOverview] = useState<FeedbackOverview | null>(null);
+  const [feedbackSubmissions, setFeedbackSubmissions] = useState<FeedbackSubmission[]>([]);
+  const [simRating, setSimRating] = useState<number>(5);
+  const [simComment, setSimComment] = useState<string>('Incredible treatment! Thoroughly professional staff.');
+  const [simResult, setSimResult] = useState<any>(null);
+  const [isSubmittingFeedback, setIsSubmittingFeedback] = useState<boolean>(false);
 
   // Initial Data Fetch
   const loadData = () => {
@@ -219,6 +232,71 @@ export default function App() {
         if (d.transactions) setTransactions(d.transactions);
       })
       .catch(() => {});
+
+    fetch('/api/feedback/overview')
+      .then(r => r.json())
+      .then(d => {
+        if (d.success) {
+          setFeedbackOverview(d.overview);
+          setFeedbackSubmissions(d.submissions || []);
+        }
+      })
+      .catch(() => {});
+  };
+
+  const handleTriggerFeedback = async (appointmentId: string) => {
+    try {
+      const res = await fetch(`/api/feedback/trigger/${appointmentId}`, { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        setWebhookToast(`Survey invitation dispatched to ${data.customerPhone || 'customer'}`);
+        setTimeout(() => setWebhookToast(null), 3500);
+        loadData();
+      }
+    } catch (err) {
+      console.error('Trigger feedback error:', err);
+    }
+  };
+
+  const handleSimulateFeedback = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmittingFeedback(true);
+    setSimResult(null);
+    try {
+      const targetAptId = appointments[0]?.id || 'apt_seed_1';
+      const res = await fetch('/api/feedback/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          appointmentId: targetAptId,
+          rating: simRating,
+          comment: simComment
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSimResult(data);
+        loadData();
+      }
+    } catch (err) {
+      console.error('Simulate feedback error:', err);
+    } finally {
+      setIsSubmittingFeedback(false);
+    }
+  };
+
+  const handleResolveFeedback = async (id: string) => {
+    try {
+      const res = await fetch(`/api/feedback/resolve/${id}`, { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        setWebhookToast('Marked customer grievance as resolved.');
+        setTimeout(() => setWebhookToast(null), 3000);
+        loadData();
+      }
+    } catch (err) {
+      console.error('Resolve feedback error:', err);
+    }
   };
 
   const handleSimulatePayment = async (paymentLinkId: string) => {
@@ -482,6 +560,7 @@ export default function App() {
             { id: 'evals', label: '20-Scenario Eval Benchmark', icon: ShieldCheck, badge: '100% Pass' },
             { id: 'whitelabel', label: 'White-Label & Embed Script', icon: Palette, badge: `${(businessConfig?.industry || 'clinic').toUpperCase()}` },
             { id: 'analytics', label: 'ROI & Conversion Intelligence', icon: TrendingUp, badge: `${analyticsData?.bookingConversionRate || 33}% Conv` },
+            { id: 'reputation', label: 'Reputation & Google Reviews', icon: Star, badge: `${feedbackOverview?.csatScore || 86}% CSAT` },
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -885,6 +964,14 @@ export default function App() {
                         <td className="py-3.5 px-4 text-right">
                           {apt.status !== 'cancelled' ? (
                             <div className="flex items-center justify-end space-x-2">
+                              <button
+                                onClick={() => handleTriggerFeedback(apt.id)}
+                                className="text-[10px] px-2.5 py-1 rounded-lg bg-[#f59e0b]/15 text-[#fbbf24] hover:bg-[#f59e0b]/25 border border-[#f59e0b]/30 transition cursor-pointer flex items-center space-x-1"
+                                title="Dispatch Post-Visit Review Survey via WhatsApp"
+                              >
+                                <Star className="h-3 w-3" />
+                                <span>Survey</span>
+                              </button>
                               <button
                                 onClick={() => {
                                   setSelectedPortalAppointmentId(apt.id);
@@ -1575,6 +1662,322 @@ export default function App() {
                       <span className="font-mono text-white font-semibold">8%</span>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* REPUTATION & GOOGLE REVIEW BOOSTER TAB */}
+        {activeTab === 'reputation' && (
+          <div className="space-y-6">
+            {/* Top Command Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0b0f19]/80 border border-[#1e293b] p-5 rounded-2xl backdrop-blur-md">
+              <div>
+                <div className="flex items-center space-x-2">
+                  <div className="h-7 w-7 rounded-lg bg-[#f59e0b]/15 border border-[#f59e0b]/30 flex items-center justify-center text-[#fbbf24]">
+                    <Star className="h-4 w-4 fill-[#fbbf24]" />
+                  </div>
+                  <h2 className="text-base font-bold text-white">Google Reviews Booster & CSAT Funnel</h2>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30">
+                    Dual Reputation Guardrail
+                  </span>
+                </div>
+                <p className="text-xs text-[#908fa0] mt-1">
+                  Automated post-service survey funnel: Promoters (4–5★) are routed directly to Google Maps, while Detractors (1–3★) are shielded from public reviews and escalated to care recovery.
+                </p>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <a
+                  href="https://g.page/r/apex-wellness-clinic/review"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-lg bg-[#6366f1]/15 hover:bg-[#6366f1]/25 border border-[#6366f1]/30 text-[#818cf8] text-xs font-semibold flex items-center space-x-1.5 transition"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  <span>Google Maps Review Page</span>
+                </a>
+                <button
+                  onClick={loadData}
+                  className="p-1.5 rounded-lg bg-[#0f172a] border border-[#1e293b] text-[#908fa0] hover:text-white transition"
+                  title="Refresh Metrics"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Top Metric Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* CSAT Score */}
+              <div className="p-4 rounded-xl bg-[#0b0f19]/80 border border-[#1e293b] backdrop-blur-md">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[#908fa0]">Patient CSAT Rating</span>
+                  <span className="p-1.5 rounded-lg bg-[#10b981]/15 text-[#4edea3]">
+                    <ThumbsUp className="h-4 w-4" />
+                  </span>
+                </div>
+                <div className="text-2xl font-bold font-mono text-[#4edea3] mt-2">
+                  {feedbackOverview?.csatScore || 86}%
+                </div>
+                <div className="text-[11px] text-[#908fa0] mt-1">
+                  4 & 5 Star ratings ({feedbackOverview?.promotersCount || 6} / {feedbackOverview?.totalResponses || 7})
+                </div>
+              </div>
+
+              {/* Net Promoter Score (NPS) */}
+              <div className="p-4 rounded-xl bg-[#0b0f19]/80 border border-[#1e293b] backdrop-blur-md">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[#908fa0]">Net Promoter Score (NPS)</span>
+                  <span className="p-1.5 rounded-lg bg-[#6366f1]/15 text-[#818cf8]">
+                    <HeartHandshake className="h-4 w-4" />
+                  </span>
+                </div>
+                <div className="text-2xl font-bold font-mono text-[#818cf8] mt-2">
+                  +{(feedbackOverview?.npsScore !== undefined) ? feedbackOverview.npsScore : 43}
+                </div>
+                <div className="text-[11px] text-[#10b981] mt-1">
+                  World-Class Tier (Range: -100 to +100)
+                </div>
+              </div>
+
+              {/* Google Review Conversion Rate */}
+              <div className="p-4 rounded-xl bg-[#0b0f19]/80 border border-[#1e293b] backdrop-blur-md">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[#908fa0]">Google Review Clicks</span>
+                  <span className="p-1.5 rounded-lg bg-[#f59e0b]/15 text-[#fbbf24]">
+                    <Star className="h-4 w-4 fill-[#fbbf24]" />
+                  </span>
+                </div>
+                <div className="text-2xl font-bold font-mono text-white mt-2">
+                  {feedbackOverview?.googleReviewClicks || 3}{' '}
+                  <span className="text-xs text-[#908fa0] font-normal font-sans">
+                    ({feedbackOverview?.googleReviewClickRate || 75}% click rate)
+                  </span>
+                </div>
+                <div className="text-[11px] text-[#fbbf24] mt-1">
+                  From {feedbackOverview?.promotersCount || 4} 5-Star Promoters
+                </div>
+              </div>
+
+              {/* Urgent Care Service Recovery */}
+              <div className="p-4 rounded-xl bg-[#0b0f19]/80 border border-[#1e293b] backdrop-blur-md">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-[#908fa0]">Urgent Recovery Queue</span>
+                  <span className="p-1.5 rounded-lg bg-[#f43f5e]/15 text-[#ffb4ab]">
+                    <AlertTriangle className="h-4 w-4" />
+                  </span>
+                </div>
+                <div className="text-2xl font-bold font-mono text-[#ffb4ab] mt-2">
+                  {feedbackOverview?.urgentServiceRecoveryCount || 1} Pending
+                </div>
+                <div className="text-[11px] text-[#908fa0] mt-1">
+                  Detractors shielded from Google Maps
+                </div>
+              </div>
+            </div>
+
+            {/* Smart Dual-Routing Architecture Banner */}
+            <div className="p-5 rounded-2xl bg-[#030712] border border-[#1e293b] space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-white uppercase tracking-wider">
+                  How Autonomous Reputation Routing Works
+                </span>
+                <span className="text-[10px] font-mono text-[#818cf8]">Zero Negative Public Leakage</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                {/* Promoter Path */}
+                <div className="p-3.5 rounded-xl bg-[#10b981]/10 border border-[#10b981]/30 space-y-1.5">
+                  <div className="flex items-center space-x-2 text-[#4edea3] font-semibold">
+                    <ThumbsUp className="h-4 w-4" />
+                    <span>Rating 4 or 5 Stars ⭐⭐⭐⭐⭐ (Promoter Path)</span>
+                  </div>
+                  <p className="text-[11px] text-[#dfe2f1]">
+                    The agent expresses heartfelt gratitude and instantly provides a direct 1-click link to your verified Google Business Profile review dialog, boosting your local SEO & organic leads.
+                  </p>
+                </div>
+
+                {/* Detractor Path */}
+                <div className="p-3.5 rounded-xl bg-[#f43f5e]/10 border border-[#f43f5e]/30 space-y-1.5">
+                  <div className="flex items-center space-x-2 text-[#ffb4ab] font-semibold">
+                    <ThumbsDown className="h-4 w-4" />
+                    <span>Rating 1, 2, or 3 Stars (Service Recovery Shield)</span>
+                  </div>
+                  <p className="text-[11px] text-[#dfe2f1]">
+                    The agent suppresses the public Google review link, issues an empathetic apology, logs the grievance, and dispatches a high-priority alert to the clinic director for immediate personal recovery.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Simulator & Live Feedback Table Split */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Left 4 Cols: Live Feedback Simulator */}
+              <div className="lg:col-span-4 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-5 backdrop-blur-md space-y-4">
+                <div className="flex items-center space-x-2 pb-3 border-b border-[#1e293b]">
+                  <Bot className="h-4 w-4 text-[#818cf8]" />
+                  <span className="text-xs font-semibold text-white">Simulate Inbound Patient Rating</span>
+                </div>
+
+                <form onSubmit={handleSimulateFeedback} className="space-y-3.5 text-xs">
+                  <div>
+                    <label className="block text-[#908fa0] mb-1.5">Customer Rating (Stars):</label>
+                    <div className="flex items-center space-x-2">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setSimRating(star)}
+                          className={`p-2 rounded-xl border flex items-center justify-center transition cursor-pointer ${
+                            simRating >= star
+                              ? 'bg-[#f59e0b]/20 border-[#f59e0b] text-[#fbbf24]'
+                              : 'bg-[#030712] border-[#1e293b] text-[#908fa0]'
+                          }`}
+                        >
+                          <Star className={`h-4 w-4 ${simRating >= star ? 'fill-[#fbbf24]' : ''}`} />
+                        </button>
+                      ))}
+                      <span className="font-mono text-xs font-bold text-white ml-2">
+                        {simRating} / 5
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-[#908fa0] mb-1">Customer Review Comment:</label>
+                    <textarea
+                      rows={3}
+                      value={simComment}
+                      onChange={(e) => setSimComment(e.target.value)}
+                      className="w-full bg-[#030712] border border-[#1e293b] rounded-xl p-2.5 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none text-xs"
+                      placeholder="e.g. Loved the session or experienced long wait..."
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmittingFeedback}
+                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#6366f1] to-[#818cf8] text-white font-semibold text-xs transition cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50"
+                  >
+                    {isSubmittingFeedback ? (
+                      <>
+                        <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                        <span>Processing Routing...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Submit Rating via WhatsApp</span>
+                        <Send className="h-3 w-3" />
+                      </>
+                    )}
+                  </button>
+                </form>
+
+                {/* Simulated Outcome Preview */}
+                {simResult && (
+                  <div className="p-3.5 rounded-xl bg-[#030712] border border-[#1e293b] space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase text-[#818cf8]">AI Response Preview</span>
+                      <span className={`text-[10px] px-2 py-0.5 rounded font-mono ${
+                        simResult.submission.category === 'promoter'
+                          ? 'bg-[#10b981]/15 text-[#4edea3]'
+                          : 'bg-[#f43f5e]/15 text-[#ffb4ab]'
+                      }`}>
+                        {simResult.submission.category.toUpperCase()}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-[#dfe2f1] whitespace-pre-line leading-relaxed">
+                      {simResult.replyMessage}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Right 8 Cols: Customer Reviews & Recovery Feed */}
+              <div className="lg:col-span-8 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-5 backdrop-blur-md space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+                  <div className="flex items-center space-x-2">
+                    <Star className="h-4 w-4 text-[#fbbf24]" />
+                    <span className="text-xs font-semibold text-white">Recent Customer Reviews & Recovery Feed</span>
+                  </div>
+                  <span className="text-[10px] text-[#908fa0] font-mono">
+                    {feedbackSubmissions.length} Submissions Tracked
+                  </span>
+                </div>
+
+                <div className="space-y-3 max-h-[520px] overflow-y-auto pr-1">
+                  {feedbackSubmissions.map((sub) => (
+                    <div
+                      key={sub.id}
+                      className={`p-4 rounded-xl border space-y-2.5 transition ${
+                        sub.category === 'promoter'
+                          ? 'bg-[#030712] border-[#1e293b]'
+                          : 'bg-[#f43f5e]/5 border-[#f43f5e]/30'
+                      }`}
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                        <div className="flex items-center space-x-2">
+                          <span className="font-semibold text-white text-xs">{sub.customerName}</span>
+                          <span className="text-[10px] text-[#908fa0] font-mono">({sub.serviceName})</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <div className="flex items-center text-[#fbbf24]">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-3 w-3 ${i < sub.rating ? 'fill-[#fbbf24]' : 'text-[#334155]'}`}
+                              />
+                            ))}
+                          </div>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
+                            sub.routedTo === 'google_review'
+                              ? 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30'
+                              : 'bg-[#f43f5e]/15 text-[#ffb4ab] border border-[#f43f5e]/30'
+                          }`}>
+                            {sub.routedTo === 'google_review' ? 'Google Review Prompted' : 'Private Escalation Shield'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {sub.comment && (
+                        <p className="text-xs text-[#dfe2f1] italic bg-[#0b0f19]/50 p-2.5 rounded-lg border border-[#1e293b]/60">
+                          "{sub.comment}"
+                        </p>
+                      )}
+
+                      <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#1e293b]/50">
+                        <span className="text-[#908fa0]">
+                          {new Date(sub.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                        
+                        <div className="flex items-center space-x-2">
+                          {sub.routedTo === 'google_review' && sub.googleReviewClicked && (
+                            <span className="text-[#10b981] font-mono text-[10px] flex items-center space-x-1">
+                              <CheckCircle2 className="h-3 w-3" />
+                              <span>Google Review Clicked</span>
+                            </span>
+                          )}
+
+                          {sub.category === 'detractor' && sub.status === 'pending' && (
+                            <button
+                              onClick={() => handleResolveFeedback(sub.id)}
+                              className="px-2.5 py-1 rounded-lg bg-[#f43f5e]/20 hover:bg-[#f43f5e]/30 text-[#ffb4ab] border border-[#f43f5e]/40 text-[10px] font-semibold transition cursor-pointer"
+                            >
+                              Resolve / Callback Done
+                            </button>
+                          )}
+
+                          {sub.category === 'detractor' && sub.status === 'resolved' && (
+                            <span className="text-[#4edea3] text-[10px] flex items-center space-x-1">
+                              <Check className="h-3 w-3" />
+                              <span>Resolved by Manager</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>

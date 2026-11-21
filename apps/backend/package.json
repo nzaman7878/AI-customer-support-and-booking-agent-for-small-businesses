@@ -18,7 +18,8 @@
     "test:analytics": "tsx src/evals/testAnalytics.ts",
     "test:voice": "tsx src/evals/testMultilingualVoice.ts",
     "test:payments": "tsx src/evals/testPayments.ts",
-    "test:portal": "tsx src/evals/testSelfServicePortal.ts"
+    "test:portal": "tsx src/evals/testSelfServicePortal.ts",
+    "test:feedback": "tsx src/evals/testFeedbackFunnel.ts"
   },
   "dependencies": {
     "@ai-agent/shared": "*",

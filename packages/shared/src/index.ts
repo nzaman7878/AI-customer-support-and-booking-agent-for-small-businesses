@@ -127,3 +127,35 @@ export interface EvalResult {
   evaluationRationale: string;
   latencyMs: number;
 }
+
+export interface FeedbackSubmission {
+  id: string;
+  appointmentId: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string;
+  serviceName: string;
+  doctorName?: string;
+  rating: number; // 1-5
+  comment?: string;
+  category: 'promoter' | 'neutral' | 'detractor';
+  routedTo: 'google_review' | 'private_resolution';
+  googleReviewClicked: boolean;
+  managerNotified: boolean;
+  status: 'pending' | 'resolved' | 'promoted';
+  createdAt: string;
+}
+
+export interface FeedbackOverview {
+  totalSurveysSent: number;
+  totalResponses: number;
+  responseRate: number;
+  csatScore: number;
+  npsScore: number;
+  promotersCount: number;
+  neutralsCount: number;
+  detractorsCount: number;
+  googleReviewClicks: number;
+  googleReviewClickRate: number;
+  urgentServiceRecoveryCount: number;
+}

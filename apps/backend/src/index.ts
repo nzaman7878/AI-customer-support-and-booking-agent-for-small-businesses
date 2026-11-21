@@ -14,6 +14,7 @@ import analyticsRouter from './routes/analytics.js';
 import voiceRouter from './routes/voice.js';
 import paymentsRouter from './routes/payments.js';
 import portalRouter from './routes/portal.js';
+import feedbackRouter from './routes/feedback.js';
 import { seedClinicKnowledgeBase } from './services/seedKnowledge.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -42,6 +43,7 @@ app.use('/api', analyticsRouter);
 app.use('/api', voiceRouter);
 app.use('/api', paymentsRouter);
 app.use('/api', portalRouter);
+app.use('/api', feedbackRouter);
 
 // Universal CDN Embed Script Delivery with CORS
 app.get('/widget.js', (req: Request, res: Response) => {
