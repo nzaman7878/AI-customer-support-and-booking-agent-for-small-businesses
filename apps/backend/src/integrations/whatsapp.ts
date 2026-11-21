@@ -2,6 +2,7 @@ import { config } from '../config/index.js';
 import { runAgent } from '../agent/graph.js';
 import { transcribeAudio } from '../services/transcriptionService.js';
 import { detectLanguage, translateResponse } from '../services/translationService.js';
+import { activeSessions } from '../routes/chat.js';
 
 export interface WhatsAppMessagePayload {
   from: string; // Customer phone number (e.g. "919820112345")
@@ -125,8 +126,47 @@ export async function processWhatsAppWebhook(body: any): Promise<{ handled: bool
     // Detect language of incoming query
     const detected = detectLanguage(text);
 
-    // Run LangGraph Agent
+    // Sync session in Live Dashboard Takeover Console
     const conversationId = `wa_${from}`;
+    let session = activeSessions.find(s => s.id === conversationId);
+
+    if (!session) {
+      session = {
+        id: conversationId,
+        name: customerName,
+        phone: from.startsWith('+') ? from : `+${from}`,
+        channel: 'whatsapp',
+        snippet: text,
+        time: 'Just now',
+        sentiment: 'nominal',
+        sentimentText: 'In progress',
+        vip: 'WhatsApp Lead',
+        isHumanTakeover: false,
+        messages: []
+      };
+      activeSessions.unshift(session);
+      if (activeSessions.length > 50) activeSessions.pop();
+    }
+
+    session.messages.push({
+      id: `m_wa_u_${Date.now()}`,
+      role: 'user',
+      content: text,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+    session.snippet = text;
+    session.time = 'Just now';
+
+    // If human takeover is active, pause autonomous AI reply
+    if (session.isHumanTakeover) {
+      console.log(`[WhatsApp Webhook] Human takeover active for ${from}; autonomous reply paused.`);
+      return {
+        handled: true,
+        reply: '[Human Takeover Active - Reply pending from human agent]'
+      };
+    }
+
+    // Run LangGraph Agent
     const agentState = await runAgent(text, conversationId, 'whatsapp', {
       name: customerName,
       phone: from
@@ -140,6 +180,22 @@ export async function processWhatsAppWebhook(body: any): Promise<{ handled: bool
 
     if (isVoiceNote) {
       replyToSend = `🎙️ *Voice Note Received & Transcribed:*\n"${text}"\n\n${replyToSend}`;
+    }
+
+    // Record AI assistant response in live session
+    session.messages.push({
+      id: `m_wa_a_${Date.now()}`,
+      role: 'assistant',
+      content: replyToSend,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      thoughts: agentState.agentThoughts
+    });
+    session.snippet = replyToSend;
+
+    if (agentState.requiresHumanTakeover) {
+      session.isHumanTakeover = true;
+      session.sentiment = 'critical';
+      session.sentimentText = 'Takeover requested';
     }
 
     // Send reply back to customer on WhatsApp

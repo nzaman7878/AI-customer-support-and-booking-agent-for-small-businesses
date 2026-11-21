@@ -4,6 +4,8 @@ import {
   queryVectorStore, 
   listIndexedDocuments, 
   getIndexedChunksCount, 
+  deleteDocument,
+  getDocumentChunks,
   CONFIDENCE_THRESHOLD 
 } from '../services/vectorStore.js';
 
@@ -47,6 +49,41 @@ router.post('/documents/upload', async (req: Request, res: Response) => {
       success: false,
       error: error.message
     });
+  }
+});
+
+// Delete a document and its chunks
+router.delete('/documents/:id', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const deleted = await deleteDocument(id);
+    if (!deleted) {
+      return res.status(404).json({ success: false, error: 'Document not found' });
+    }
+
+    res.json({
+      success: true,
+      message: `Document ${id} and all its vector chunks have been removed.`,
+      documentId: id
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Get chunks for a specific document
+router.get('/documents/:id/chunks', (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const chunks = getDocumentChunks(id);
+    res.json({
+      success: true,
+      documentId: id,
+      count: chunks.length,
+      chunks
+    });
+  } catch (err: any) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

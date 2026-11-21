@@ -208,12 +208,79 @@ router.post('/chat', async (req: Request, res: Response) => {
       });
     }
 
+    const convId = conversationId || `conv_${Date.now()}`;
+    let session = activeSessions.find(s => s.id === convId);
+
+    if (!session) {
+      const shortId = convId.slice(-4);
+      session = {
+        id: convId,
+        name: customerInfo?.name || (channel === 'whatsapp' ? `WhatsApp (+${convId.replace('wa_', '')})` : `Web Guest (${shortId})`),
+        phone: customerInfo?.phone || (channel === 'whatsapp' ? `+${convId.replace('wa_', '')}` : '+1 (555) 000-0000'),
+        channel: channel as 'web' | 'whatsapp',
+        snippet: message,
+        time: 'Just now',
+        sentiment: 'nominal',
+        sentimentText: 'In progress',
+        vip: 'Standard',
+        isHumanTakeover: false,
+        messages: []
+      };
+      activeSessions.unshift(session);
+      if (activeSessions.length > 50) activeSessions.pop();
+    }
+
+    // Record customer message in live session
+    session.messages.push({
+      id: `m_u_${Date.now()}`,
+      role: 'user',
+      content: message,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    });
+    session.snippet = message;
+    session.time = 'Just now';
+
+    // If human takeover is active, pause autonomous AI reply
+    if (session.isHumanTakeover) {
+      return res.json({
+        success: true,
+        response: 'A care specialist has taken over this conversation and will respond shortly.',
+        detectedIntent: 'human_takeover_active',
+        sentiment: session.sentiment,
+        requiresHumanTakeover: true,
+        isHumanTakeover: true,
+        agentThoughts: ['[Human Takeover Active] Autonomous AI responses are paused. Front desk team has been alerted.']
+      });
+    }
+
     const state = await runAgent(
       message,
-      conversationId || `conv_${Date.now()}`,
+      convId,
       channel,
       customerInfo
     );
+
+    // Record AI assistant response in live session
+    session.messages.push({
+      id: `m_a_${Date.now()}`,
+      role: 'assistant',
+      content: state.finalResponse,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      thoughts: state.agentThoughts
+    });
+    session.snippet = state.finalResponse;
+
+    if (state.requiresHumanTakeover) {
+      session.isHumanTakeover = true;
+      session.sentiment = 'critical';
+      session.sentimentText = 'Takeover requested';
+    } else if (state.detectedIntent === 'booking_request') {
+      session.sentiment = 'warning';
+      session.sentimentText = 'Booking pending';
+    } else {
+      session.sentiment = 'nominal';
+      session.sentimentText = 'Nominal query';
+    }
 
     res.json({
       success: true,

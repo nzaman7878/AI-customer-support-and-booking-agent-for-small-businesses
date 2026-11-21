@@ -210,3 +210,43 @@ export function listIndexedDocuments(): KnowledgeDocument[] {
 export function getIndexedChunksCount(): number {
   return memoryChunks.length;
 }
+
+/**
+ * Delete a document and all its indexed vector chunks
+ */
+export async function deleteDocument(documentId: string): Promise<boolean> {
+  const docIdx = memoryDocuments.findIndex(d => d.id === documentId);
+  if (docIdx === -1) {
+    return false;
+  }
+
+  // Remove document from memory
+  memoryDocuments.splice(docIdx, 1);
+
+  // Remove corresponding chunks from memory
+  const remainingChunks = memoryChunks.filter(c => c.documentId !== documentId);
+  memoryChunks.length = 0;
+  memoryChunks.push(...remainingChunks);
+
+  // Remove from MongoDB if connected
+  const db = getDb();
+  if (isDbConnected() && db) {
+    try {
+      await db.collection('knowledge_documents').deleteOne({ id: documentId });
+      await db.collection('document_chunks').deleteMany({ documentId });
+    } catch (err: any) {
+      console.error('[VectorStore] Atlas delete error:', err.message);
+    }
+  }
+
+  return true;
+}
+
+/**
+ * Get all vector chunks for a specific document
+ */
+export function getDocumentChunks(documentId: string): DocumentChunk[] {
+  return memoryChunks
+    .filter(c => c.documentId === documentId)
+    .map(({ embedding, ...rest }) => rest);
+}

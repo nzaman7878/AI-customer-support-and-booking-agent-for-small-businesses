@@ -6,6 +6,8 @@ import {
   registerLead, 
   getAllLeads 
 } from '../services/bookingService.js';
+import { cancelCalendarEvent } from '../integrations/googleCalendar.js';
+import { dispatchWebhookEvent } from '../services/webhookDispatcher.js';
 
 const router = Router();
 
@@ -45,6 +47,35 @@ router.post('/appointments', async (req: Request, res: Response) => {
       success: false,
       error: error.message
     });
+  }
+});
+
+// Cancel appointment and free calendar slot
+router.post('/appointments/:id/cancel', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id as string;
+    const { reason = 'Admin dashboard cancellation' } = req.body || {};
+    const cancelled = cancelCalendarEvent(id);
+    if (!cancelled) {
+      return res.status(404).json({ success: false, error: 'Appointment not found' });
+    }
+
+    await dispatchWebhookEvent('appointment.cancelled', {
+      appointmentId: cancelled.id,
+      customerName: cancelled.customerName,
+      customerEmail: cancelled.customerEmail,
+      customerPhone: cancelled.customerPhone,
+      serviceName: cancelled.serviceName,
+      reason
+    });
+
+    res.json({
+      success: true,
+      message: `Appointment ${id} successfully cancelled and calendar slot freed.`,
+      appointment: cancelled
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 
