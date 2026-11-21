@@ -24,5 +24,8 @@
     "tailwind-v4"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@esbuild/win32-x64": "^0.28.2"
+  }
 }

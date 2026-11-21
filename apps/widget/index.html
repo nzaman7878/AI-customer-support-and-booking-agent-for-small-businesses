@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Client Website Preview | OmniAgent Universal Embed Test</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #0f172a;
+        color: #f8fafc;
+        min-height: 100vh;
+      }
+      .hero {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 80px 24px;
+        text-align: center;
+      }
+      h1 {
+        font-size: 48px;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 16px;
+        background: linear-gradient(to right, #ffffff, #cbd5e1);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      p {
+        font-size: 18px;
+        color: #94a3b8;
+        line-height: 1.6;
+      }
+      .badge {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        background: rgba(99, 102, 241, 0.15);
+        color: #818cf8;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: 24px;
+        border: 1px solid rgba(99, 102, 241, 0.3);
+      }
+      .card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 20px;
+        margin-top: 48px;
+        text-align: left;
+      }
+      .card {
+        background: #1e293b;
+        border: 1px solid #334155;
+        border-radius: 16px;
+        padding: 24px;
+      }
+      .card h3 {
+        margin-top: 0;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="hero">
+      <div class="badge">Third-Party Client Website (Shopify / WordPress Simulation)</div>
+      <h1>Apex Wellness & Aesthetic Pavilion</h1>
+      <p>
+        Notice how OmniAgent embeds via isolated Shadow DOM in the lower right corner.
+        Parent website CSS resets and typography never clash with the widget!
+      </p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h3>🩺 Clinical Longevity</h3>
+          <p>Biomarker profiling, VO2 max analysis, and executive wellness roadmap tailored by Dr. Marcus Vance.</p>
+        </div>
+        <div class="card">
+          <h3>❄️ Cryo Suite Sessions</h3>
+          <p>Whole-body cryotherapy chamber running at -110°C to accelerate recovery and reduce inflammation.</p>
+        </div>
+        <div class="card">
+          <h3>💧 Hydra-Facial Deluxe</h3>
+          <p>Medical-grade vacuum pore extraction followed by intensive hyaluronic and peptide skin infusion.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Universal Embed Script Tag -->
+    <script type="module" src="/src/index.ts" data-api-url="http://localhost:5000"></script>
+  </body>
+</html>

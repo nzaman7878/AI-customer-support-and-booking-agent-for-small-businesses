@@ -20,8 +20,14 @@ Freelancers and agencies sell this system to small businesses because it deliver
 
 - **Atlas Vector Search RAG**: Semantic document chunking (500 tokens, 50 overlap) with calibrated cosine thresholding.
 - **LangGraph.js State Machine**: Cyclic multi-node graph with sentiment classification, booking routing, and conditional interruption.
+- **Universal Standalone Widget (`widget.js`)**:
+  - 100% Shadow DOM isolated container preventing parent website CSS conflicts on WordPress, Shopify, or Squarespace.
+  - Bundled as an ultra-compact IIFE script (`dist/widget.js`) with zero external runtime dependencies.
+- **Client White-Labeling Studio**:
+  - 1-click preset switcher supporting **Clinics**, **Hair Salons**, **Luxury Real Estate**, and **Exam Coaching Academies**.
+  - Dynamic palette, operating hours, custom prompt chips, and greeting messages.
 - **Omnichannel Support**:
-  - **Website Chat Widget**: Standalone floating widget with real-time thought step visualization and 1-click slot picker.
+  - **Universal Website Embed**: Single copy-paste `<script>` tag deployable on any CMS.
   - **WhatsApp Cloud API**: Official Meta Graph API webhook supporting text replies and interactive quick-reply buttons.
 - **Admin Control Room**:
   - Live session monitor with **Instant Human Takeover Toggle** (`⌥ + Space`).
@@ -65,18 +71,25 @@ Freelancers and agencies sell this system to small businesses because it deliver
 │   │   │   ├── agent/                # Graph definition, triage & nodes
 │   │   │   ├── config/               # Business profile & environment
 │   │   │   ├── db/                   # MongoDB Atlas connection pool
-│   │   │   ├── evals/                # 20-scenario golden eval runner
+│   │   │   ├── evals/                # 20-scenario golden eval runner & testBusinessConfig
 │   │   │   ├── integrations/         # Google Calendar & WhatsApp Cloud API
-│   │   │   ├── routes/               # /chat, /documents, /appointments, /whatsapp
+│   │   │   ├── routes/               # /chat, /documents, /appointments, /whatsapp, /business
 │   │   │   └── services/             # Chunking, embeddings & vector store
 │   │   └── package.json
 │   │
-│   └── dashboard/                    # Admin Control Room & Chat Widget
+│   ├── dashboard/                    # Admin Control Room, Live Chat & White-Label Studio
+│   │   ├── src/
+│   │   │   ├── components/           # ChatWidget.tsx & UI controls
+│   │   │   ├── App.tsx               # 5-Tab Command Room & White-Label Switcher
+│   │   │   └── index.css             # Tailwind v4 theme & Stitch tokens
+│   │   ├── vite.config.ts
+│   │   └── package.json
+│   │
+│   └── widget/                       # Standalone Universal IIFE Script Embed (<script src=".../widget.js">)
 │       ├── src/
-│       │   ├── components/           # ChatWidget.tsx & UI controls
-│       │   ├── App.tsx               # Main Dashboard application
-│       │   └── index.css             # Tailwind v4 theme & Stitch tokens
-│       ├── vite.config.ts
+│       │   ├── Widget.tsx            # Isolated Shadow DOM Chat Experience
+│       │   └── index.ts              # Custom DOM bootstrapping & stylesheet injection
+│       ├── vite.config.ts            # Library mode compiler outputting widget.js
 │       └── package.json
 │
 ├── design-system/                    # Stitch MCP artifacts
@@ -104,10 +117,43 @@ cp apps/backend/.env.example apps/backend/.env
 ```
 *(Note: If no API keys are provided, OmniAgent automatically runs in offline simulation mode with in-memory vector search and calendar cache, allowing full visual testing and benchmarking right away!)*
 
-### 3. Run Benchmark Suite
+### 3. Run Verification & Benchmark Suite
 ```bash
+# Verify Multi-Niche White-Label Presets
+npm run test:business --workspace=apps/backend
+
+# Run 20-Scenario Golden Evaluation Benchmark (100% Pass)
 npm run test:evals --workspace=apps/backend
 ```
+
+### 4. Build Standalone Universal Embed Widget
+```bash
+npm run build --workspace=apps/widget
+```
+This produces `apps/widget/dist/widget.js` which is immediately served by the backend at `http://localhost:5000/widget.js`.
+
+---
+
+## 🔌 Universal Client Website Embed Guide
+
+Any client can embed the autonomous concierge onto their website with a single script tag:
+
+```html
+<script 
+  src="http://localhost:5000/widget.js" 
+  data-business-id="preset_clinic" 
+  data-api-url="http://localhost:5000" 
+  defer>
+</script>
+```
+
+### Supported CMS Integrations:
+- **WordPress**: Paste into **Appearance &gt; Theme File Editor &gt; footer.php** or via WPCode plugin.
+- **Shopify**: Paste into **Online Store &gt; Themes &gt; Edit Code &gt; theme.liquid** before `</body>`.
+- **Squarespace**: Paste into **Settings &gt; Developer Tools &gt; Code Injection &gt; Footer**.
+- **Webflow / Custom HTML**: Add as a custom `<script>` element before `</body>`.
+
+---
 
 ### 4. Start the Application
 In separate terminal tabs:

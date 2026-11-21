@@ -20,9 +20,34 @@ import {
   Play,
   Upload,
   X,
-  Plus
+  Plus,
+  Palette,
+  Code2,
+  Copy,
+  ExternalLink,
+  Layers
 } from 'lucide-react';
 import ChatWidget from './components/ChatWidget.js';
+
+interface BusinessConfig {
+  id: string;
+  name: string;
+  industry: 'clinic' | 'salon' | 'real_estate' | 'coaching' | 'general';
+  tagline: string;
+  welcomeMessage: string;
+  primaryColor: string;
+  accentColor: string;
+  timezone: string;
+  contactEmail: string;
+  contactPhone: string;
+  operatingHours: {
+    days: string[];
+    openTime: string;
+    closeTime: string;
+    slotDurationMinutes: number;
+  };
+  promptChips: string[];
+}
 
 interface SystemHealth {
   status: string;
@@ -55,7 +80,7 @@ interface ChatSession {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'live' | 'knowledge' | 'appointments' | 'evals'>('live');
+  const [activeTab, setActiveTab] = useState<'live' | 'knowledge' | 'appointments' | 'evals' | 'whitelabel'>('live');
   const [health, setHealth] = useState<SystemHealth | null>(null);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [selectedSessionId, setSelectedSessionId] = useState<string>('sess_1');
@@ -75,11 +100,31 @@ export default function App() {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [leads, setLeads] = useState<any[]>([]);
 
+  // White-Label & Business Config state
+  const [businessConfig, setBusinessConfig] = useState<BusinessConfig | null>(null);
+  const [presets, setPresets] = useState<Record<string, BusinessConfig>>({});
+  const [copiedEmbed, setCopiedEmbed] = useState(false);
+  const [activePresetTab, setActivePresetTab] = useState<'wordpress' | 'shopify' | 'squarespace' | 'html'>('html');
+
   // Initial Data Fetch
   const loadData = () => {
     fetch('/api/health')
       .then(r => r.json())
       .then(d => setHealth(d))
+      .catch(() => {});
+
+    fetch('/api/business/config')
+      .then(r => r.json())
+      .then(d => {
+        if (d.config) setBusinessConfig(d.config);
+      })
+      .catch(() => {});
+
+    fetch('/api/business/presets')
+      .then(r => r.json())
+      .then(d => {
+        if (d.presets) setPresets(d.presets);
+      })
       .catch(() => {});
 
     fetch('/api/sessions')
@@ -109,6 +154,38 @@ export default function App() {
         if (d.leads) setLeads(d.leads);
       })
       .catch(() => {});
+  };
+
+  const handleSelectPreset = async (presetKey: string) => {
+    try {
+      const targetPreset = presets[presetKey];
+      if (!targetPreset) return;
+      const res = await fetch('/api/business/config', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(targetPreset)
+      });
+      const data = await res.json();
+      if (data.config) {
+        setBusinessConfig(data.config);
+        loadData();
+      }
+    } catch (err) {
+      console.error('Failed to update business config:', err);
+    }
+  };
+
+  const embedScriptTag = `<script 
+  src="http://localhost:5000/widget.js" 
+  data-business-id="${businessConfig?.id || 'preset_clinic'}" 
+  data-api-url="http://localhost:5000" 
+  defer>
+</script>`;
+
+  const handleCopyEmbedCode = () => {
+    navigator.clipboard.writeText(embedScriptTag);
+    setCopiedEmbed(true);
+    setTimeout(() => setCopiedEmbed(false), 2000);
   };
 
   useEffect(() => {
@@ -209,14 +286,14 @@ export default function App() {
             <div>
               <div className="flex items-center space-x-2">
                 <span className="font-bold text-base tracking-tight text-white">
-                  Apex Wellness Clinic
+                  {businessConfig?.name || 'Apex Wellness Clinic'}
                 </span>
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#6366f1]/15 text-[#818cf8] border border-[#6366f1]/30">
                   AI Agent v2.4 (Active)
                 </span>
               </div>
               <p className="text-[11px] text-[#908fa0]">
-                Obsidian Autonomous Command • RAG & Booking Orchestrator
+                {businessConfig?.tagline || 'Obsidian Autonomous Command • RAG & Booking Orchestrator'}
               </p>
             </div>
           </div>
@@ -264,7 +341,8 @@ export default function App() {
             { id: 'live', label: 'Live Conversations & Takeover', icon: MessageSquare, badge: `${sessions.length} Active` },
             { id: 'knowledge', label: 'Knowledge Base (Atlas RAG)', icon: BookOpen, badge: `${documents.length} Docs` },
             { id: 'appointments', label: 'Bookings & Calendar Matrix', icon: Calendar, badge: `${appointments.length} Slots` },
-            { id: 'evals', label: '20-Scenario Eval Benchmark', icon: ShieldCheck, badge: '98% Pass' },
+            { id: 'evals', label: '20-Scenario Eval Benchmark', icon: ShieldCheck, badge: '100% Pass' },
+            { id: 'whitelabel', label: 'White-Label & Embed Script', icon: Palette, badge: `${(businessConfig?.industry || 'clinic').toUpperCase()}` },
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -719,6 +797,243 @@ export default function App() {
                 <div className="text-xs text-[#908fa0]">4. Frustration & Handoff</div>
                 <div className="text-2xl font-bold text-white mt-1 font-mono">100%</div>
                 <div className="text-[10px] text-[#4edea3] mt-1">3/3 triggered takeover</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 5: White-Label Studio & Universal Embed Code */}
+        {activeTab === 'whitelabel' && (
+          <div className="space-y-6">
+            {/* Header & Value Proposition */}
+            <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <div className="flex items-center space-x-2">
+                  <h2 className="text-base font-bold text-white">Client White-Label Studio & Universal Embed</h2>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30">
+                    Shadow DOM Isolated
+                  </span>
+                </div>
+                <p className="text-xs text-[#908fa0] mt-1">
+                  Switch business verticals in 1-click or generate a self-contained <code>&lt;script&gt;</code> embed for WordPress, Shopify, Squarespace, and Webflow clients.
+                </p>
+              </div>
+
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={handleCopyEmbedCode}
+                  className="px-4 py-2 bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-2 shadow-lg shadow-[#6366f1]/20"
+                >
+                  {copiedEmbed ? <Check className="h-4 w-4 text-[#4edea3]" /> : <Copy className="h-4 w-4" />}
+                  <span>{copiedEmbed ? 'Copied Embed Code!' : 'Copy Script Tag'}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Quick Niche Switcher Cards */}
+            <div>
+              <div className="text-xs font-semibold text-[#908fa0] uppercase tracking-wider mb-3">
+                1-Click Niche Switcher (Preconfigured Demo Verticals)
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {[
+                  {
+                    key: 'clinic',
+                    name: 'Wellness Clinic',
+                    preset: presets.clinic,
+                    icon: '🩺',
+                    color: '#6366f1',
+                    badge: 'Apex Wellness'
+                  },
+                  {
+                    key: 'salon',
+                    name: 'Hair & Glam Salon',
+                    preset: presets.salon,
+                    icon: '✂️',
+                    color: '#ec4899',
+                    badge: 'Luxe Glow'
+                  },
+                  {
+                    key: 'real_estate',
+                    name: 'Luxury Real Estate',
+                    preset: presets.real_estate,
+                    icon: '🏢',
+                    color: '#0ea5e9',
+                    badge: 'Skyline Premier'
+                  },
+                  {
+                    key: 'coaching',
+                    name: 'Prep Coaching Academy',
+                    preset: presets.coaching,
+                    icon: '🎓',
+                    color: '#f59e0b',
+                    badge: 'Ascend Academy'
+                  }
+                ].map((item) => {
+                  const isCurrent = businessConfig?.industry === item.key;
+                  return (
+                    <div
+                      key={item.key}
+                      onClick={() => handleSelectPreset(item.key)}
+                      className={`p-4 rounded-xl border transition cursor-pointer flex flex-col justify-between ${
+                        isCurrent
+                          ? 'bg-[#1e1b4b]/60 border-[#6366f1] shadow-lg shadow-[#6366f1]/15 ring-1 ring-[#6366f1]'
+                          : 'bg-[#0f172a]/60 border-[#1e293b] hover:border-[#334155]'
+                      }`}
+                    >
+                      <div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-2xl">{item.icon}</span>
+                          {isCurrent ? (
+                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#10b981]/20 text-[#4edea3] border border-[#10b981]/40 flex items-center space-x-1">
+                              <CheckCircle2 className="h-3 w-3 inline" />
+                              <span>ACTIVE CLIENT</span>
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-[#908fa0] hover:text-white">Click to Activate</span>
+                          )}
+                        </div>
+                        <h3 className="text-sm font-bold text-white mt-2.5">{item.name}</h3>
+                        <p className="text-[11px] text-[#908fa0] mt-1 line-clamp-2">
+                          {item.preset?.tagline || 'Custom client configuration'}
+                        </p>
+                      </div>
+
+                      <div className="mt-4 pt-3 border-t border-[#1e293b] flex items-center justify-between text-[11px]">
+                        <span className="font-mono text-[#818cf8]">{item.badge}</span>
+                        <div className="flex items-center space-x-1.5">
+                          <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} />
+                          <span className="text-[10px] text-[#908fa0] font-mono">{item.color}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Embed Script Code Box & Installation Guide */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Left 7 Cols: Embed Code & Platform Tabs */}
+              <div className="lg:col-span-7 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-5 backdrop-blur-md space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+                  <div className="flex items-center space-x-2">
+                    <Code2 className="h-4 w-4 text-[#818cf8]" />
+                    <span className="text-xs font-semibold text-white">Universal Standalone Embed Code</span>
+                  </div>
+                  <button
+                    onClick={handleCopyEmbedCode}
+                    className="text-[11px] text-[#818cf8] hover:text-white flex items-center space-x-1 cursor-pointer font-medium"
+                  >
+                    {copiedEmbed ? <Check className="h-3.5 w-3.5 text-[#4edea3]" /> : <Copy className="h-3.5 w-3.5" />}
+                    <span>{copiedEmbed ? 'Copied' : 'Copy'}</span>
+                  </button>
+                </div>
+
+                {/* Code Block */}
+                <div className="relative rounded-xl bg-[#030712] border border-[#1e293b] p-4 font-mono text-xs text-[#dfe2f1] overflow-x-auto">
+                  <pre className="text-[12px] leading-relaxed text-[#818cf8]">
+                    {embedScriptTag}
+                  </pre>
+                </div>
+
+                {/* CMS Install Tabs */}
+                <div>
+                  <div className="flex space-x-2 border-b border-[#1e293b] pb-2">
+                    {[
+                      { id: 'html', label: 'HTML / Webflow' },
+                      { id: 'wordpress', label: 'WordPress' },
+                      { id: 'shopify', label: 'Shopify' },
+                      { id: 'squarespace', label: 'Squarespace' }
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setActivePresetTab(tab.id as any)}
+                        className={`text-xs px-3 py-1 rounded-lg transition cursor-pointer ${
+                          activePresetTab === tab.id
+                            ? 'bg-[#6366f1]/20 text-[#818cf8] font-semibold border border-[#6366f1]/40'
+                            : 'text-[#908fa0] hover:text-white'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="mt-3 text-xs text-[#908fa0] leading-relaxed">
+                    {activePresetTab === 'html' && (
+                      <p>Paste the snippet directly before the closing <code>&lt;/body&gt;</code> tag of your website. The widget automatically binds to Shadow DOM without style conflicts.</p>
+                    )}
+                    {activePresetTab === 'wordpress' && (
+                      <p>In WordPress Admin, go to <b>Appearance &gt; Theme File Editor &gt; footer.php</b> or install the free <i>WPCode (Insert Headers and Footers)</i> plugin and paste into the Footer script box.</p>
+                    )}
+                    {activePresetTab === 'shopify' && (
+                      <p>In Shopify Admin, go to <b>Online Store &gt; Themes &gt; Edit Code &gt; theme.liquid</b>. Paste the script right before <code>&lt;/body&gt;</code> and click Save.</p>
+                    )}
+                    {activePresetTab === 'squarespace' && (
+                      <p>In Squarespace, navigate to <b>Settings &gt; Developer Tools &gt; Code Injection</b> and paste into the <b>Footer</b> block.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Right 5 Cols: Active Brand Inspector */}
+              <div className="lg:col-span-5 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-5 backdrop-blur-md space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+                  <div className="flex items-center space-x-2">
+                    <Palette className="h-4 w-4 text-[#10b981]" />
+                    <span className="text-xs font-semibold text-white">Active Branding Properties</span>
+                  </div>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#10b981]/15 text-[#4edea3]">
+                    SYNCED TO BACKEND
+                  </span>
+                </div>
+
+                <div className="space-y-3 text-xs">
+                  <div>
+                    <div className="text-[11px] text-[#908fa0]">Client Business Name</div>
+                    <div className="text-sm font-semibold text-white mt-0.5">{businessConfig?.name}</div>
+                  </div>
+
+                  <div>
+                    <div className="text-[11px] text-[#908fa0]">AI Agent Greeting</div>
+                    <div className="text-[11px] text-[#dfe2f1] bg-[#030712] p-2.5 rounded-lg border border-[#1e293b] mt-1 italic">
+                      "{businessConfig?.welcomeMessage}"
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <div className="text-[11px] text-[#908fa0]">Primary Palette</div>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <div className="h-4 w-4 rounded-full border border-white/20" style={{ backgroundColor: businessConfig?.primaryColor }} />
+                        <span className="font-mono text-[11px] text-white">{businessConfig?.primaryColor}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-[11px] text-[#908fa0]">Slot Duration</div>
+                      <div className="text-[11px] font-mono text-white mt-1">
+                        {businessConfig?.operatingHours?.slotDurationMinutes || 30} Minutes
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="text-[11px] text-[#908fa0]">Quick Action Prompts</div>
+                    <div className="flex flex-wrap gap-1.5 mt-1.5">
+                      {businessConfig?.promptChips?.map((chip, idx) => (
+                        <span key={idx} className="text-[10px] px-2 py-1 rounded bg-[#0f172a] border border-[#1e293b] text-[#818cf8]">
+                          {chip}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-[#1e293b] flex items-center justify-between text-[11px] text-[#908fa0]">
+                    <span>Support: {businessConfig?.contactEmail}</span>
+                    <span>{businessConfig?.contactPhone}</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

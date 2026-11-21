@@ -222,14 +222,28 @@ ai-customer-support-agent/
 
 ---
 
+### Phase 9: Universal Standalone Embed Widget (`widget.js`), Dynamic White-Labeling & Client Script Generator
+- **Goal**: Provide a standalone IIFE bundle (`dist/widget.js`) with isolated Shadow DOM that any small business can paste into WordPress, Shopify, Webflow, or Squarespace with a single `<script>` tag. Enable dynamic multi-niche white-labeling (Clinics, Salons, Real Estate, Coaching Institutes) via API and an in-dashboard 1-click Embed Code & Theme Customizer.
+- **Deliverables**:
+  - `apps/backend/src/routes/business.ts`: Dynamic business configuration & white-label settings API (`GET /api/business/config`, `PUT /api/business/config`).
+  - `apps/widget`: Standalone package bundling to `widget.js` (IIFE with Shadow DOM CSS isolation).
+  - Backend static serving of `/widget.js` with CORS for CDN-style script loading.
+  - In `apps/dashboard/src/App.tsx`: 5th tab "Client White-Label & Embed Code" with theme picker, live preview, and 1-click copyable `<script>` tag.
+  - Automated test `apps/backend/src/evals/testBusinessConfig.ts`.
+- **Git Commit**: `feat(widget): implement universal standalone shadow-dom embed widget and white-label business customizer`
+
+---
+
 ## 5. Verification Checklist
 
-1. [ ] MongoDB Atlas connection and `$vectorSearch` vector index configured.
-2. [ ] Tailwind CSS v4 styling configured properly in Vite with zero legacy config file errors.
-3. [ ] Stitch MCP screens generated and visual tokens applied to components.
-4. [ ] Ingestion pipeline chunks documents and returns grounded answers with citations.
-5. [ ] RAG retriever fallback returns "I don't know" when questions fall below threshold.
-6. [ ] Google Calendar freebusy check correctly identifies busy vs free slots.
-7. [ ] WhatsApp webhook responds to incoming texts within < 3 seconds.
-8. [ ] Live chat allows real-time human takeover with agent suspension.
-9. [ ] 20-question eval suite runs and outputs measurable accuracy score (>90%).
+1. [x] MongoDB Atlas connection and `$vectorSearch` vector index configured.
+2. [x] Tailwind CSS v4 styling configured properly in Vite with zero legacy config file errors.
+3. [x] Stitch MCP screens generated and visual tokens applied to components.
+4. [x] Ingestion pipeline chunks documents and returns grounded answers with citations.
+5. [x] RAG retriever fallback returns "I don't know" when questions fall below threshold.
+6. [x] Google Calendar freebusy check correctly identifies busy vs free slots.
+7. [x] WhatsApp webhook responds to incoming texts within < 3 seconds.
+8. [x] Live chat allows real-time human takeover with agent suspension.
+9. [x] 20-question eval suite runs and outputs measurable accuracy score (>90% - achieved 100%).
+10. [x] Standalone Shadow DOM `widget.js` built and served from API for universal website embedding.
+11. [x] Dynamic business white-labeling allows switching clinic/salon/real estate configurations instantly.

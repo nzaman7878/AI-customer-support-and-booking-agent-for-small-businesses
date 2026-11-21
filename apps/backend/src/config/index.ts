@@ -30,7 +30,7 @@ export const config = {
   },
   business: {
     name: 'Apex Wellness & Aesthetics Clinic',
-    industry: 'clinic' as const,
+    industry: 'clinic' as 'clinic' | 'salon' | 'real_estate' | 'coaching' | 'general',
     timezone: 'Asia/Kolkata',
     operatingHours: {
       days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],

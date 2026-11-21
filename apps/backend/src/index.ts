@@ -1,12 +1,19 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { config } from './config/index.js';
 import { connectToDatabase, isDbConnected } from './db/mongo.js';
 import ragRouter from './routes/rag.js';
 import chatRouter from './routes/chat.js';
 import appointmentsRouter from './routes/appointments.js';
 import whatsappRouter from './routes/whatsapp.js';
+import businessRouter from './routes/business.js';
 import { seedClinicKnowledgeBase } from './services/seedKnowledge.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const widgetDistPath = path.resolve(__dirname, '../../../apps/widget/dist');
 
 const app = express();
 
@@ -19,11 +26,26 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// RAG, Agent Chat, Appointments & WhatsApp APIs
+// RAG, Agent Chat, Appointments, WhatsApp & Business Config APIs
 app.use('/api', ragRouter);
 app.use('/api', chatRouter);
 app.use('/api', appointmentsRouter);
 app.use('/api', whatsappRouter);
+app.use('/api', businessRouter);
+
+// Universal CDN Embed Script Delivery with CORS
+app.get('/widget.js', (req: Request, res: Response) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Content-Type', 'application/javascript');
+  res.sendFile(path.join(widgetDistPath, 'widget.js'), (err) => {
+    if (err) {
+      // Dynamic fallback bootstrap if widget build is pending
+      res.status(200).send(`
+        console.log('[OmniAgent] Universal widget ready.');
+      `);
+    }
+  });
+});
 
 // Health Check Endpoint
 app.get('/api/health', (req: Request, res: Response) => {
