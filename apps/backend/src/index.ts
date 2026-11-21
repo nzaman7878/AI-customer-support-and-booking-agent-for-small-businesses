@@ -10,6 +10,7 @@ import appointmentsRouter from './routes/appointments.js';
 import whatsappRouter from './routes/whatsapp.js';
 import businessRouter from './routes/business.js';
 import remindersRouter from './routes/reminders.js';
+import analyticsRouter from './routes/analytics.js';
 import { seedClinicKnowledgeBase } from './services/seedKnowledge.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -34,6 +35,7 @@ app.use('/api', appointmentsRouter);
 app.use('/api', whatsappRouter);
 app.use('/api', businessRouter);
 app.use('/api', remindersRouter);
+app.use('/api', analyticsRouter);
 
 // Universal CDN Embed Script Delivery with CORS
 app.get('/widget.js', (req: Request, res: Response) => {

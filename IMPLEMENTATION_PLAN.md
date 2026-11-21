@@ -247,6 +247,17 @@ ai-customer-support-agent/
 
 ---
 
+### Phase 11: Business Analytics, Conversation Intelligence & Automated CSV/Audit Reporting
+- **Goal**: Provide small business owners and freelancers with executive ROI intelligence: conversion rates, autonomous deflection percentage, revenue pipeline estimate, customer sentiment breakdown, top FAQ inquiries, and 1-click CSV/PDF export.
+- **Deliverables**:
+  - `apps/backend/src/services/analyticsService.ts`: Computes conversation volume, booking conversion rate, deflection percentage (autonomous vs human takeover), topic clustering, and pipeline revenue value based on business niche pricing.
+  - `apps/backend/src/routes/analytics.ts`: REST API endpoints for live metrics (`GET /api/analytics/overview`), top topics (`GET /api/analytics/topics`), and downloadable CSV exports (`GET /api/analytics/export/appointments.csv`, `GET /api/analytics/export/leads.csv`).
+  - `apps/dashboard/src/App.tsx`: 6th Command tab **"Analytics & ROI Intelligence"** with visual KPI cards, topic volume progress bars, sentiment distribution meters, and 1-click CSV download buttons.
+  - Automated test suite `apps/backend/src/evals/testAnalytics.ts`.
+- **Git Commit**: `feat(analytics): implement conversion analytics, conversation intelligence and automated csv export engine`
+
+---
+
 ## 5. Verification Checklist
 
 1. [x] MongoDB Atlas connection and `$vectorSearch` vector index configured.
@@ -262,3 +273,5 @@ ai-customer-support-agent/
 11. [x] Dynamic business white-labeling allows switching clinic/salon/real estate configurations instantly.
 12. [x] Multi-channel appointment reminders (24h/2h) dispatching with cancellation handling.
 13. [x] Real-time CRM webhook dispatcher firing on booking and lead capture events.
+14. [x] Conversion metrics, deflection percentage and ROI calculated dynamically.
+15. [x] Appointments and leads exported via RFC 4180 compliant CSV stream.

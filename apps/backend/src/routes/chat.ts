@@ -22,7 +22,7 @@ export interface ChatSession {
 }
 
 // Active sessions state for live dashboard monitoring
-const activeSessions: ChatSession[] = [
+export const activeSessions: ChatSession[] = [
   {
     id: 'sess_1',
     name: 'Elena Rostova',
