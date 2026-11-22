@@ -49,9 +49,32 @@ export async function createBooking(
   const validated = CreateAppointmentSchema.parse(input);
 
   // Check collision
+  const reqStart = new Date(validated.startTime).getTime();
+  const reqEnd = new Date(validated.endTime).getTime();
+
+  // Check direct collision with existing active appointments
+  const activeApts = getCachedAppointments();
+  const hasDirectConflict = activeApts.some(apt => {
+    if (apt.status === 'cancelled') return false;
+    const aptStart = new Date(apt.startTime).getTime();
+    const aptEnd = new Date(apt.endTime).getTime();
+    return (
+      (reqStart >= aptStart && reqStart < aptEnd) ||
+      (reqEnd > aptStart && reqEnd <= aptEnd) ||
+      (reqStart <= aptStart && reqEnd >= aptEnd)
+    );
+  });
+
+  if (hasDirectConflict) {
+    throw new Error('This time slot is already booked. Please choose another time.');
+  }
+
   const dateStr = validated.startTime.split('T')[0];
   const slots = await getFreeBusySlots(dateStr);
-  const targetSlot = slots.find(s => s.startTime === validated.startTime);
+  const targetSlot = slots.find(s => {
+    const sStart = new Date(s.startTime).getTime();
+    return Math.abs(sStart - reqStart) < 60000;
+  });
 
   if (targetSlot && !targetSlot.isAvailable) {
     throw new Error('This time slot is already booked. Please choose another time.');

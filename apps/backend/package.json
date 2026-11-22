@@ -22,7 +22,8 @@
     "test:feedback": "tsx src/evals/testFeedbackFunnel.ts",
     "test:phase-a": "tsx src/evals/testPhaseAFixes.ts",
     "test:phase-b": "tsx src/evals/testPhaseBFixes.ts",
-    "test:phase-c": "tsx src/evals/testPhaseCFixes.ts"
+    "test:phase-c": "tsx src/evals/testPhaseCFixes.ts",
+    "test:phase-d": "tsx src/evals/testPhaseDFixes.ts"
   },
   "dependencies": {
     "@ai-agent/shared": "*",

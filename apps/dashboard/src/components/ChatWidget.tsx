@@ -175,7 +175,7 @@ export default function ChatWidget() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl bg-gradient-to-r from-[#6366f1] via-[#818cf8] to-[#10b981] p-[1.5px] shadow-2xl shadow-[#6366f1]/40 hover:scale-105 transition-all duration-300 cursor-pointer group"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-gradient-to-r from-[#6366f1] via-[#818cf8] to-[#10b981] p-[1.5px] shadow-2xl shadow-[#6366f1]/40 hover:scale-105 transition-all duration-300 cursor-pointer group"
         >
           <div className="bg-[#030712] px-3.5 py-2 rounded-[14px] flex items-center space-x-2.5">
             <span className="relative flex h-2.5 w-2.5">
@@ -192,7 +192,7 @@ export default function ChatWidget() {
 
       {/* Floating Chat Drawer */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 w-[380px] sm:w-[420px] h-[620px] max-h-[85vh] rounded-3xl bg-[#0b0f19]/95 border border-[#1e293b] shadow-2xl shadow-black/80 flex flex-col backdrop-blur-2xl overflow-hidden font-sans">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-w-[420px] h-[calc(100vh-5rem)] max-h-[620px] rounded-2xl sm:rounded-3xl bg-[#0b0f19]/95 border border-[#1e293b] shadow-2xl shadow-black/80 flex flex-col backdrop-blur-2xl overflow-hidden font-sans">
           {/* Header */}
           <div className="p-4 bg-[#0f131d]/90 border-b border-[#1e293b] flex items-center justify-between">
             <div className="flex items-center space-x-3">

@@ -130,6 +130,22 @@ export default function App() {
   // Appointments & Leads state
   const [appointments, setAppointments] = useState<any[]>([]);
   const [leads, setLeads] = useState<any[]>([]);
+  const [appointmentSearchQuery, setAppointmentSearchQuery] = useState('');
+  const [appointmentStatusFilter, setAppointmentStatusFilter] = useState<'all' | 'confirmed' | 'pending_payment' | 'cancelled'>('all');
+  const [showWalkInModal, setShowWalkInModal] = useState(false);
+  const [walkInName, setWalkInName] = useState('');
+  const [walkInEmail, setWalkInEmail] = useState('');
+  const [walkInPhone, setWalkInPhone] = useState('');
+  const [walkInService, setWalkInService] = useState('Medical & Longevity Consultation');
+  const [walkInDate, setWalkInDate] = useState(() => {
+    const today = new Date();
+    today.setDate(today.getDate() + 1);
+    return today.toISOString().split('T')[0];
+  });
+  const [walkInTime, setWalkInTime] = useState('11:00');
+  const [walkInDoctor, setWalkInDoctor] = useState('Dr. Marcus Vance');
+  const [walkInNotes, setWalkInNotes] = useState('');
+  const [isCreatingWalkIn, setIsCreatingWalkIn] = useState(false);
 
   // White-Label & Business Config state
   const [businessConfig, setBusinessConfig] = useState<BusinessConfig | null>(null);
@@ -324,6 +340,51 @@ export default function App() {
       console.error('Run benchmark failed:', err);
     } finally {
       setIsRunningEvals(false);
+    }
+  };
+
+  const handleCreateWalkIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!walkInName || !walkInPhone || !walkInDate || !walkInTime) return;
+
+    setIsCreatingWalkIn(true);
+    try {
+      const [hours, minutes] = walkInTime.split(':');
+      const startDt = new Date(`${walkInDate}T${hours || '10'}:${minutes || '00'}:00`);
+      const endDt = new Date(startDt.getTime() + 45 * 60 * 1000);
+
+      const res = await fetch('/api/appointments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: walkInName,
+          customerEmail: walkInEmail || `${walkInName.toLowerCase().replace(/\s+/g, '.')}@client.com`,
+          customerPhone: walkInPhone,
+          serviceName: walkInService,
+          startTime: startDt.toISOString(),
+          endTime: endDt.toISOString(),
+          notes: walkInNotes ? `[Walk-in / ${walkInDoctor}] ${walkInNotes}` : `[Walk-in / ${walkInDoctor}]`
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setWebhookToast(`Walk-in confirmed: ${walkInName} (${walkInService})`);
+        setTimeout(() => setWebhookToast(null), 3500);
+        setShowWalkInModal(false);
+        setWalkInName('');
+        setWalkInPhone('');
+        setWalkInEmail('');
+        setWalkInNotes('');
+        loadData();
+      } else {
+        alert(data.error || 'Failed to create walk-in booking');
+      }
+    } catch (err: any) {
+      console.error('Walk-in booking error:', err);
+      alert(err.message || 'Error creating walk-in booking');
+    } finally {
+      setIsCreatingWalkIn(false);
     }
   };
 
@@ -580,6 +641,17 @@ export default function App() {
 
   const filteredEvalScenarios = evalScenarios.filter(sc => {
     return evalCategoryFilter === 'all' || sc.category === evalCategoryFilter;
+  });
+
+  const filteredAppointments = appointments.filter(apt => {
+    const matchesStatus = appointmentStatusFilter === 'all' || apt.status === appointmentStatusFilter;
+    const q = appointmentSearchQuery.toLowerCase().trim();
+    const matchesSearch = !q ||
+      (apt.customerName || '').toLowerCase().includes(q) ||
+      (apt.serviceName || '').toLowerCase().includes(q) ||
+      (apt.customerPhone || '').toLowerCase().includes(q) ||
+      (apt.customerEmail || '').toLowerCase().includes(q);
+    return matchesStatus && matchesSearch;
   });
 
   // Standalone Direct Magic-Link Customer Landing View
@@ -1113,6 +1185,49 @@ export default function App() {
                   <span className="text-xs font-mono text-[#818cf8] bg-[#6366f1]/15 px-3 py-1.5 rounded-lg border border-[#6366f1]/30">
                     Timezone: Asia/Kolkata (IST)
                   </span>
+                  <button
+                    onClick={() => setShowWalkInModal(true)}
+                    className="px-3.5 py-1.5 rounded-lg bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer shadow-md shadow-[#6366f1]/20"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>+ New Walk-In</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Appointments Search & Filter Toolbar */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-xl bg-[#030712] border border-[#1e293b]">
+                {/* Search Bar */}
+                <div className="relative flex-1">
+                  <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#908fa0]" />
+                  <input
+                    type="text"
+                    value={appointmentSearchQuery}
+                    onChange={(e) => setAppointmentSearchQuery(e.target.value)}
+                    placeholder="Search bookings by customer name, service, phone or email..."
+                    className="w-full pl-9 pr-4 py-2 bg-[#0b0f19] border border-[#1e293b] rounded-lg text-xs text-white placeholder-[#908fa0] focus:outline-none focus:border-[#6366f1]"
+                  />
+                </div>
+
+                {/* Status Filter Pills */}
+                <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 sm:pb-0">
+                  {(['all', 'confirmed', 'pending_payment', 'cancelled'] as const).map(status => (
+                    <button
+                      key={status}
+                      onClick={() => setAppointmentStatusFilter(status)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition cursor-pointer ${
+                        appointmentStatusFilter === status
+                          ? 'bg-[#6366f1] text-white'
+                          : 'bg-[#0b0f19] text-[#908fa0] hover:text-white border border-[#1e293b]'
+                      }`}
+                    >
+                      {status === 'all'
+                        ? `All (${appointments.length})`
+                        : status === 'pending_payment'
+                        ? `Deposit Pending (${appointments.filter(a => a.status === 'pending_payment').length})`
+                        : `${status.charAt(0).toUpperCase() + status.slice(1)} (${appointments.filter(a => a.status === status).length})`}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -1139,7 +1254,7 @@ export default function App() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[#1e293b]/70 text-[#dfe2f1]">
-                    {appointments.map(apt => (
+                    {filteredAppointments.map(apt => (
                       <tr key={apt.id}>
                         <td className="py-3.5 px-4 font-medium text-white">{apt.customerName}</td>
                         <td className="py-3.5 px-4">{apt.serviceName}</td>
@@ -1194,6 +1309,13 @@ export default function App() {
                         </td>
                       </tr>
                     ))}
+                    {filteredAppointments.length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="py-8 text-center text-[#908fa0] text-xs">
+                          No bookings match the search criteria or status filter.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -2470,6 +2592,166 @@ export default function App() {
           }}
           onAppointmentUpdated={loadData}
         />
+      )}
+
+      {/* Walk-in Booking Creation Modal */}
+      {showWalkInModal && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-lg bg-[#0b0f19] border border-[#1e293b] rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+              <div className="flex items-center space-x-2.5">
+                <div className="h-8 w-8 rounded-lg bg-[#6366f1]/20 border border-[#6366f1]/40 flex items-center justify-center text-[#818cf8]">
+                  <Calendar className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-white">Create Walk-in / Direct Reservation</h3>
+                  <p className="text-[11px] text-[#908fa0]">Lock in calendar slot and trigger instant confirmation</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowWalkInModal(false)}
+                className="p-1 rounded-lg text-[#908fa0] hover:text-white hover:bg-[#1e293b] transition cursor-pointer"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleCreateWalkIn} className="space-y-3.5 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[#908fa0] mb-1 font-medium">Customer Full Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={walkInName}
+                    onChange={(e) => setWalkInName(e.target.value)}
+                    placeholder="e.g. Liam Henderson"
+                    className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#908fa0] mb-1 font-medium">Phone Number *</label>
+                  <input
+                    type="tel"
+                    required
+                    value={walkInPhone}
+                    onChange={(e) => setWalkInPhone(e.target.value)}
+                    placeholder="e.g. +1 (415) 555-0199"
+                    className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[#908fa0] mb-1 font-medium">Email Address (Optional)</label>
+                <input
+                  type="email"
+                  value={walkInEmail}
+                  onChange={(e) => setWalkInEmail(e.target.value)}
+                  placeholder="e.g. liam.h@example.com"
+                  className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[#908fa0] mb-1 font-medium">Service / Treatment *</label>
+                  <select
+                    value={walkInService}
+                    onChange={(e) => setWalkInService(e.target.value)}
+                    className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none cursor-pointer"
+                  >
+                    <option value="Medical & Longevity Consultation">Medical Consultation ($150)</option>
+                    <option value="Whole-Body Cryo & Assessment">Whole-Body Cryotherapy ($85)</option>
+                    <option value="Hydra-Facial Deluxe Treatment">Hydra-Facial Treatment ($180)</option>
+                    <option value="Hyperbaric Oxygen Therapy (HBOT)">Hyperbaric Oxygen ($120)</option>
+                    <option value="Laser Teeth Whitening">Laser Whitening ($220)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-[#908fa0] mb-1 font-medium">Assigned Specialist</label>
+                  <select
+                    value={walkInDoctor}
+                    onChange={(e) => setWalkInDoctor(e.target.value)}
+                    className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none cursor-pointer"
+                  >
+                    <option value="Dr. Marcus Vance">Dr. Marcus Vance (Longevity)</option>
+                    <option value="Dr. Ananya Ray">Dr. Ananya Ray (Aesthetics)</option>
+                    <option value="Dr. Elena Rostova">Dr. Elena Rostova (Diagnostics)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[#908fa0] mb-1 font-medium">Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={walkInDate}
+                    onChange={(e) => setWalkInDate(e.target.value)}
+                    className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[#908fa0] mb-1 font-medium">Time Slot (IST) *</label>
+                  <select
+                    value={walkInTime}
+                    onChange={(e) => setWalkInTime(e.target.value)}
+                    className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none cursor-pointer"
+                  >
+                    <option value="10:00">10:00 AM</option>
+                    <option value="11:00">11:00 AM</option>
+                    <option value="12:00">12:00 PM</option>
+                    <option value="14:00">02:00 PM</option>
+                    <option value="15:30">03:30 PM</option>
+                    <option value="16:15">04:15 PM</option>
+                    <option value="17:00">05:00 PM</option>
+                    <option value="18:00">06:00 PM</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[#908fa0] mb-1 font-medium">Front Desk Notes</label>
+                <textarea
+                  rows={2}
+                  value={walkInNotes}
+                  onChange={(e) => setWalkInNotes(e.target.value)}
+                  placeholder="e.g. Walk-in customer at reception, requested Dr. Vance."
+                  className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[#1e293b]">
+                <button
+                  type="button"
+                  onClick={() => setShowWalkInModal(false)}
+                  className="px-4 py-2 rounded-xl text-[#908fa0] hover:bg-[#1e293b] transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreatingWalkIn}
+                  className="px-4 py-2 rounded-xl bg-[#6366f1] hover:bg-[#818cf8] text-white font-semibold transition cursor-pointer disabled:opacity-50 flex items-center space-x-1.5"
+                >
+                  {isCreatingWalkIn ? (
+                    <>
+                      <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                      <span>Locking Slot...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check className="h-3.5 w-3.5" />
+                      <span>Confirm Reservation</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
       {/* Omnichannel Floating Customer Chat Widget */}
