@@ -20,7 +20,8 @@
     "test:payments": "tsx src/evals/testPayments.ts",
     "test:portal": "tsx src/evals/testSelfServicePortal.ts",
     "test:feedback": "tsx src/evals/testFeedbackFunnel.ts",
-    "test:phase-a": "tsx src/evals/testPhaseAFixes.ts"
+    "test:phase-a": "tsx src/evals/testPhaseAFixes.ts",
+    "test:phase-b": "tsx src/evals/testPhaseBFixes.ts"
   },
   "dependencies": {
     "@ai-agent/shared": "*",

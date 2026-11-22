@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { runAgent } from '../agent/graph.js';
+import { detectLanguage, translateResponse } from '../services/translationService.js';
 
 export interface ChatSession {
   id: string;
@@ -199,7 +200,7 @@ router.post('/sessions/:id/message', async (req: Request, res: Response) => {
 // Standard Chat Endpoint
 router.post('/chat', async (req: Request, res: Response) => {
   try {
-    const { message, conversationId, channel = 'web', customerInfo } = req.body;
+    const { message, conversationId, channel = 'web', customerInfo, language } = req.body;
 
     if (!message) {
       return res.status(400).json({
@@ -260,15 +261,28 @@ router.post('/chat', async (req: Request, res: Response) => {
       customerInfo
     );
 
+    // Multilingual Translation Support
+    const detected = detectLanguage(message);
+    const targetLang = (language && language !== 'auto') ? language : (detected.code !== 'en' ? detected.code : 'en');
+    
+    let finalResponse = state.finalResponse;
+    if (targetLang && targetLang !== 'en') {
+      try {
+        finalResponse = await translateResponse(finalResponse, targetLang);
+      } catch (err) {
+        console.error('[Translation Error] Failed translating chat response:', err);
+      }
+    }
+
     // Record AI assistant response in live session
     session.messages.push({
       id: `m_a_${Date.now()}`,
       role: 'assistant',
-      content: state.finalResponse,
+      content: finalResponse,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       thoughts: state.agentThoughts
     });
-    session.snippet = state.finalResponse;
+    session.snippet = finalResponse;
 
     if (state.requiresHumanTakeover) {
       session.isHumanTakeover = true;
@@ -284,8 +298,9 @@ router.post('/chat', async (req: Request, res: Response) => {
 
     res.json({
       success: true,
-      response: state.finalResponse,
+      response: finalResponse,
       detectedIntent: state.detectedIntent,
+      language: targetLang,
       sentiment: state.sentiment,
       requiresHumanTakeover: state.requiresHumanTakeover,
       handoffReason: state.handoffReason,

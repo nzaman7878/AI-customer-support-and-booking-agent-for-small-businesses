@@ -18,9 +18,11 @@ import {
 import { Appointment } from '@ai-agent/shared';
 
 interface SelfServicePortalProps {
-  appointmentId: string;
+  appointmentId?: string;
+  token?: string;
+  isStandalone?: boolean;
   initialAppointment?: Appointment;
-  onClose: () => void;
+  onClose?: () => void;
   onAppointmentUpdated?: () => void;
 }
 
@@ -42,14 +44,17 @@ interface PolicyInfo {
 
 export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
   appointmentId,
+  token: tokenProp,
+  isStandalone = false,
   initialAppointment,
   onClose,
   onAppointmentUpdated
 }) => {
   const [loading, setLoading] = useState<boolean>(true);
-  const [token, setToken] = useState<string>('');
+  const [token, setToken] = useState<string>(tokenProp || '');
   const [appointment, setAppointment] = useState<Appointment | null>(initialAppointment || null);
   const [policy, setPolicy] = useState<PolicyInfo | null>(null);
+  const [manualInput, setManualInput] = useState<string>('');
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const today = new Date();
     today.setDate(today.getDate() + 1); // default to tomorrow
@@ -66,41 +71,54 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
   // 1. Initialize Portal Session Token
-  useEffect(() => {
-    async function initPortal() {
-      setLoading(true);
-      setStatusMessage(null);
-      try {
-        const tokenRes = await fetch(`/api/portal/token/${appointmentId}`);
+  const initPortal = async (explicitToken?: string, explicitAptId?: string) => {
+    setLoading(true);
+    setStatusMessage(null);
+    try {
+      let activeToken = explicitToken || tokenProp || '';
+      const targetAptId = explicitAptId || appointmentId;
+
+      if (!activeToken && targetAptId) {
+        const tokenRes = await fetch(`/api/portal/token/${targetAptId}`);
         const tokenData = await tokenRes.json();
 
         if (!tokenData.success || !tokenData.token) {
           throw new Error(tokenData.error || 'Failed to generate self-service token');
         }
-
-        setToken(tokenData.token);
-
-        // 2. Verify and load live appointment + policy
-        const verifyRes = await fetch(`/api/portal/verify?token=${encodeURIComponent(tokenData.token)}`);
-        const verifyData = await verifyRes.json();
-
-        if (verifyData.success) {
-          setAppointment(verifyData.appointment);
-          setPolicy(verifyData.policy);
-        } else {
-          throw new Error(verifyData.error || 'Portal verification failed');
-        }
-      } catch (err: any) {
-        setStatusMessage({ type: 'error', text: err.message || 'Network error initializing portal' });
-      } finally {
-        setLoading(false);
+        activeToken = tokenData.token;
       }
-    }
 
-    if (appointmentId) {
-      initPortal();
+      if (!activeToken) {
+        setLoading(false);
+        return;
+      }
+
+      setToken(activeToken);
+
+      // 2. Verify and load live appointment + policy
+      const verifyRes = await fetch(`/api/portal/verify?token=${encodeURIComponent(activeToken)}`);
+      const verifyData = await verifyRes.json();
+
+      if (verifyData.success) {
+        setAppointment(verifyData.appointment);
+        setPolicy(verifyData.policy);
+      } else {
+        throw new Error(verifyData.error || 'Portal verification failed. Link may be invalid or expired.');
+      }
+    } catch (err: any) {
+      setStatusMessage({ type: 'error', text: err.message || 'Network error initializing portal' });
+    } finally {
+      setLoading(false);
     }
-  }, [appointmentId]);
+  };
+
+  useEffect(() => {
+    if (tokenProp || appointmentId) {
+      initPortal(tokenProp, appointmentId);
+    } else {
+      setLoading(false);
+    }
+  }, [tokenProp, appointmentId]);
 
   // 3. Load Available Slots when selectedDate or token changes
   useEffect(() => {
@@ -201,58 +219,101 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
     setTimeout(() => setCopiedLink(false), 2500);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-[#0b0f19] border border-[#1e293b] rounded-2xl w-full max-w-2xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden">
-        
-        {/* Top Header */}
-        <div className="px-6 py-4 border-b border-[#1e293b] flex items-center justify-between bg-[#0f172a]/60">
-          <div className="flex items-center space-x-3">
-            <div className="h-9 w-9 rounded-xl bg-[#6366f1]/15 border border-[#6366f1]/30 flex items-center justify-center text-[#818cf8]">
-              <Calendar className="h-5 w-5" />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <h3 className="font-bold text-white text-sm sm:text-base">Client Self-Service Portal</h3>
-                <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30 font-mono">
-                  Magic-Link Verified
-                </span>
-              </div>
-              <p className="text-[11px] text-[#908fa0]">1-Click Slot Rescheduling & Self-Service Management</p>
-            </div>
+  const portalCard = (
+    <div className={`bg-[#0b0f19] border border-[#1e293b] rounded-2xl w-full ${isStandalone ? 'max-w-2xl' : 'max-w-2xl max-h-[92vh]'} flex flex-col shadow-2xl overflow-hidden`}>
+      
+      {/* Top Header */}
+      <div className="px-6 py-4 border-b border-[#1e293b] flex items-center justify-between bg-[#0f172a]/60">
+        <div className="flex items-center space-x-3">
+          <div className="h-9 w-9 rounded-xl bg-[#6366f1]/15 border border-[#6366f1]/30 flex items-center justify-center text-[#818cf8]">
+            <Calendar className="h-5 w-5" />
           </div>
+          <div>
+            <div className="flex items-center space-x-2">
+              <h3 className="font-bold text-white text-sm sm:text-base">Client Self-Service Portal</h3>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30 font-mono">
+                Magic-Link Verified
+              </span>
+            </div>
+            <p className="text-[11px] text-[#908fa0]">1-Click Slot Rescheduling & Self-Service Management</p>
+          </div>
+        </div>
+        {onClose && (
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#908fa0] hover:text-white hover:bg-[#1e293b] transition"
+            className="p-1.5 rounded-lg text-[#908fa0] hover:text-white hover:bg-[#1e293b] transition cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
-        </div>
+        )}
+      </div>
 
-        {/* Modal Body */}
-        <div className="p-6 space-y-6 overflow-y-auto">
-          {loading ? (
-            <div className="py-12 flex flex-col items-center justify-center space-y-3">
-              <RefreshCw className="h-7 w-7 text-[#818cf8] animate-spin" />
-              <p className="text-xs text-[#908fa0]">Decrypting magic-link session token & calendar state...</p>
-            </div>
-          ) : (
-            <>
-              {/* Status Alert Toast */}
-              {statusMessage && (
-                <div className={`p-3.5 rounded-xl border text-xs flex items-center space-x-2.5 ${
-                  statusMessage.type === 'success'
-                    ? 'bg-[#10b981]/15 border-[#10b981]/40 text-[#4edea3]'
-                    : 'bg-[#f43f5e]/15 border-[#f43f5e]/40 text-[#ffb4ab]'
-                }`}>
-                  {statusMessage.type === 'success' ? (
-                    <CheckCircle2 className="h-4 w-4 shrink-0" />
-                  ) : (
-                    <AlertTriangle className="h-4 w-4 shrink-0" />
-                  )}
-                  <span>{statusMessage.text}</span>
+      {/* Modal / Card Body */}
+      <div className="p-6 space-y-6 overflow-y-auto">
+        {loading ? (
+          <div className="py-12 flex flex-col items-center justify-center space-y-3">
+            <RefreshCw className="h-7 w-7 text-[#818cf8] animate-spin" />
+            <p className="text-xs text-[#908fa0]">Decrypting magic-link session token & calendar state...</p>
+          </div>
+        ) : (
+          <>
+            {/* Status Alert Toast */}
+            {statusMessage && (
+              <div className={`p-3.5 rounded-xl border text-xs flex items-center space-x-2.5 ${
+                statusMessage.type === 'success'
+                  ? 'bg-[#10b981]/15 border-[#10b981]/40 text-[#4edea3]'
+                  : 'bg-[#f43f5e]/15 border-[#f43f5e]/40 text-[#ffb4ab]'
+              }`}>
+                {statusMessage.type === 'success' ? (
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                ) : (
+                  <AlertTriangle className="h-4 w-4 shrink-0" />
+                )}
+                <span>{statusMessage.text}</span>
+              </div>
+            )}
+
+            {!appointment && (
+              <div className="py-8 px-4 flex flex-col items-center justify-center space-y-4 text-center">
+                <div className="h-12 w-12 rounded-2xl bg-[#6366f1]/15 border border-[#6366f1]/30 flex items-center justify-center text-[#818cf8]">
+                  <ShieldCheck className="h-6 w-6" />
                 </div>
-              )}
+                <div>
+                  <h4 className="font-bold text-white text-base">Client Self-Service Verification</h4>
+                  <p className="text-xs text-[#908fa0] mt-1 max-w-md">
+                    Enter the secure magic-link token or appointment reference ID (e.g. <code>apt_seed_1</code>) sent to your WhatsApp or SMS to manage your booking.
+                  </p>
+                </div>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (manualInput.trim()) {
+                      if (manualInput.startsWith('eyJ')) {
+                        initPortal(manualInput.trim(), undefined);
+                      } else {
+                        initPortal(undefined, manualInput.trim());
+                      }
+                    }
+                  }}
+                  className="w-full max-w-md flex space-x-2"
+                >
+                  <input
+                    type="text"
+                    value={manualInput}
+                    onChange={(e) => setManualInput(e.target.value)}
+                    placeholder="Paste token or appointment ID..."
+                    className="flex-1 px-4 py-2.5 rounded-xl bg-[#030712] border border-[#1e293b] text-xs text-white placeholder-[#908fa0] focus:border-[#6366f1] focus:outline-none"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!manualInput.trim()}
+                    className="px-4 py-2.5 rounded-xl bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold transition cursor-pointer disabled:opacity-50"
+                  >
+                    Verify
+                  </button>
+                </form>
+              </div>
+            )}
 
               {/* Active Appointment Summary Card */}
               {appointment && (
@@ -535,15 +596,26 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
         {/* Footer */}
         <div className="px-6 py-3 border-t border-[#1e293b] bg-[#0f172a]/60 flex items-center justify-between text-xs text-[#908fa0]">
           <span className="text-[11px]">HMAC-SHA256 Encrypted Magic Portal</span>
-          <button
-            onClick={onClose}
-            className="px-3 py-1.5 rounded-lg bg-[#1e293b] text-white text-xs hover:bg-[#334155] transition cursor-pointer"
-          >
-            Close
-          </button>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="px-3 py-1.5 rounded-lg bg-[#1e293b] text-white text-xs hover:bg-[#334155] transition cursor-pointer"
+            >
+              Close
+            </button>
+          )}
         </div>
 
       </div>
+  );
+
+  if (isStandalone) {
+    return portalCard;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+      {portalCard}
     </div>
   );
 };

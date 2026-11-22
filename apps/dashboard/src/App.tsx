@@ -140,6 +140,17 @@ export default function App() {
   // Self-Service Portal state
   const [selectedPortalAppointmentId, setSelectedPortalAppointmentId] = useState<string | null>(null);
   const [showPortalModal, setShowPortalModal] = useState<boolean>(false);
+  const [standalonePortalToken, setStandalonePortalToken] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const token = searchParams.get('token');
+      if (token) return token;
+      if (window.location.pathname.startsWith('/portal')) {
+        return searchParams.get('token') || 'direct_portal_mode';
+      }
+    }
+    return null;
+  });
 
   // Reputation & Review Booster state
   const [feedbackOverview, setFeedbackOverview] = useState<FeedbackOverview | null>(null);
@@ -486,6 +497,49 @@ export default function App() {
   const filteredSessions = sessions.filter(
     s => channelFilter === 'all' || s.channel === channelFilter
   );
+
+  // Standalone Direct Magic-Link Customer Landing View
+  if (standalonePortalToken) {
+    return (
+      <div className="min-h-screen bg-[#030712] text-[#dfe2f1] flex flex-col font-sans selection:bg-[#6366f1] selection:text-white p-4 sm:p-6 justify-center items-center">
+        {/* Top Minimal Client Bar */}
+        <div className="w-full max-w-2xl flex items-center justify-between mb-4 px-1">
+          <div className="flex items-center space-x-3">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-[#6366f1] via-[#818cf8] to-[#10b981] p-[1.5px] shadow-lg shadow-[#6366f1]/25">
+              <div className="h-full w-full bg-[#030712] rounded-[10px] flex items-center justify-center">
+                <Bot className="h-5 w-5 text-[#818cf8]" />
+              </div>
+            </div>
+            <div>
+              <h2 className="font-bold text-sm tracking-tight text-white">{businessConfig?.name || 'Apex Wellness Clinic'}</h2>
+              <p className="text-[11px] text-[#908fa0]">Client Self-Service & Rescheduling Hub</p>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              window.history.pushState({}, '', '/');
+              setStandalonePortalToken(null);
+            }}
+            className="text-xs text-[#908fa0] hover:text-white transition flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-[#1e293b] hover:bg-[#1e293b]/50 cursor-pointer"
+          >
+            <span>Admin Console</span>
+            <ChevronRight className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        {/* Dedicated Standalone Self-Service Portal */}
+        <SelfServicePortal
+          token={standalonePortalToken === 'direct_portal_mode' ? undefined : standalonePortalToken}
+          isStandalone={true}
+          onClose={() => {
+            window.history.pushState({}, '', '/');
+            setStandalonePortalToken(null);
+          }}
+          onAppointmentUpdated={loadData}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#030712] text-[#dfe2f1] flex flex-col font-sans selection:bg-[#6366f1] selection:text-white">

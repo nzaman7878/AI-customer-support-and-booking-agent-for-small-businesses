@@ -32,6 +32,16 @@ export default function ChatWidget() {
   const [showThoughts, setShowThoughts] = useState(true);
   const [selectedLang, setSelectedLang] = useState<'en' | 'hi' | 'es' | 'fr'>('en');
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [conversationId] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = sessionStorage.getItem('omniagent_dashboard_widget_conv');
+      if (stored) return stored;
+      const newId = `web_guest_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 6)}`;
+      sessionStorage.setItem('omniagent_dashboard_widget_conv', newId);
+      return newId;
+    }
+    return `web_guest_${Date.now()}`;
+  });
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'm1',
@@ -44,7 +54,9 @@ export default function ChatWidget() {
   const handleVoiceInput = async () => {
     setIsTranscribing(true);
     try {
-      const audioMarker = selectedLang === 'hi' ? 'simulated_hindi' : (selectedLang === 'es' ? 'simulated_spanish' : 'simulated_voice');
+      const audioMarker = selectedLang === 'hi'
+        ? 'simulated_hindi'
+        : (selectedLang === 'es' ? 'simulated_spanish' : (selectedLang === 'fr' ? 'simulated_french' : 'simulated_voice'));
       const res = await fetch('/api/voice/transcribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -94,8 +106,9 @@ export default function ChatWidget() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
-          conversationId: 'widget_session_1',
-          channel: 'web'
+          conversationId,
+          channel: 'web',
+          language: selectedLang
         })
       });
 
@@ -103,11 +116,33 @@ export default function ChatWidget() {
 
       let slots: any[] | undefined = undefined;
       if (data.detectedIntent === 'booking_request' || data.detectedIntent === 'reschedule') {
-        slots = [
-          { time: '2:00 PM', doctor: 'Dr. Marcus Vance', chamber: 'Cryo Suite A' },
-          { time: '3:30 PM', doctor: 'Dr. Marcus Vance', chamber: 'Cryo Suite B' },
-          { time: '4:15 PM', doctor: 'Dr. Ananya Ray', chamber: 'Aesthetics 1' }
-        ];
+        try {
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          const dateStr = tomorrow.toISOString().split('T')[0];
+          const slotRes = await fetch(`/api/appointments/slots?date=${dateStr}`);
+          const slotData = await slotRes.json();
+          if (slotData.success && Array.isArray(slotData.slots)) {
+            const avail = slotData.slots.filter((s: any) => s.isAvailable);
+            if (avail.length > 0) {
+              slots = avail.slice(0, 3).map((s: any) => ({
+                time: s.displayTime,
+                doctor: s.assignedDoctor,
+                chamber: s.chamber || 'Cryo Suite A'
+              }));
+            }
+          }
+        } catch (e) {
+          console.error('Failed to fetch live slots:', e);
+        }
+
+        if (!slots || slots.length === 0) {
+          slots = [
+            { time: '2:00 PM', doctor: 'Dr. Marcus Vance', chamber: 'Cryo Suite A' },
+            { time: '3:30 PM', doctor: 'Dr. Marcus Vance', chamber: 'Cryo Suite B' },
+            { time: '4:15 PM', doctor: 'Dr. Ananya Ray', chamber: 'Aesthetics 1' }
+          ];
+        }
       }
 
       const botMsg: Message = {

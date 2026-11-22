@@ -47,7 +47,22 @@ export default function StandaloneWidget({
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [showThoughts, setShowThoughts] = useState(true);
+  const [selectedLang, setSelectedLang] = useState<'en' | 'hi' | 'es' | 'fr'>('en');
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [conversationId] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const stored = sessionStorage.getItem('omniagent_widget_conv');
+        if (stored) return stored;
+        const newId = `widget_guest_${Date.now().toString(36)}_${Math.random().toString(36).substring(2, 6)}`;
+        sessionStorage.setItem('omniagent_widget_conv', newId);
+        return newId;
+      } catch (e) {
+        // fallback
+      }
+    }
+    return `widget_guest_${Date.now()}`;
+  });
   const [activeConfig, setActiveConfig] = useState({
     name: businessName,
     primaryColor,
@@ -131,8 +146,9 @@ export default function StandaloneWidget({
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
-          conversationId: `standalone_widget_${Date.now()}`,
-          channel: 'web'
+          conversationId,
+          channel: 'web',
+          language: selectedLang
         })
       });
 
@@ -140,11 +156,33 @@ export default function StandaloneWidget({
 
       let slots: any[] | undefined = undefined;
       if (data.detectedIntent === 'booking_request' || data.detectedIntent === 'reschedule') {
-        slots = [
-          { time: '2:00 PM', doctor: 'Dr. Marcus Vance', chamber: 'Cryo Suite A' },
-          { time: '3:30 PM', doctor: 'Dr. Marcus Vance', chamber: 'Cryo Suite B' },
-          { time: '4:15 PM', doctor: 'Dr. Ananya Ray', chamber: 'Aesthetics 1' }
-        ];
+        try {
+          const tomorrow = new Date();
+          tomorrow.setDate(tomorrow.getDate() + 1);
+          const dateStr = tomorrow.toISOString().split('T')[0];
+          const slotRes = await fetch(`${base}/api/appointments/slots?date=${dateStr}`);
+          const slotData = await slotRes.json();
+          if (slotData.success && Array.isArray(slotData.slots)) {
+            const avail = slotData.slots.filter((s: any) => s.isAvailable);
+            if (avail.length > 0) {
+              slots = avail.slice(0, 3).map((s: any) => ({
+                time: s.displayTime,
+                doctor: s.assignedDoctor,
+                chamber: s.chamber || 'Cryo Suite A'
+              }));
+            }
+          }
+        } catch (e) {
+          console.error('Failed to fetch live slots:', e);
+        }
+
+        if (!slots || slots.length === 0) {
+          slots = [
+            { time: '2:00 PM', doctor: 'Dr. Marcus Vance', chamber: 'Cryo Suite A' },
+            { time: '3:30 PM', doctor: 'Dr. Marcus Vance', chamber: 'Cryo Suite B' },
+            { time: '4:15 PM', doctor: 'Dr. Ananya Ray', chamber: 'Aesthetics 1' }
+          ];
+        }
       }
 
       const botMsg: Message = {
@@ -176,11 +214,17 @@ export default function StandaloneWidget({
   const handleVoiceInput = async () => {
     setIsTranscribing(true);
     try {
-      const base = apiUrl || window.location.origin;
+      const base = apiUrl || (typeof window !== 'undefined' ? window.location.origin : '');
+      const audioMarker = selectedLang === 'hi'
+        ? 'simulated_hindi'
+        : (selectedLang === 'es' ? 'simulated_spanish' : (selectedLang === 'fr' ? 'simulated_french' : 'simulated_voice'));
       const res = await fetch(`${base}/api/voice/transcribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ audioBase64: 'simulated_voice' })
+        body: JSON.stringify({
+          audioBase64: audioMarker,
+          languageHint: selectedLang
+        })
       });
       const data = await res.json();
       if (data.transcription) {
@@ -304,22 +348,54 @@ export default function StandaloneWidget({
               </div>
             </div>
 
-            <button
-              onClick={() => setIsOpen(false)}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: '#908fa0',
-                cursor: 'pointer',
-                padding: '6px',
-                borderRadius: '8px',
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {/* Language Selector */}
+              <div style={{
                 display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}
-            >
-              <X size={18} />
-            </button>
+                background: '#030712',
+                padding: '2px',
+                borderRadius: '8px',
+                border: '1px solid #1e293b',
+                fontSize: '9px',
+                fontFamily: 'monospace'
+              }}>
+                {(['en', 'hi', 'es', 'fr'] as const).map(lang => (
+                  <button
+                    key={lang}
+                    onClick={() => setSelectedLang(lang)}
+                    style={{
+                      padding: '2px 5px',
+                      borderRadius: '5px',
+                      textTransform: 'uppercase',
+                      border: 'none',
+                      background: selectedLang === lang ? activeConfig.primaryColor : 'transparent',
+                      color: selectedLang === lang ? '#ffffff' : '#908fa0',
+                      fontWeight: selectedLang === lang ? 700 : 400,
+                      cursor: 'pointer'
+                    }}
+                  >
+                    {lang}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                onClick={() => setIsOpen(false)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: '#908fa0',
+                  cursor: 'pointer',
+                  padding: '6px',
+                  borderRadius: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
           </div>
 
           {/* Conversation Stream */}
