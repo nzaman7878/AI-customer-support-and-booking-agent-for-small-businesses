@@ -21,7 +21,8 @@
     "test:portal": "tsx src/evals/testSelfServicePortal.ts",
     "test:feedback": "tsx src/evals/testFeedbackFunnel.ts",
     "test:phase-a": "tsx src/evals/testPhaseAFixes.ts",
-    "test:phase-b": "tsx src/evals/testPhaseBFixes.ts"
+    "test:phase-b": "tsx src/evals/testPhaseBFixes.ts",
+    "test:phase-c": "tsx src/evals/testPhaseCFixes.ts"
   },
   "dependencies": {
     "@ai-agent/shared": "*",
