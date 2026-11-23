@@ -50,6 +50,7 @@ import ChatWidget from './components/ChatWidget.js';
 import SelfServicePortal from './components/SelfServicePortal.js';
 import DocsViewer from './components/DocsViewer.js';
 import LandingPage from './components/LandingPage.js';
+import StyleGuide from './components/StyleGuide.js';
 
 interface BusinessConfig {
   id: string;
@@ -111,7 +112,7 @@ export default function App() {
     }
     return 'landing';
   });
-  const [activeTab, setActiveTab] = useState<'live' | 'knowledge' | 'appointments' | 'evals' | 'whitelabel' | 'analytics' | 'reputation' | 'docs'>('live');
+  const [activeTab, setActiveTab] = useState<'live' | 'knowledge' | 'appointments' | 'evals' | 'whitelabel' | 'analytics' | 'reputation' | 'docs' | 'styleguide'>('live');
   const [health, setHealth] = useState<SystemHealth | null>(null);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [selectedSessionId, setSelectedSessionId] = useState<string>('sess_1');
@@ -729,122 +730,149 @@ export default function App() {
     );
   }
 
+  const urgentCount = sessions.filter(s => s.sentiment === 'critical' || s.sentiment === 'warning').length;
+
   return (
-    <div className="min-h-screen bg-[#000000] text-[#f5f5f5] flex flex-col font-sans selection:bg-[#6366f1] selection:text-white">
-      {/* Top Command Deck Header */}
-      <header className="border-b border-[#313131] bg-[#181818] sticky top-0 z-40">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-          {/* Brand & Studio ID */}
-          <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 rounded-xl bg-[#272727] border border-[#313131] flex items-center justify-center">
-              <Bot className="h-5 w-5 text-[#818cf8]" />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="font-bold text-base tracking-tight bg-gradient-to-r from-[#ffffff] to-[#9b9b9b] bg-clip-text text-transparent">
-                  {businessConfig?.name || 'Apex Wellness Clinic'}
-                </span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-[#272727] text-[#818cf8] border border-[#313131]">
-                  AI Agent v2.4 (Active)
-                </span>
-              </div>
-              <p className="text-[11px] text-[#8c8c8c]">
-                {businessConfig?.tagline || 'Obsidian Autonomous Command • RAG & Booking Orchestrator'}
-              </p>
-            </div>
+    <div className="min-h-screen bg-[#FBF9F5] text-[#1C1917] flex flex-col font-sans selection:bg-[#1E3A2F] selection:text-white">
+      {/* 1. Slim Top Bar (h-[52px]) */}
+      <header className="h-[52px] border-b border-[#E5DFD5] bg-[#FFFFFF] sticky top-0 z-40 px-4 sm:px-6 flex items-center justify-between">
+        {/* Left: Clinic Title & Specialty */}
+        <div className="flex items-center space-x-3">
+          <div className="h-7 w-7 rounded bg-[#EBF2EE] border border-[#C6E7D2] flex items-center justify-center text-[#1E3A2F]">
+            <Bot className="h-4 w-4" />
           </div>
-
-          {/* Telemetry Chips & Public View Switcher */}
-          <div className="flex items-center space-x-3">
-            {/* View Public Landing Page Switcher */}
-            <button
-              onClick={() => {
-                window.history.pushState({}, '', '/');
-                setCurrentView('landing');
-              }}
-              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#1f1f1f] hover:bg-[#272727] active:bg-[#181818] border border-[#313131] text-xs text-[#d6d6d6] hover:text-white transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] cursor-pointer"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-[#818cf8]" />
-              <span>Public landing page</span>
-            </button>
-            {/* Atlas Vector Store */}
-            <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#1f1f1f] border border-[#313131] text-xs">
-              <Database className="h-3.5 w-3.5 text-[#10b981]" />
-              <span className="text-[#8c8c8c]">Atlas Vector:</span>
-              <span className="text-[#10b981] font-mono text-[11px]">
-                {health?.database.connected ? 'Atlas Cluster Synced' : 'Simulation Mode'} ({documents.reduce((acc, d) => acc + (d.chunkCount || 0), 0)} chunks)
-              </span>
-            </div>
-
-            {/* WhatsApp Webhook Status */}
-            <div className="hidden lg:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#1f1f1f] border border-[#313131] text-xs">
-              <Radio className="h-3.5 w-3.5 text-[#10b981]" />
-              <span className="text-[#8c8c8c]">WhatsApp Cloud API:</span>
-              <span className="text-white font-mono text-[11px]">Active (Webhook Ready)</span>
-            </div>
-
-            {/* Autonomous Mode Pill */}
-            <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition ${
-              activeSession?.isHumanTakeover 
-                ? 'bg-[#ef4444]/15 border-[#ef4444]/40 text-[#ffb4ab]' 
-                : 'bg-[#10b981]/15 border-[#10b981]/40 text-[#4edea3]'
-            }`}>
-              <span className="relative flex h-2 w-2">
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                  activeSession?.isHumanTakeover ? 'bg-[#ef4444]' : 'bg-[#10b981]'
-                }`}></span>
-                <span className={`relative inline-flex rounded-full h-2 w-2 ${
-                  activeSession?.isHumanTakeover ? 'bg-[#ef4444]' : 'bg-[#10b981]'
-                }`}></span>
-              </span>
-              <span>{activeSession?.isHumanTakeover ? 'Human Takeover Active' : 'AI Autonomous Mode'}</span>
-            </div>
+          <div className="flex items-baseline space-x-2">
+            <span className="font-serif-display font-medium text-sm sm:text-base tracking-tight text-[#1C1917]">
+              {businessConfig?.name || 'Apex Wellness & Aesthetics Clinic'}
+            </span>
+            <span className="text-[11px] text-[#78716C] font-normal hidden sm:inline pl-2 border-l border-[#E5DFD5]">
+              Private Practice Concierge
+            </span>
           </div>
         </div>
 
-        {/* Modular Navigation Tabs */}
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 flex space-x-1 overflow-x-auto border-t border-[#313131]">
-          {[
-            { id: 'live', label: 'Live conversations & takeover', icon: MessageSquare, badge: `${sessions.length} Active` },
-            { id: 'knowledge', label: 'Knowledge base (Atlas RAG)', icon: BookOpen, badge: `${documents.length} Docs` },
-            { id: 'appointments', label: 'Bookings & calendar matrix', icon: Calendar, badge: `${appointments.length} Slots` },
-            { id: 'evals', label: '20-scenario eval benchmark', icon: ShieldCheck, badge: '100% Pass' },
-            { id: 'whitelabel', label: 'White-label & embed script', icon: Palette, badge: `${(businessConfig?.industry || 'clinic').toUpperCase()}` },
-            { id: 'analytics', label: 'ROI & conversion intelligence', icon: TrendingUp, badge: `${analyticsData?.bookingConversionRate || 33}% Conv` },
-            { id: 'reputation', label: 'Reputation & Google reviews', icon: Star, badge: `${feedbackOverview?.csatScore || 86}% CSAT` },
-            { id: 'docs', label: 'Docs & architecture specs', icon: FileText, badge: '15 Specs' },
-          ].map(tab => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center space-x-2 py-2.5 px-4 text-xs font-medium border-b-2 transition whitespace-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1] ${
-                  isActive
-                    ? 'border-[#6366f1] text-[#f5f5f5] bg-[#1f1f1f]'
-                    : 'border-transparent text-[#8c8c8c] hover:text-white hover:border-[#454545]'
-                }`}
-              >
-                <Icon className={`h-4 w-4 ${isActive ? 'text-[#818cf8]' : 'text-[#8c8c8c]'}`} />
-                <span>{tab.label}</span>
-                {tab.badge && (
-                  <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
-                    tab.badge.includes('Active')
-                      ? 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30' 
-                      : 'bg-[#272727] text-[#818cf8] border border-[#313131]'
-                  }`}>
-                    {tab.badge}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+        {/* Right: Calm Agent Status & Switchers */}
+        <div className="flex items-center space-x-4">
+          {/* Calm Status Indicator (Single clear indicator with simple on/off or pause control) */}
+          <div className="flex items-center space-x-2 text-xs">
+            <span className={`h-2 w-2 rounded-full ${activeSession?.isHumanTakeover ? 'bg-[#991B1B]' : 'bg-[#1B4332]'}`} />
+            <span className="text-[#44403C] font-medium">
+              {activeSession?.isHumanTakeover ? 'Agent is paused' : 'Agent is handling chats'}
+            </span>
+            <button
+              onClick={handleToggleTakeover}
+              className="text-[11px] font-medium text-[#78716C] hover:text-[#1C1917] underline decoration-[#D8D0C3] ml-1 cursor-pointer"
+            >
+              {activeSession?.isHumanTakeover ? 'Resume' : 'Pause'}
+            </button>
+          </div>
+
+          {/* View Public Page Link */}
+          <button
+            onClick={() => {
+              window.history.pushState({}, '', '/');
+              setCurrentView('landing');
+            }}
+            className="text-xs text-[#78716C] hover:text-[#1C1917] hover:bg-[#F3EFE8] px-2.5 py-1 rounded transition flex items-center space-x-1 cursor-pointer"
+          >
+            <span>View public page</span>
+            <ExternalLink className="h-3 w-3 text-[#A8A29E]" />
+          </button>
         </div>
       </header>
 
-      {/* Main Command Workspace */}
-      <main className="flex-1 max-w-[1600px] mx-auto w-full px-4 sm:px-6 py-5">
+      {/* Main Two-Column App Layout (Sidebar + Canvas) */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Sidebar on Desktop (w-60) */}
+        <aside className="w-60 shrink-0 border-r border-[#E5DFD5] bg-[#FBF9F5] flex flex-col justify-between hidden md:flex p-3 select-none">
+          <nav className="space-y-6">
+            {/* Practice Core Group */}
+            <div className="space-y-1">
+              <div className="px-2.5 py-1 text-[11px] font-semibold text-[#A8A29E] uppercase tracking-wider">
+                Practice
+              </div>
+              {[
+                { id: 'live', label: 'Conversations', icon: MessageSquare, badge: urgentCount > 0 ? `${urgentCount} urgent` : undefined, badgeUrgent: true },
+                { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
+                { id: 'appointments', label: 'Bookings', icon: Calendar, badge: `${appointments.filter(a => a.status === 'confirmed').length || ''}` },
+                { id: 'analytics', label: 'Practice insights', icon: TrendingUp },
+                { id: 'reputation', label: 'Patient reviews', icon: Star },
+              ].map(tab => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-medium transition cursor-pointer ${
+                      isActive 
+                        ? 'bg-[#1E3A2F] text-white shadow-xs' 
+                        : 'text-[#44403C] hover:bg-[#F3EFE8] hover:text-[#1C1917]'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2.5">
+                      <Icon className={`h-4 w-4 ${isActive ? 'text-white' : 'text-[#78716C]'}`} />
+                      <span>{tab.label}</span>
+                    </div>
+                    {tab.badge && (
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono ${
+                        isActive
+                          ? 'bg-white/20 text-white'
+                          : tab.badgeUrgent
+                          ? 'bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]'
+                          : 'bg-[#F3EFE8] text-[#78716C]'
+                      }`}>
+                        {tab.badge}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Systems & Diagnostics Group */}
+            <div className="space-y-1">
+              <div className="px-2.5 py-1 text-[11px] font-semibold text-[#A8A29E] uppercase tracking-wider">
+                Systems
+              </div>
+              {[
+                { id: 'whitelabel', label: 'Clinic settings', icon: SlidersHorizontal },
+                { id: 'evals', label: 'Agent diagnostics', icon: ShieldCheck },
+                { id: 'docs', label: 'Documentation', icon: FileText },
+                { id: 'styleguide', label: 'Style guide', icon: Palette },
+              ].map(tab => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-md text-xs font-medium transition cursor-pointer ${
+                      isActive 
+                        ? 'bg-[#1E3A2F] text-white shadow-xs' 
+                        : 'text-[#44403C] hover:bg-[#F3EFE8] hover:text-[#1C1917]'
+                    }`}
+                  >
+                    <div className="flex items-center space-x-2.5">
+                      <Icon className={`h-4 w-4 ${isActive ? 'text-white' : 'text-[#78716C]'}`} />
+                      <span>{tab.label}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+
+          {/* Sidebar Footer Info */}
+          <div className="p-2 border-t border-[#E5DFD5] text-[11px] text-[#A8A29E] space-y-1">
+            <div className="text-[#78716C] font-medium">Apex Reception Suite</div>
+            <div>Synced with Google Calendar</div>
+            <div className="font-mono text-[10px]">Timezone: Asia/Kolkata</div>
+          </div>
+        </aside>
+
+        {/* Main Scrollable Canvas */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-20 md:pb-6 bg-[#FBF9F5]">
         {/* Tab 1: Live Conversations & Human Takeover */}
         {activeTab === 'live' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-140px)] min-h-[680px]">
@@ -2500,7 +2528,42 @@ export default function App() {
         {activeTab === 'docs' && (
           <DocsViewer />
         )}
+
+        {/* STYLE GUIDE & DESIGN TOKENS TAB */}
+        {activeTab === 'styleguide' && (
+          <StyleGuide />
+        )}
       </main>
+      </div>
+
+      {/* Mobile Bottom Navigation Bar (md:hidden) */}
+      <nav className="md:hidden fixed bottom-0 inset-x-0 h-14 bg-white/95 backdrop-blur-md border-t border-[#E5DFD5] flex items-center justify-around z-40 px-2 select-none shadow-lg">
+        {[
+          { id: 'live', label: 'Inbox', icon: MessageSquare, badge: urgentCount > 0 },
+          { id: 'appointments', label: 'Bookings', icon: Calendar },
+          { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
+          { id: 'analytics', label: 'Insights', icon: TrendingUp },
+          { id: 'whitelabel', label: 'Settings', icon: SlidersHorizontal },
+        ].map(item => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id as any)}
+              className={`flex flex-col items-center justify-center flex-1 py-1 text-[10px] font-medium transition cursor-pointer ${
+                isActive ? 'text-[#1E3A2F]' : 'text-[#78716C]'
+              }`}
+            >
+              <div className="relative">
+                <Icon className={`h-4 w-4 ${isActive ? 'text-[#1E3A2F]' : 'text-[#78716C]'}`} />
+                {item.badge && <span className="absolute -top-1 -right-1.5 h-2 w-2 rounded-full bg-[#991B1B]" />}
+              </div>
+              <span className="mt-0.5">{item.label}</span>
+            </button>
+          );
+        })}
+      </nav>
 
       {/* Document Upload Modal */}
       {showUploadModal && (
