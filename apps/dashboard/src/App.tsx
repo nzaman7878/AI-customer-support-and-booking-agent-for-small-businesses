@@ -874,264 +874,295 @@ export default function App() {
         {/* Main Scrollable Canvas */}
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 pb-20 md:pb-6 bg-[#FBF9F5]">
         {/* Tab 1: Live Conversations & Human Takeover */}
-        {activeTab === 'live' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-140px)] min-h-[680px]">
-            {/* Left 3 Cols: Omnichannel Ingress & Threads */}
-            <div className="lg:col-span-3 rounded-2xl bg-[#181818] border border-[#313131] p-3.5 flex flex-col">
-              <div className="flex items-center justify-between pb-3 border-b border-[#313131]">
-                <div className="flex items-center space-x-2">
-                  <span className="font-semibold text-xs text-white">Omnichannel Inbox</span>
-                  <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#1e293b] text-[#8c8c8c] font-mono">
-                    {filteredSessions.length}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-1">
-                  {(['all', 'whatsapp', 'web'] as const).map(ch => (
-                    <button
-                      key={ch}
-                      onClick={() => setChannelFilter(ch)}
-                      className={`text-[10px] px-2 py-0.5 rounded capitalize transition cursor-pointer ${
-                        channelFilter === ch 
-                          ? 'bg-[#6366f1] text-white font-medium' 
-                          : 'text-[#8c8c8c] hover:text-white hover:bg-[#1e293b]'
-                      }`}
-                    >
-                      {ch}
-                    </button>
-                  ))}
-                </div>
-              </div>
+        {activeTab === 'live' && (() => {
+          // Sort by urgency: critical patients first, then warning, then nominal
+          const sortedSessions = [...filteredSessions].sort((a, b) => {
+            const getPriority = (s: ChatSession) => {
+              if (s.sentiment === 'critical') return 1;
+              if (s.sentiment === 'warning') return 2;
+              return 3;
+            };
+            const diff = getPriority(a) - getPriority(b);
+            if (diff !== 0) return diff;
+            return b.time.localeCompare(a.time);
+          });
 
-              {/* Thread List */}
-              <div className="mt-3 space-y-2 overflow-y-auto flex-1 pr-1">
-                {filteredSessions.map(session => {
-                  const isSelected = session.id === (activeSession?.id || '');
-                  return (
-                    <div
-                      key={session.id}
-                      onClick={() => setSelectedSessionId(session.id)}
-                      className={`p-3 rounded-xl border transition cursor-pointer ${
-                        isSelected
-                          ? 'bg-[#6366f1]/10 border-[#6366f1]/50 shadow-sm shadow-[#6366f1]/10'
-                          : 'bg-[#1f1f1f] border-[#313131] hover:border-[#334155]'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-xs font-semibold text-white">{session.name}</span>
-                          <span className={`text-[9px] px-1.5 py-0.5 rounded uppercase font-mono ${
-                            session.channel === 'whatsapp' 
-                              ? 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30' 
-                              : 'bg-[#6366f1]/15 text-[#818cf8] border border-[#6366f1]/30'
-                          }`}>
-                            {session.channel}
-                          </span>
-                        </div>
-                        <span className="text-[10px] text-[#8c8c8c]">{session.time}</span>
-                      </div>
-                      <p className="text-[11px] text-[#8c8c8c] mt-1.5 line-clamp-2 leading-relaxed">
-                        {session.snippet}
-                      </p>
-                      <div className="mt-2.5 flex items-center justify-between text-[10px]">
-                        <span className={`px-2 py-0.5 rounded-full font-medium ${
-                          session.sentiment === 'critical'
-                            ? 'bg-[#f43f5e]/15 text-[#ffb4ab] border border-[#f43f5e]/30'
-                            : session.sentiment === 'warning'
-                            ? 'bg-[#f59e0b]/15 text-[#ffb95f] border border-[#f59e0b]/30'
-                            : 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30'
-                        }`}>
-                          {session.sentimentText}
-                        </span>
-                        <span className="text-[#8c8c8c]">{session.vip}</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Center 6 Cols: Active Conversation & LangGraph Thought Stream */}
-            <div className="lg:col-span-6 rounded-2xl bg-[#181818] border border-[#313131] flex flex-col">
-              {activeSession ? (
-                <>
-                  {/* Header */}
-                  <div className="p-3.5 border-b border-[#313131] flex items-center justify-between bg-[#181818] rounded-t-2xl">
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h3 className="font-semibold text-sm text-white">{activeSession.name}</h3>
-                        <span className="text-xs text-[#8c8c8c]">• {activeSession.phone}</span>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1e293b] text-[#818cf8]">
-                          #{activeSession.id}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-[#8c8c8c] mt-0.5">
-                        Tier: {activeSession.vip} • Active Channel: {activeSession.channel.toUpperCase()}
-                      </p>
-                    </div>
-
-                    {/* Instant Human Takeover Toggle */}
-                    <div className="flex items-center space-x-3">
-                      <button 
-                        onClick={handleToggleTakeover}
-                        className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer flex items-center space-x-1.5 shadow-md ${
-                          activeSession.isHumanTakeover
-                            ? 'bg-[#10b981] hover:bg-[#10b981]/90 text-[#030712]'
-                            : 'bg-[#f43f5e]/20 hover:bg-[#f43f5e]/30 text-[#ffb4ab] border border-[#f43f5e]/50'
+          return (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-120px)] min-h-[640px]">
+              {/* Left 3 Cols: Omnichannel Ingress & Patient Triage */}
+              <div className="lg:col-span-3 bg-white border border-[#E5DFD5] rounded-lg p-3 flex flex-col shadow-xs">
+                {/* Inbox Header with Channel Text Filters */}
+                <div className="flex items-center justify-between pb-2.5 border-b border-[#E5DFD5]">
+                  <div className="flex items-center space-x-1.5">
+                    <span className="font-semibold text-xs text-[#1C1917]">Patient Inbox</span>
+                    <span className="text-[11px] text-[#78716C]">
+                      ({sortedSessions.length})
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    {(['all', 'whatsapp', 'web'] as const).map(ch => (
+                      <button
+                        key={ch}
+                        onClick={() => setChannelFilter(ch)}
+                        className={`text-[11px] px-2 py-0.5 rounded capitalize transition cursor-pointer ${
+                          channelFilter === ch 
+                            ? 'bg-[#1E3A2F] text-white font-medium' 
+                            : 'text-[#78716C] hover:text-[#1C1917] hover:bg-[#F3EFE8]'
                         }`}
                       >
-                        <UserCheck className="h-3.5 w-3.5" />
-                        <span>{activeSession.isHumanTakeover ? 'Resume AI Agent' : 'Take Over (Pause AI)'}</span>
+                        {ch}
                       </button>
-                    </div>
+                    ))}
                   </div>
+                </div>
 
-                  {/* Takeover Active Banner */}
-                  {activeSession.isHumanTakeover && (
-                    <div className="px-4 py-2 bg-[#f43f5e]/15 border-b border-[#f43f5e]/30 text-xs text-[#ffb4ab] flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <AlertTriangle className="h-4 w-4 text-[#ffb4ab]" />
-                        <span>AI Autonomous Execution is <strong>PAUSED</strong>. You are typing directly to {activeSession.name}.</span>
+                {/* Patient Session List (Sorted by Urgency) */}
+                <div className="mt-2.5 space-y-2 overflow-y-auto flex-1 pr-1">
+                  {sortedSessions.map(session => {
+                    const isSelected = session.id === (activeSession?.id || '');
+                    const isUrgent = session.sentiment === 'critical';
+
+                    return (
+                      <div
+                        key={session.id}
+                        onClick={() => setSelectedSessionId(session.id)}
+                        className={`p-3 rounded-md border transition cursor-pointer text-left ${
+                          isUrgent
+                            ? isSelected
+                              ? 'bg-[#FEF2F2] border-[#991B1B] shadow-xs'
+                              : 'bg-[#FFFBFB] border-[#FECACA] hover:bg-[#FEF2F2]'
+                            : isSelected
+                            ? 'bg-[#EBF2EE] border-[#1E3A2F] shadow-xs'
+                            : 'bg-white border-[#E5DFD5] hover:bg-[#F3EFE8]/70'
+                        }`}
+                      >
+                        {/* Top: Name, Quiet Channel Mark & Time */}
+                        <div className="flex items-baseline justify-between">
+                          <div className="flex items-baseline space-x-2">
+                            <span className="text-xs font-semibold text-[#1C1917]">{session.name}</span>
+                            <span className="text-[10px] text-[#78716C]">
+                              via {session.channel === 'whatsapp' ? 'WhatsApp' : 'Web'}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-[#A8A29E] font-mono">{session.time}</span>
+                        </div>
+
+                        {/* Middle: Patient Message Snippet */}
+                        <p className="text-[11px] text-[#44403C] mt-1.5 line-clamp-2 leading-relaxed">
+                          {session.snippet}
+                        </p>
+
+                        {/* Bottom: Triage Flag & Membership Metadata */}
+                        <div className="mt-2.5 flex items-center justify-between text-[11px]">
+                          {isUrgent ? (
+                            <span className="inline-flex items-center space-x-1.5 text-[10px] font-semibold text-[#991B1B]">
+                              <span className="h-1.5 w-1.5 rounded-full bg-[#991B1B]" />
+                              <span>Needs reception attention</span>
+                            </span>
+                          ) : (
+                            <span className="text-[10px] text-[#78716C]">
+                              {session.sentimentText}
+                            </span>
+                          )}
+                          <span className="text-[10px] text-[#A8A29E]">{session.vip}</span>
+                        </div>
                       </div>
-                      <span className="font-mono text-[10px] text-[#ffb4ab]">Live Human Mode</span>
+                    );
+                  })}
+
+                  {sortedSessions.length === 0 && (
+                    <div className="py-12 text-center text-[#78716C] text-xs">
+                      No active patient inquiries in this channel.
                     </div>
                   )}
+                </div>
+              </div>
 
-                  {/* Chat Thread Stream */}
-                  <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-                    {activeSession.messages.map(m => (
-                      <div key={m.id} className="space-y-2">
-                        {/* Thoughts accordion */}
-                        {m.thoughts && m.thoughts.length > 0 && (
-                          <div className="rounded-xl bg-[#1f1f1f] border border-[#6366f1]/30 p-3 text-xs">
-                            <div 
-                              className="flex items-center justify-between cursor-pointer select-none"
-                              onClick={() => setShowThoughtDetails(!showThoughtDetails)}
-                            >
-                              <div className="flex items-center space-x-2 text-[#818cf8] font-semibold text-[11px]">
-                                <Activity className="h-3.5 w-3.5 animate-pulse text-[#6366f1]" />
-                                <span>LangGraph Agent Thought Stream</span>
+              {/* Center 6 Cols: Active Conversation Thread */}
+              <div className="lg:col-span-6 bg-white border border-[#E5DFD5] rounded-lg flex flex-col shadow-xs overflow-hidden">
+                {activeSession ? (
+                  <>
+                    {/* Thread Header */}
+                    <div className="p-3.5 border-b border-[#E5DFD5] bg-[#FFFFFF] flex items-center justify-between">
+                      <div>
+                        <div className="flex items-baseline space-x-2">
+                          <h3 className="font-serif-display font-medium text-base text-[#1C1917]">
+                            {activeSession.name}
+                          </h3>
+                          <span className="text-xs text-[#78716C]">{activeSession.phone}</span>
+                        </div>
+                        <p className="text-[11px] text-[#A8A29E] mt-0.5">
+                          {activeSession.vip} • Active via {activeSession.channel === 'whatsapp' ? 'WhatsApp' : 'Web Concierge'}
+                        </p>
+                      </div>
+
+                      {/* Graceful Takeover / Handback Control */}
+                      <button 
+                        onClick={handleToggleTakeover}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition cursor-pointer flex items-center space-x-1.5 ${
+                          activeSession.isHumanTakeover
+                            ? 'bg-[#1E3A2F] text-white hover:bg-[#152B23]'
+                            : 'bg-white text-[#1C1917] border border-[#E5DFD5] hover:bg-[#F3EFE8]'
+                        }`}
+                      >
+                        <UserCheck className="h-3.5 w-3.5 text-current" />
+                        <span>{activeSession.isHumanTakeover ? 'Hand back to agent' : 'Step in & reply directly'}</span>
+                      </button>
+                    </div>
+
+                    {/* Active Staff Takeover Notice */}
+                    {activeSession.isHumanTakeover && (
+                      <div className="px-4 py-2 bg-[#FEF2F2] border-b border-[#FECACA] text-xs text-[#991B1B] flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <AlertTriangle className="h-4 w-4 text-[#991B1B]" />
+                          <span>Staff is replying directly. Automated responses are paused for {activeSession.name}.</span>
+                        </div>
+                        <span className="text-[10px] font-medium text-[#991B1B]">Reception Mode</span>
+                      </div>
+                    )}
+
+                    {/* Chat Messages Stream */}
+                    <div className="flex-1 p-4 space-y-4 overflow-y-auto bg-[#FBF9F5]">
+                      {activeSession.messages.map(m => (
+                        <div key={m.id} className="space-y-1.5">
+                          {/* Quiet Guidance Citation (replaces technical Thought Stream) */}
+                          {m.thoughts && m.thoughts.length > 0 && (
+                            <div className="rounded-md bg-white border border-[#E5DFD5] p-2.5 text-xs">
+                              <div 
+                                className="flex items-center justify-between cursor-pointer select-none"
+                                onClick={() => setShowThoughtDetails(!showThoughtDetails)}
+                              >
+                                <div className="flex items-center space-x-1.5 text-[#1B4332] font-medium text-[11px]">
+                                  <CheckCircle2 className="h-3.5 w-3.5 text-[#1B4332]" />
+                                  <span>Verified against clinic documentation</span>
+                                </div>
+                                {showThoughtDetails ? <ChevronDown className="h-3.5 w-3.5 text-[#78716C]" /> : <ChevronRight className="h-3.5 w-3.5 text-[#78716C]" />}
                               </div>
-                              {showThoughtDetails ? <ChevronDown className="h-4 w-4 text-[#8c8c8c]" /> : <ChevronRight className="h-4 w-4 text-[#8c8c8c]" />}
+
+                              {showThoughtDetails && (
+                                <div className="mt-2 space-y-1 border-t border-[#E5DFD5] pt-1.5 text-[11px] text-[#78716C] leading-relaxed">
+                                  {m.thoughts.map((t, idx) => (
+                                    <div key={idx}>{t}</div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
+                          )}
 
-                            {showThoughtDetails && (
-                              <div className="mt-2.5 space-y-1.5 border-t border-[#313131] pt-2 font-mono text-[11px] text-[#8c8c8c]">
-                                {m.thoughts.map((t, idx) => (
-                                  <div key={idx} className="line-clamp-2">{t}</div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                        )}
-
-                        <div className={`flex ${m.role === 'user' ? 'justify-start' : 'justify-end'}`}>
-                          <div
-                            className={`max-w-md p-3.5 text-xs rounded-2xl ${
-                              m.role === 'user'
-                                ? 'bg-[#272727] border border-[#313131] rounded-tl-sm text-[#f5f5f5]'
-                                : m.role === 'human_agent'
-                                ? 'bg-[#10b981] text-[#030712] font-medium rounded-tr-sm shadow-md'
-                                : 'bg-[#6366f1] text-white rounded-tr-sm'
-                            }`}
-                          >
-                            {m.content}
-                            <div className={`text-[10px] mt-1.5 flex items-center justify-between ${
-                              m.role === 'user' ? 'text-[#8c8c8c]' : m.role === 'human_agent' ? 'text-[#030712]/70' : 'text-indigo-200'
-                            }`}>
-                              <span>{m.timestamp}</span>
-                              <span>
-                                {m.role === 'user' 
-                                  ? `via ${activeSession.channel}` 
+                          {/* Message Bubble: Distinct Patient, AI, and Staff styling */}
+                          <div className={`flex ${m.role === 'user' ? 'justify-start' : 'justify-end'}`}>
+                            <div
+                              className={`max-w-md p-3.5 text-xs rounded-xl ${
+                                m.role === 'user'
+                                  ? 'bg-white border border-[#E5DFD5] text-[#1C1917] rounded-tl-xs shadow-xs'
+                                  : m.role === 'human_agent'
+                                  ? 'bg-[#1E3A2F] text-white rounded-tr-xs shadow-xs'
+                                  : 'bg-[#EBF2EE] border border-[#C6E7D2] text-[#1B4332] rounded-tr-xs shadow-xs'
+                              }`}
+                            >
+                              <div className="leading-relaxed">{m.content}</div>
+                              <div className={`text-[10px] mt-2 flex items-center justify-between ${
+                                m.role === 'user' 
+                                  ? 'text-[#A8A29E]' 
                                   : m.role === 'human_agent' 
-                                  ? 'Sent by Human Agent' 
-                                  : 'Autonomous AI Reply'}
-                              </span>
+                                  ? 'text-white/70' 
+                                  : 'text-[#1B4332]/70'
+                              }`}>
+                                <span className="font-mono">{m.timestamp}</span>
+                                <span className="ml-3 font-medium">
+                                  {m.role === 'user' 
+                                    ? `Patient via ${activeSession.channel}` 
+                                    : m.role === 'human_agent' 
+                                    ? 'Sent by Staff' 
+                                    : 'Autonomous Concierge'}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
+                      ))}
+                    </div>
+
+                    {/* Bottom Message Input Dock */}
+                    <div className="p-3 border-t border-[#E5DFD5] bg-white">
+                      <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
+                        <input
+                          type="text"
+                          value={chatInput}
+                          onChange={(e) => setChatInput(e.target.value)}
+                          placeholder={
+                            activeSession.isHumanTakeover 
+                              ? `Reply directly to ${activeSession.name} as front desk...` 
+                              : `Simulate patient question or prompt agent...`
+                          }
+                          className="flex-1 input-clinic"
+                        />
+                        <button 
+                          type="submit"
+                          disabled={!chatInput.trim()}
+                          className="btn-clinic-primary"
+                        >
+                          <span>Send</span>
+                          <Send className="h-3.5 w-3.5" />
+                        </button>
+                      </form>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex-1 flex items-center justify-center text-xs text-[#78716C]">
+                    Select a conversation from the left to view messages.
+                  </div>
+                )}
+              </div>
+
+              {/* Right 3 Cols: Patient Context & Verified Guidance */}
+              <div className="lg:col-span-3 space-y-4 flex flex-col">
+                {/* Verified Guidance Summary */}
+                <div className="bg-white border border-[#E5DFD5] rounded-lg p-3.5 shadow-xs">
+                  <div className="flex items-center justify-between pb-2 border-b border-[#E5DFD5]">
+                    <span className="font-semibold text-xs text-[#1C1917]">Verified Clinic Guidance</span>
+                    <span className="text-[10px] font-medium text-[#1B4332] bg-[#EBF2EE] px-2 py-0.5 rounded">
+                      Protocol Grounded
+                    </span>
+                  </div>
+                  <div className="mt-2.5">
+                    <div className="text-xs font-semibold text-[#1C1917]">
+                      Cancellation & Reschedule Policy
+                    </div>
+                    <div className="mt-1.5 text-[11px] text-[#44403C] leading-relaxed bg-[#FBF9F5] p-2.5 rounded border border-[#E5DFD5]">
+                      "Patients may reschedule recovery and cryotherapy sessions up to 4 hours in advance at zero penalty."
+                    </div>
+                    <div className="mt-2 text-[10px] text-[#A8A29E] flex items-center justify-between">
+                      <span>Apex Operations Manual</span>
+                      <span className="text-[#1B4332] font-medium">100% Match</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Upcoming Schedule for Context */}
+                <div className="flex-1 bg-white border border-[#E5DFD5] rounded-lg p-3.5 flex flex-col shadow-xs">
+                  <div className="flex items-center justify-between pb-2 border-b border-[#E5DFD5]">
+                    <span className="font-semibold text-xs text-[#1C1917]">Today's Appointments</span>
+                    <span className="text-[10px] text-[#78716C] font-mono">{appointments.length} Slots</span>
+                  </div>
+                  <div className="mt-2.5 space-y-2 flex-1 overflow-y-auto">
+                    {appointments.slice(0, 5).map(apt => (
+                      <div key={apt.id} className="p-2.5 rounded border border-[#E5DFD5] bg-[#FBF9F5] text-xs">
+                        <div className="flex items-baseline justify-between text-[11px]">
+                          <span className="font-semibold text-[#1C1917]">{apt.customerName}</span>
+                          <span className="text-[#1E3A2F] font-mono text-[10px]">
+                            {new Date(apt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
+                        </div>
+                        <div className="text-[10px] text-[#78716C] mt-0.5 truncate">{apt.serviceName}</div>
                       </div>
                     ))}
                   </div>
-
-                  {/* Bottom Input Area */}
-                  <div className="p-3 border-t border-[#313131] bg-[#181818] rounded-b-2xl">
-                    <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
-                      <input
-                        type="text"
-                        value={chatInput}
-                        onChange={(e) => setChatInput(e.target.value)}
-                        placeholder={
-                          activeSession.isHumanTakeover 
-                            ? `Type response to ${activeSession.name} as human agent...` 
-                            : `Simulate customer response or prompt AI...`
-                        }
-                        className="flex-1 bg-[#1f1f1f] border border-[#313131] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#6366f1] placeholder-[#908fa0]"
-                      />
-                      <button 
-                        type="submit"
-                        disabled={!chatInput.trim()}
-                        className="px-4 py-2.5 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] disabled:opacity-40 text-white rounded-xl text-xs font-semibold transition cursor-pointer flex items-center space-x-1.5"
-                      >
-                        <span>Send</span>
-                        <Send className="h-3.5 w-3.5" />
-                      </button>
-                    </form>
-                  </div>
-                </>
-              ) : (
-                <div className="flex-1 flex items-center justify-center text-xs text-[#8c8c8c]">
-                  No active session selected.
-                </div>
-              )}
-            </div>
-
-            {/* Right 3 Cols: RAG Inspector & Live Appointments */}
-            <div className="lg:col-span-3 space-y-4 flex flex-col">
-              {/* RAG Grounding Summary */}
-              <div className="rounded-2xl bg-[#181818] border border-[#313131] p-4">
-                <div className="flex items-center justify-between pb-2.5 border-b border-[#313131]">
-                  <span className="font-semibold text-xs text-white">Active RAG Grounding</span>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#10b981]/15 text-[#4edea3]">
-                    Verified Clinic Policy
-                  </span>
-                </div>
-                <div className="mt-3">
-                  <div className="text-[11px] font-semibold text-white">
-                    Rescheduling & Cancellation Policy v2.1
-                  </div>
-                  <div className="mt-1 text-[11px] text-[#8c8c8c] leading-relaxed bg-[#1f1f1f] p-2.5 rounded-lg border border-[#313131] font-mono">
-                    "...Patients may reschedule recovery and cryotherapy sessions up to 4 hours in advance at zero penalty..."
-                  </div>
-                  <div className="mt-2.5 flex items-center justify-between text-[10px] text-[#8c8c8c]">
-                    <span>Source: Apex_Ops_Manual_2025.pdf</span>
-                    <span className="text-[#4edea3]">Confidence: 89%</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Real-time Appointments Sidebar */}
-              <div className="flex-1 rounded-2xl bg-[#181818] border border-[#313131] p-4 flex flex-col">
-                <div className="flex items-center justify-between pb-2.5 border-b border-[#313131]">
-                  <span className="font-semibold text-xs text-white">Upcoming Appointments</span>
-                  <span className="text-[10px] text-[#818cf8] font-mono">{appointments.length} Booked</span>
-                </div>
-                <div className="mt-3 space-y-2 flex-1 overflow-y-auto">
-                  {appointments.slice(0, 4).map(apt => (
-                    <div key={apt.id} className="p-2.5 rounded-lg bg-[#1f1f1f] border border-[#313131] text-xs">
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="font-semibold text-white">{apt.customerName}</span>
-                        <span className="text-[#818cf8] font-mono text-[10px]">
-                          {new Date(apt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                      </div>
-                      <div className="text-[10px] text-[#8c8c8c] mt-0.5 truncate">{apt.serviceName}</div>
-                    </div>
-                  ))}
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Tab 2: Knowledge Base & Document Manager */}
         {activeTab === 'knowledge' && (
