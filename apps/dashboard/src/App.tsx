@@ -1164,110 +1164,135 @@ export default function App() {
           );
         })()}
 
-        {/* Tab 2: Knowledge Base & Document Manager */}
+        {/* Tab 2: Knowledge Base ("What your concierge knows") */}
         {activeTab === 'knowledge' && (
-          <div className="rounded-2xl bg-[#181818] border border-[#313131] p-6 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-white border border-[#E5DFD5] rounded-lg p-6 space-y-6 shadow-xs">
+            {/* Header: Plain Language Title & Action */}
+            <div className="flex flex-col sm:flex-row sm:items-baseline justify-between gap-4 pb-4 border-b border-[#E5DFD5]">
               <div>
-                <h2 className="text-base font-bold text-white">Atlas Vector Store & Document Ingestion</h2>
-                <p className="text-xs text-[#8c8c8c] mt-0.5">
-                  Manage indexed knowledge chunks for zero-hallucination LangGraph RAG support across multiple business verticals.
+                <h2 className="font-serif-display font-medium text-2xl text-[#1C1917]">
+                  What your concierge knows
+                </h2>
+                <p className="text-xs text-[#78716C] mt-1">
+                  Verified documents, treatment protocols, and pricing rules that guide how your concierge assists patients.
                 </p>
               </div>
-              <div className="flex items-center space-x-2">
-                <button 
-                  onClick={() => setShowUploadModal(true)}
-                  className="px-4 py-2 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>Upload Document</span>
-                </button>
-              </div>
+              <button 
+                onClick={() => setShowUploadModal(true)}
+                className="btn-clinic-primary shrink-0"
+              >
+                <Plus className="h-4 w-4" />
+                <span>Add clinic guide</span>
+              </button>
             </div>
 
-            {/* Knowledge Base Search & Category Filter Toolbar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-xl bg-[#1f1f1f] border border-[#313131]">
-              {/* Search Bar */}
-              <div className="relative flex-1">
-                <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#8c8c8c]" />
+            {/* Filter Toolbar: Text Tabs & Search */}
+            <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+              {/* Text-based Category Tabs */}
+              <div className="flex items-center space-x-1 border-b border-[#E5DFD5] md:border-none pb-2 md:pb-0 overflow-x-auto">
+                {[
+                  { id: 'all', label: `All guides (${documents.length})` },
+                  { id: 'faq', label: 'FAQ & Protocols' },
+                  { id: 'pricing', label: 'Pricing & Fees' },
+                  { id: 'policy', label: 'Clinic Policies' },
+                  { id: 'service_catalog', label: 'Service Catalog' },
+                ].map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setKnowledgeCategoryFilter(cat.id as any)}
+                    className={`px-3 py-1.5 rounded-md text-xs font-medium transition cursor-pointer whitespace-nowrap ${
+                      knowledgeCategoryFilter === cat.id
+                        ? 'bg-[#1E3A2F] text-white'
+                        : 'text-[#78716C] hover:text-[#1C1917] hover:bg-[#F3EFE8]'
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Quiet Search Bar */}
+              <div className="relative w-full md:w-72">
+                <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#A8A29E]" />
                 <input
                   type="text"
                   value={knowledgeSearchQuery}
                   onChange={(e) => setKnowledgeSearchQuery(e.target.value)}
-                  placeholder="Search indexed knowledge documents by title or keywords..."
-                  className="w-full pl-9 pr-4 py-2 bg-[#181818] border border-[#313131] rounded-lg text-xs text-white placeholder-[#908fa0] focus:outline-none focus:border-[#6366f1]"
+                  placeholder="Search guides or topics..."
+                  className="w-full pl-8 pr-3 py-1.5 input-clinic text-xs"
                 />
               </div>
-
-              {/* Category Filter Pills */}
-              <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 sm:pb-0">
-                {(['all', 'faq', 'pricing', 'policy', 'service_catalog'] as const).map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setKnowledgeCategoryFilter(cat)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition cursor-pointer ${
-                      knowledgeCategoryFilter === cat
-                        ? 'bg-[#6366f1] text-white'
-                        : 'bg-[#181818] text-[#8c8c8c] hover:text-white border border-[#313131]'
-                    }`}
-                  >
-                    {cat === 'all' ? `All Docs (${documents.length})` : cat.replace('_', ' ').toUpperCase()}
-                  </button>
-                ))}
-              </div>
             </div>
 
-            {/* Document Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredDocuments.map(doc => (
-                <div key={doc.id} className="p-4 rounded-xl bg-[#1f1f1f]/70 border border-[#313131] hover:border-[#334155] transition flex flex-col justify-between group">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#6366f1]/15 text-[#818cf8] uppercase">
-                        {doc.category}
-                      </span>
-                      <div className="flex items-center space-x-1.5">
-                        <span className="text-[11px] text-[#4edea3] flex items-center space-x-1">
-                          <CheckCircle2 className="h-3 w-3" />
-                          <span>Indexed</span>
+            {/* Document Index: Refined List / Table */}
+            <div className="border border-[#E5DFD5] rounded-md overflow-hidden bg-white">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="bg-[#FAF7F2] border-b border-[#E5DFD5] text-[#78716C] font-medium text-[11px]">
+                    <th className="py-2.5 px-4 font-medium">Document Title</th>
+                    <th className="py-2.5 px-4 font-medium">Category</th>
+                    <th className="py-2.5 px-4 font-medium">Verified Sections</th>
+                    <th className="py-2.5 px-4 font-medium">Status</th>
+                    <th className="py-2.5 px-4 font-medium text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-[#E5DFD5]">
+                  {filteredDocuments.map(doc => (
+                    <tr key={doc.id} className="hover:bg-[#FBF9F5] transition">
+                      <td className="py-3.5 px-4">
+                        <div className="font-semibold text-xs text-[#1C1917]">{doc.title}</div>
+                        <p className="text-[11px] text-[#78716C] mt-0.5 line-clamp-1 max-w-lg">
+                          {doc.content}
+                        </p>
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="inline-block px-2 py-0.5 rounded text-[10px] font-medium bg-[#F3EFE8] text-[#78716C] uppercase">
+                          {doc.category.replace('_', ' ')}
                         </span>
-                        <button
-                          onClick={() => handleDeleteDocument(doc.id)}
-                          disabled={deletingDocId === doc.id}
-                          title="Delete from Vector Store"
-                          className="p-1 rounded text-[#8c8c8c] hover:text-[#f43f5e] hover:bg-[#f43f5e]/10 transition cursor-pointer"
-                        >
-                          {deletingDocId === doc.id ? (
-                            <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-                          ) : (
-                            <Trash2 className="h-3.5 w-3.5" />
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                    <h4 className="text-sm font-semibold text-white mt-2.5">{doc.title}</h4>
-                    <p className="text-[11px] text-[#8c8c8c] mt-1.5 line-clamp-3 leading-relaxed">
-                      {doc.content}
-                    </p>
-                  </div>
-                  <div className="mt-4 pt-3 border-t border-[#313131] flex items-center justify-between text-xs text-[#8c8c8c]">
-                    <span className="font-mono text-[11px]">{doc.chunkCount} Vector Chunks</span>
-                    <button
-                      onClick={() => handleInspectChunks(doc)}
-                      className="text-[#818cf8] hover:text-[#a5b4fc] text-[11px] font-medium cursor-pointer"
-                    >
-                      {isLoadingChunks && selectedDocChunks?.docId === doc.id ? 'Loading...' : 'Inspect Chunks →'}
-                    </button>
-                  </div>
-                </div>
-              ))}
+                      </td>
+                      <td className="py-3.5 px-4 text-[#44403C]">
+                        <span className="font-mono text-xs">{doc.chunkCount}</span> sections verified
+                      </td>
+                      <td className="py-3.5 px-4">
+                        <span className="inline-flex items-center space-x-1.5 px-2 py-0.5 rounded-full text-[10px] font-medium bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]">
+                          <span className="h-1.5 w-1.5 rounded-full bg-[#1B4332]" />
+                          <span>Ready</span>
+                        </span>
+                      </td>
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="flex items-center justify-end space-x-2">
+                          <button
+                            onClick={() => handleInspectChunks(doc)}
+                            className="text-xs text-[#1E3A2F] hover:underline font-medium cursor-pointer"
+                          >
+                            {isLoadingChunks && selectedDocChunks?.docId === doc.id ? 'Loading...' : 'View sections'}
+                          </button>
+                          <button
+                            onClick={() => handleDeleteDocument(doc.id)}
+                            disabled={deletingDocId === doc.id}
+                            title="Remove guide"
+                            className="p-1 rounded text-[#A8A29E] hover:text-[#991B1B] hover:bg-[#FEF2F2] transition cursor-pointer"
+                          >
+                            {deletingDocId === doc.id ? (
+                              <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                            ) : (
+                              <Trash2 className="h-3.5 w-3.5" />
+                            )}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredDocuments.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="py-12 text-center text-[#78716C] text-xs">
+                        No clinic guides match your search or category filter. Click "Add clinic guide" above to add guidance.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
-
-            {filteredDocuments.length === 0 && (
-              <div className="py-12 text-center text-[#8c8c8c] text-xs">
-                No indexed documents match the selected category or search query.
-              </div>
-            )}
           </div>
         )}
 
@@ -2598,71 +2623,81 @@ export default function App() {
 
       {/* Document Upload Modal */}
       {showUploadModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-[#181818] border border-[#313131] rounded-2xl p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white">Upload New Policy / FAQ Document</h3>
+        <div className="fixed inset-0 z-50 bg-[#1C1917]/50 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-white border border-[#E5DFD5] rounded-xl p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5DFD5]">
+              <div>
+                <h3 className="font-serif-display font-medium text-lg text-[#1C1917]">Add Clinic Guide or Protocol</h3>
+                <p className="text-xs text-[#78716C] mt-0.5">Teach your concierge verified fees, policies, and clinic guidelines.</p>
+              </div>
               <button 
                 onClick={() => setShowUploadModal(false)}
-                className="text-[#8c8c8c] hover:text-white"
+                className="text-[#78716C] hover:text-[#1C1917] p-1 cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <form onSubmit={handleUploadDocument} className="space-y-3.5 text-xs">
+            <form onSubmit={handleUploadDocument} className="space-y-4 text-xs">
               <div>
-                <label className="block text-[#8c8c8c] mb-1">Document Title</label>
+                <label className="block text-[#44403C] font-medium mb-1">Document Title</label>
                 <input
                   type="text"
                   required
                   value={uploadTitle}
                   onChange={(e) => setUploadTitle(e.target.value)}
-                  placeholder="e.g. VIP Membership Perks & Cryo Add-ons"
-                  className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                  placeholder="e.g. Cryotherapy Pre-Care & Reschedule Window"
+                  className="w-full input-clinic"
                 />
               </div>
 
               <div>
-                <label className="block text-[#8c8c8c] mb-1">Category</label>
+                <label className="block text-[#44403C] font-medium mb-1">Guide Category</label>
                 <select
                   value={uploadCategory}
                   onChange={(e) => setUploadCategory(e.target.value as any)}
-                  className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none"
+                  className="w-full input-clinic cursor-pointer"
                 >
-                  <option value="faq">FAQ</option>
-                  <option value="pricing">Pricing & Menu</option>
-                  <option value="policy">Clinic Policy</option>
-                  <option value="service_catalog">Service Catalog</option>
+                  <option value="faq">FAQ & Practice Q&A</option>
+                  <option value="pricing">Pricing & Treatment Fees</option>
+                  <option value="policy">Clinic Operating Policy</option>
+                  <option value="service_catalog">Service & Practitioner Catalog</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-[#8c8c8c] mb-1">Document Content</label>
+                <label className="block text-[#44403C] font-medium mb-1">Guide Content</label>
                 <textarea
                   required
                   rows={6}
                   value={uploadContent}
                   onChange={(e) => setUploadContent(e.target.value)}
-                  placeholder="Paste policies, pricing tables, or treatment guidance text here..."
-                  className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl p-3.5 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none font-mono text-[11px]"
+                  placeholder="Paste verified clinic policies, fee tables, or treatment prep guidance..."
+                  className="w-full input-clinic leading-relaxed text-xs"
                 />
               </div>
 
-              <div className="flex items-center justify-end space-x-2 pt-2">
+              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[#E5DFD5]">
                 <button
                   type="button"
                   onClick={() => setShowUploadModal(false)}
-                  className="px-4 py-2 rounded-xl text-[#8c8c8c] hover:bg-[#1e293b] transition cursor-pointer"
+                  className="btn-clinic-ghost"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUploading}
-                  className="px-4 py-2 rounded-xl bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white font-semibold transition cursor-pointer disabled:opacity-50"
+                  className="btn-clinic-primary"
                 >
-                  {isUploading ? 'Chunking & Embedding...' : 'Index Document'}
+                  {isUploading ? (
+                    <>
+                      <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                      <span>Saving guide...</span>
+                    </>
+                  ) : (
+                    <span>Save to knowledge base</span>
+                  )}
                 </button>
               </div>
             </form>
@@ -2670,53 +2705,48 @@ export default function App() {
         </div>
       )}
 
-      {/* Vector Chunks Inspector Modal */}
+      {/* Guidance Sections Preview Modal */}
       {selectedDocChunks && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-2xl bg-[#181818] border border-[#313131] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-            <div className="px-6 py-4 border-b border-[#313131] flex items-center justify-between bg-[#1f1f1f]">
-              <div className="flex items-center space-x-3">
-                <div className="h-8 w-8 rounded-lg bg-[#6366f1]/20 border border-[#6366f1]/40 flex items-center justify-center text-[#818cf8]">
-                  <Layers className="h-4 w-4" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-white">Vector Chunks Inspector</h3>
-                  <p className="text-xs text-[#8c8c8c] truncate max-w-md">{selectedDocChunks.title}</p>
-                </div>
+        <div className="fixed inset-0 z-50 bg-[#1C1917]/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-2xl bg-white border border-[#E5DFD5] rounded-xl shadow-xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="px-6 py-4 border-b border-[#E5DFD5] flex items-center justify-between bg-[#FAF7F2]">
+              <div>
+                <h3 className="font-serif-display font-medium text-base text-[#1C1917]">Verified Guidance Sections</h3>
+                <p className="text-xs text-[#78716C] truncate max-w-md mt-0.5">{selectedDocChunks.title}</p>
               </div>
               <button
                 onClick={() => setSelectedDocChunks(null)}
-                className="p-1.5 rounded-lg text-[#8c8c8c] hover:text-white hover:bg-[#1e293b] transition cursor-pointer"
+                className="p-1 rounded text-[#78716C] hover:text-[#1C1917] cursor-pointer"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="p-6 space-y-3 overflow-y-auto">
-              <div className="text-xs text-[#8c8c8c]">
-                Document has <span className="font-semibold text-white">{selectedDocChunks.chunks.length}</span> indexed TF-IDF vector embeddings for zero-hallucination cosine retrieval:
-              </div>
+            <div className="p-6 space-y-3 overflow-y-auto bg-white">
+              <p className="text-xs text-[#78716C]">
+                This guide is split into <span className="font-semibold text-[#1C1917]">{selectedDocChunks.chunks.length} verified sections</span> that your concierge references during patient conversations:
+              </p>
 
               {selectedDocChunks.chunks.map((chunk, idx) => (
-                <div key={idx} className="p-3.5 rounded-xl bg-[#1f1f1f] border border-[#313131] space-y-2">
-                  <div className="flex items-center justify-between text-[10px] text-[#818cf8] font-mono">
-                    <span className="font-semibold">Chunk #{idx + 1} ({chunk.chunkId})</span>
-                    <span>Tokens: ~{Math.round(chunk.text.length / 4)}</span>
+                <div key={idx} className="p-3.5 rounded-md bg-[#FBF9F5] border border-[#E5DFD5] space-y-1.5">
+                  <div className="flex items-center justify-between text-[11px] text-[#1E3A2F] font-medium">
+                    <span>Section {idx + 1}</span>
+                    <span className="text-[#78716C] font-normal text-[10px]">Verified Clinic Rule</span>
                   </div>
-                  <p className="text-[#f5f5f5] text-xs leading-relaxed font-mono bg-[#181818] p-3 rounded-lg border border-[#313131]/70 whitespace-pre-wrap">
+                  <p className="text-[#1C1917] text-xs leading-relaxed">
                     {chunk.text}
                   </p>
                 </div>
               ))}
             </div>
 
-            <div className="px-6 py-3.5 border-t border-[#313131] bg-[#1f1f1f] flex items-center justify-between">
-              <span className="text-[11px] text-[#8c8c8c]">Threshold: 0.50 Cosine Confidence</span>
+            <div className="px-6 py-3 border-t border-[#E5DFD5] bg-[#FAF7F2] flex items-center justify-between">
+              <span className="text-xs text-[#78716C]">Status: Active & Grounded</span>
               <button
                 onClick={() => setSelectedDocChunks(null)}
-                className="px-3.5 py-1.5 rounded-lg bg-[#1e293b] hover:bg-[#334155] text-white text-xs font-semibold transition cursor-pointer"
+                className="btn-clinic-secondary text-xs"
               >
-                Close Inspector
+                Close
               </button>
             </div>
           </div>
