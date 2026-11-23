@@ -1,19 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Bot, 
+  Building2, 
   X, 
   Send, 
-  Sparkles, 
   Calendar, 
   Check, 
   Clock, 
-  AlertCircle, 
   UserCheck, 
   ChevronDown, 
   ChevronUp, 
-  Activity,
+  ShieldCheck,
   Mic,
-  Paperclip
+  MessageSquare
 } from 'lucide-react';
 
 interface Message {
@@ -25,11 +23,20 @@ interface Message {
   requiresTakeover?: boolean;
 }
 
-export default function ChatWidget() {
+export interface ChatWidgetProps {
+  clinicName?: string;
+  accentColor?: string;
+  welcomeGreeting?: string;
+}
+
+export default function ChatWidget({
+  clinicName = 'Apex Wellness & Aesthetics',
+  welcomeGreeting = 'Welcome to Apex Wellness. I am your clinic concierge. How can we assist with your treatments, pricing, or scheduling today?'
+}: ChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showThoughts, setShowThoughts] = useState(true);
+  const [showThoughts, setShowThoughts] = useState(false);
   const [selectedLang, setSelectedLang] = useState<'en' | 'hi' | 'es' | 'fr'>('en');
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [conversationId] = useState<string>(() => {
@@ -42,11 +49,12 @@ export default function ChatWidget() {
     }
     return `web_guest_${Date.now()}`;
   });
+
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'm1',
       role: 'assistant',
-      content: 'Welcome to Apex Wellness Clinic. I am your autonomous health concierge. How can I assist your longevity and recovery journey today?'
+      content: welcomeGreeting
     }
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -161,7 +169,7 @@ export default function ChatWidget() {
         {
           id: `err_${Date.now()}`,
           role: 'assistant',
-          content: "I'm having trouble connecting right now, but our front desk coordinator has been notified."
+          content: "I'm having trouble connecting right now, but our reception coordinator has been alerted to assist you directly."
         }
       ]);
     } finally {
@@ -171,54 +179,54 @@ export default function ChatWidget() {
 
   return (
     <>
-      {/* Floating Launcher Button */}
+      {/* Discreet, Elegant Floating Launcher (Small 48px circle, never obscures footer or content) */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-[#181818] border border-[#313131] hover:bg-[#272727] shadow-xl text-white transition cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1] focus-visible:ring-offset-2 focus-visible:ring-offset-[#000000]"
+          aria-label="Open clinic concierge chat"
+          className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 h-12 w-12 sm:h-13 sm:w-13 rounded-full bg-[#1E3A2F] text-white shadow-lg hover:shadow-xl hover:bg-[#152B23] active:scale-95 transition-all duration-200 flex items-center justify-center cursor-pointer border border-[#152B23] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1E3A2F] focus-visible:ring-offset-2"
         >
-          <div className="flex items-center space-x-2.5">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10b981] opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#10b981]"></span>
-            </span>
-            <Bot className="h-4 w-4 text-[#818cf8] group-hover:rotate-12 transition-transform" />
-            <span className="text-xs font-semibold text-[#f5f5f5] tracking-tight">
-              Apex AI Concierge
-            </span>
-          </div>
+          <span className="sr-only">Open Apex Wellness Concierge</span>
+          {/* Subtle online pip */}
+          <span className="absolute -top-0.5 -right-0.5 h-3 w-3 rounded-full bg-[#10b981] border-2 border-white"></span>
+          <MessageSquare className="h-5 w-5" />
         </button>
       )}
 
-      {/* Floating Chat Drawer */}
+      {/* Clinic Branded Chat Drawer (Warm paper aesthetic, restrained radii, hairline dividers) */}
       {isOpen && (
-        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-w-[420px] h-[calc(100vh-5rem)] max-h-[620px] rounded-2xl bg-[#181818] border border-[#313131] shadow-2xl flex flex-col overflow-hidden font-sans">
-          {/* Header */}
-          <div className="p-4 bg-[#181818] border-b border-[#313131] flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="h-9 w-9 rounded-xl bg-[#272727] border border-[#313131] flex items-center justify-center">
-                <Bot className="h-5 w-5 text-[#818cf8]" />
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[400px] max-w-[400px] h-[calc(100vh-5rem)] max-h-[580px] rounded-xl bg-[#FBF9F5] border border-[#E5DFD5] shadow-2xl flex flex-col overflow-hidden font-sans animate-in fade-in slide-in-from-bottom-2 duration-200">
+          
+          {/* Clinic Header */}
+          <div className="p-3.5 bg-white border-b border-[#E5DFD5] flex items-center justify-between">
+            <div className="flex items-center space-x-2.5">
+              <div className="h-8 w-8 rounded-lg bg-[#EBF2EE] border border-[#D5E2DB] flex items-center justify-center text-[#1E3A2F]">
+                <Building2 className="h-4 w-4" />
               </div>
               <div>
                 <div className="flex items-center space-x-1.5">
-                  <h4 className="text-xs font-semibold text-[#f5f5f5] tracking-tight">Apex concierge AI</h4>
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]"></span>
+                  <h4 className="font-serif-display font-semibold text-xs text-[#1C1917] tracking-tight">
+                    {clinicName}
+                  </h4>
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#1B4332]"></span>
                 </div>
-                <p className="text-[10px] text-[#8c8c8c]">Online • Instant verified response</p>
+                <p className="text-[10px] text-[#78716C]">
+                  Concierge active • Verified protocols
+                </p>
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1.5">
               {/* Language Selector Pills */}
-              <div className="flex bg-[#030712] p-0.5 rounded-lg border border-[#1e293b] text-[9px] font-mono">
+              <div className="flex bg-[#FAF7F2] p-0.5 rounded border border-[#E5DFD5] text-[9px] font-mono">
                 {(['en', 'hi', 'es', 'fr'] as const).map(lang => (
                   <button
                     key={lang}
                     onClick={() => setSelectedLang(lang)}
                     className={`px-1.5 py-0.5 rounded uppercase transition cursor-pointer ${
                       selectedLang === lang
-                        ? 'bg-[#6366f1] text-white font-bold'
-                        : 'text-[#908fa0] hover:text-white'
+                        ? 'bg-[#1E3A2F] text-white font-semibold'
+                        : 'text-[#78716C] hover:text-[#1C1917]'
                     }`}
                   >
                     {lang}
@@ -226,9 +234,11 @@ export default function ChatWidget() {
                 ))}
               </div>
 
+              {/* Close Button */}
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg text-[#908fa0] hover:text-white hover:bg-[#1e293b] transition"
+                aria-label="Close concierge window"
+                className="p-1 rounded text-[#78716C] hover:text-[#1C1917] hover:bg-[#F3EFE8] transition cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -236,26 +246,26 @@ export default function ChatWidget() {
           </div>
 
           {/* Messages Stream */}
-          <div className="flex-1 p-4 overflow-y-auto space-y-3.5 text-xs">
+          <div className="flex-1 p-3.5 overflow-y-auto space-y-3 text-xs">
             {messages.map((m) => (
-              <div key={m.id} className="space-y-2">
-                {/* Agent Thought Accordion */}
+              <div key={m.id} className="space-y-1.5">
+                {/* Quiet Protocol Verification Detail (Replaces Jargon) */}
                 {m.thoughts && m.thoughts.length > 0 && (
-                  <div className="rounded-xl bg-[#0a0e18] border border-[#6366f1]/30 p-2.5 text-[10px] font-mono text-[#908fa0]">
+                  <div className="rounded-md bg-white border border-[#E5DFD5] p-2 text-[10px] text-[#78716C]">
                     <div 
-                      className="flex items-center justify-between cursor-pointer select-none text-[#818cf8]"
+                      className="flex items-center justify-between cursor-pointer select-none text-[#1E3A2F] font-medium"
                       onClick={() => setShowThoughts(!showThoughts)}
                     >
-                      <div className="flex items-center space-x-1.5 font-semibold">
-                        <Activity className="h-3 w-3 animate-pulse text-[#6366f1]" />
-                        <span>LangGraph Reasoning Step</span>
+                      <div className="flex items-center space-x-1.5">
+                        <ShieldCheck className="h-3 w-3 text-[#1E3A2F]" />
+                        <span>Verified against clinic documentation</span>
                       </div>
                       {showThoughts ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                     </div>
                     {showThoughts && (
-                      <div className="mt-1.5 space-y-1 border-t border-[#1e293b] pt-1">
+                      <div className="mt-1.5 space-y-1 border-t border-[#E5DFD5] pt-1 text-[10px] text-[#44403C]">
                         {m.thoughts.map((t, idx) => (
-                          <div key={idx} className="line-clamp-1">{t}</div>
+                          <div key={idx} className="line-clamp-1">• {t}</div>
                         ))}
                       </div>
                     )}
@@ -265,38 +275,39 @@ export default function ChatWidget() {
                 {/* Message Bubble */}
                 <div className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div
-                    className={`max-w-[85%] p-3.5 rounded-xl text-xs leading-relaxed ${
+                    className={`max-w-[88%] p-3 rounded-lg text-xs leading-relaxed ${
                       m.role === 'user'
-                        ? 'bg-[#6366f1] text-white rounded-tr-sm'
-                        : 'bg-[#272727] border border-[#313131] text-[#f5f5f5] rounded-tl-sm'
+                        ? 'bg-[#1E3A2F] text-white rounded-tr-xs'
+                        : 'bg-white border border-[#E5DFD5] text-[#1C1917] rounded-tl-xs shadow-2xs'
                     }`}
                   >
                     {m.content}
                   </div>
                 </div>
 
-                {/* Interactive Slot Carousel */}
+                {/* Interactive Slot Carousel (Lead View for bookings) */}
                 {m.slots && (
                   <div className="mt-2 space-y-1.5">
-                    <div className="text-[10px] font-semibold text-[#818cf8] flex items-center space-x-1">
+                    <div className="text-[10px] font-medium text-[#1E3A2F] flex items-center space-x-1">
                       <Calendar className="h-3 w-3" />
-                      <span>Available consultation slots</span>
+                      <span>Available calendar consultation slots:</span>
                     </div>
                     <div className="flex space-x-2 overflow-x-auto pb-1">
                       {m.slots.map((slot, sIdx) => (
                         <div
                           key={sIdx}
-                          className="min-w-[130px] p-2.5 rounded-lg bg-[#1f1f1f] border border-[#313131] hover:border-[#6366f1] transition flex flex-col justify-between"
+                          className="min-w-[135px] p-2.5 rounded-lg bg-white border border-[#E5DFD5] hover:border-[#1E3A2F] transition flex flex-col justify-between shadow-2xs"
                         >
                           <div>
-                            <div className="text-xs font-semibold text-white">{slot.time}</div>
-                            <div className="text-[10px] text-[#8c8c8c] mt-0.5">{slot.doctor}</div>
+                            <div className="font-mono text-xs font-semibold text-[#1E3A2F]">{slot.time}</div>
+                            <div className="text-[10px] text-[#44403C] mt-0.5">{slot.doctor}</div>
+                            <div className="text-[9px] text-[#78716C]">{slot.chamber}</div>
                           </div>
                           <button
-                            onClick={() => handleSend(`I'll book the ${slot.time} slot with ${slot.doctor}.`)}
-                            className="mt-2 w-full py-1.5 rounded-md bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-[10px] font-semibold transition cursor-pointer"
+                            onClick={() => handleSend(`I'd like to confirm the ${slot.time} slot with ${slot.doctor}.`)}
+                            className="mt-2 w-full btn-clinic-primary text-[10px] py-1 px-2 cursor-pointer text-center"
                           >
-                            Book slot
+                            Reserve slot
                           </button>
                         </div>
                       ))}
@@ -304,24 +315,26 @@ export default function ChatWidget() {
                   </div>
                 )}
 
-                {/* Human Takeover Alert */}
+                {/* Receptionist Takeover Alert */}
                 {m.requiresTakeover && (
-                  <div className="p-2.5 rounded-xl bg-[#ef4444]/15 border border-[#ef4444]/30 text-[11px] text-[#ffb4ab] flex items-center space-x-2">
-                    <UserCheck className="h-4 w-4 shrink-0 text-[#ffb4ab]" />
-                    <span>Human intervention requested. Our clinic director has been alerted.</span>
+                  <div className="p-2.5 rounded-lg bg-[#FEF9C3] border border-[#FDE047] text-[11px] text-[#854D0E] flex items-center space-x-2">
+                    <UserCheck className="h-4 w-4 shrink-0 text-[#854D0E]" />
+                    <span>Reception notified. A clinic staff coordinator is stepping in to assist you directly.</span>
                   </div>
                 )}
               </div>
             ))}
 
+            {/* Calm Loading State */}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-[#272727] border border-[#313131] rounded-xl rounded-tl-sm p-3 text-xs text-[#8c8c8c] flex items-center space-x-2">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6366f1] opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#6366f1]"></span>
+                <div className="bg-white border border-[#E5DFD5] rounded-lg rounded-tl-xs p-2.5 text-xs text-[#78716C] flex items-center space-x-2 shadow-2xs">
+                  <span className="flex space-x-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#1E3A2F] animate-bounce"></span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#1E3A2F] animate-bounce [animation-delay:0.15s]"></span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-[#1E3A2F] animate-bounce [animation-delay:0.3s]"></span>
                   </span>
-                  <span>Synthesizing verified clinic answer...</span>
+                  <span>Verifying schedule & clinic records...</span>
                 </div>
               </div>
             )}
@@ -329,17 +342,17 @@ export default function ChatWidget() {
           </div>
 
           {/* Quick Action Suggestion Chips */}
-          <div className="px-4 py-2 border-t border-[#313131] flex space-x-1.5 overflow-x-auto bg-[#1f1f1f]">
+          <div className="px-3 py-2 border-t border-[#E5DFD5] flex space-x-1.5 overflow-x-auto bg-[#FAF7F2]">
             {[
-              'Book an appointment',
-              'Check service pricing',
-              'Rescheduling policy',
-              'Speak to human'
+              'Book consultation',
+              'Check treatment fees',
+              'Reschedule slot',
+              'Talk to reception'
             ].map((chip, idx) => (
               <button
                 key={idx}
                 onClick={() => handleSend(chip)}
-                className="whitespace-nowrap px-2.5 py-1 rounded-md text-[10px] font-medium bg-[#272727] hover:bg-[#313131] border border-[#313131] text-[#d6d6d6] transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]"
+                className="whitespace-nowrap px-2.5 py-1 rounded-md text-[10px] font-medium bg-white hover:bg-[#F3EFE8] border border-[#E5DFD5] text-[#1C1917] transition cursor-pointer"
               >
                 {chip}
               </button>
@@ -347,11 +360,11 @@ export default function ChatWidget() {
           </div>
 
           {/* Bottom Input Dock */}
-          <div className="p-3 border-t border-[#313131] bg-[#181818]">
+          <div className="p-2.5 border-t border-[#E5DFD5] bg-white">
             {isTranscribing && (
-              <div className="mb-2 px-3 py-1.5 rounded-lg bg-[#ef4444]/15 border border-[#ef4444]/30 text-[10px] text-[#ffb4ab] flex items-center space-x-2">
-                <Mic className="h-3 w-3 text-[#ef4444]" />
-                <span>Transcribing incoming voice note with STT...</span>
+              <div className="mb-2 px-2.5 py-1 rounded bg-[#EBF2EE] border border-[#C6E7D2] text-[10px] text-[#1B4332] flex items-center space-x-1.5">
+                <Mic className="h-3 w-3 text-[#1B4332] animate-pulse" />
+                <span>Transcribing voice inquiry...</span>
               </div>
             )}
             <form
@@ -359,25 +372,25 @@ export default function ChatWidget() {
                 e.preventDefault();
                 handleSend();
               }}
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-1.5"
             >
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder={selectedLang === 'hi' ? 'Kuch bhi poochein ya book karein...' : (selectedLang === 'es' ? 'Pregunte o reserve una cita...' : 'Ask about treatments, pricing, or book a slot...')}
-                className="flex-1 bg-[#1f1f1f] border border-[#313131] rounded-lg px-3.5 py-2 text-xs text-[#f5f5f5] placeholder-[#8c8c8c] focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1]"
+                placeholder={selectedLang === 'hi' ? 'Kuch bhi poochein ya book karein...' : (selectedLang === 'es' ? 'Pregunte o reserve una cita...' : 'Ask about treatments or schedule a visit...')}
+                className="flex-1 input-clinic text-xs py-1.5 px-3"
               />
 
               <button
                 type="button"
                 onClick={handleVoiceInput}
                 disabled={isTranscribing || isLoading}
-                title="Speak / Voice Note Transcription"
-                className={`p-2 rounded-lg border transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1] ${
+                title="Speak / Voice Note"
+                className={`p-2 rounded-md border transition cursor-pointer ${
                   isTranscribing
-                    ? 'bg-[#ef4444]/20 border-[#ef4444] text-[#ef4444]'
-                    : 'bg-[#272727] hover:bg-[#313131] border-[#313131] text-[#f5f5f5]'
+                    ? 'bg-[#EBF2EE] border-[#1E3A2F] text-[#1E3A2F]'
+                    : 'bg-[#FAF7F2] hover:bg-[#F3EFE8] border-[#E5DFD5] text-[#78716C]'
                 }`}
               >
                 <Mic className="h-3.5 w-3.5" />
@@ -386,7 +399,7 @@ export default function ChatWidget() {
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="p-2 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]"
+                className="btn-clinic-primary p-2 cursor-pointer disabled:opacity-40"
               >
                 <Send className="h-3.5 w-3.5" />
               </button>

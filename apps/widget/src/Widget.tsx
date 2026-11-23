@@ -1,17 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
-  Bot, 
+  Building2, 
   X, 
   Send, 
   Calendar, 
   UserCheck, 
   ChevronDown, 
   ChevronUp, 
-  Activity,
-  Sparkles,
-  Phone,
-  Clock,
-  Check,
+  ShieldCheck,
+  MessageSquare,
   Mic
 } from 'lucide-react';
 
@@ -37,16 +34,16 @@ interface Message {
 
 export default function StandaloneWidget({
   apiUrl = '',
-  businessName = 'Apex Wellness Clinic',
-  primaryColor = '#6366f1',
-  accentColor = '#10b981',
-  welcomeMessage = 'Welcome! I am your autonomous AI assistant. How can I help you today?',
-  promptChips = ['Book an appointment', 'Check pricing', 'Opening hours', 'Speak to human']
+  businessName = 'Apex Wellness & Aesthetics Clinic',
+  primaryColor = '#1E3A2F',
+  accentColor = '#1B4332',
+  welcomeMessage = 'Welcome to Apex Wellness Clinic. I am your health and booking concierge. How may we assist your longevity or treatment journey today?',
+  promptChips = ['Book consultation', 'Treatment fees', 'Reschedule appointment', 'Speak to reception']
 }: WidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [showThoughts, setShowThoughts] = useState(true);
+  const [showThoughts, setShowThoughts] = useState(false);
   const [selectedLang, setSelectedLang] = useState<'en' | 'hi' | 'es' | 'fr'>('en');
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [conversationId] = useState<string>(() => {
@@ -202,7 +199,7 @@ export default function StandaloneWidget({
         {
           id: `err_${Date.now()}`,
           role: 'assistant',
-          content: "I'm having trouble connecting right now, but our front desk team has been notified.",
+          content: "I'm having trouble connecting right now, but our reception team has been notified to assist you.",
           timestamp: 'Just now'
         }
       ]);
@@ -238,123 +235,109 @@ export default function StandaloneWidget({
   };
 
   return (
-    <div style={{ fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif", color: '#dfe2f1' }}>
-      {/* Launcher Button */}
+    <div style={{ fontFamily: "Figtree, -apple-system, BlinkMacSystemFont, sans-serif", color: '#1C1917' }}>
+      {/* Discreet Branded Circular Launcher (Small 48px circle, leaving room for mobile footers) */}
       {!isOpen && (
-        <div
+        <button
           onClick={() => setIsOpen(true)}
+          aria-label="Open clinic concierge"
           style={{
             position: 'fixed',
-            bottom: '24px',
-            right: '24px',
+            bottom: '20px',
+            right: '20px',
             zIndex: 999999,
             cursor: 'pointer',
-            padding: '0',
-            borderRadius: '16px',
-            background: '#181818',
-            border: '1px solid #313131',
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
-            transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+            width: '48px',
+            height: '48px',
+            borderRadius: '50%',
+            background: activeConfig.primaryColor,
+            border: '1px solid #152B23',
+            color: '#FFFFFF',
+            boxShadow: '0 8px 20px -4px rgba(28, 25, 23, 0.25)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            transition: 'transform 0.15s ease'
           }}
           onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
           <div style={{
-            background: '#181818',
-            padding: '10px 16px',
-            borderRadius: '16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px'
-          }}>
-            <div style={{ position: 'relative', width: '8px', height: '8px' }}>
-              <div style={{
-                position: 'absolute',
-                width: '100%',
-                height: '100%',
-                borderRadius: '50%',
-                backgroundColor: activeConfig.accentColor,
-                opacity: 0.75,
-                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
-              }} />
-              <div style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                backgroundColor: activeConfig.accentColor
-              }} />
-            </div>
-            <Bot size={18} color="#818cf8" />
-            <span style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff', letterSpacing: '-0.01em' }}>
-              Chat with AI
-            </span>
-          </div>
-        </div>
+            position: 'absolute',
+            top: '-2px',
+            right: '-2px',
+            width: '10px',
+            height: '10px',
+            borderRadius: '50%',
+            backgroundColor: '#10b981',
+            border: '2px solid #FFFFFF'
+          }} />
+          <MessageSquare size={20} color="#FFFFFF" />
+        </button>
       )}
 
-      {/* Expandable Chat Drawer */}
+      {/* Expandable Chat Drawer (Warm paper aesthetic) */}
       {isOpen && (
         <div style={{
           position: 'fixed',
-          bottom: '24px',
-          right: '24px',
+          bottom: '20px',
+          right: '20px',
           zIndex: 999999,
           width: '390px',
           maxWidth: 'calc(100vw - 32px)',
-          height: '630px',
-          maxHeight: 'calc(100vh - 48px)',
-          borderRadius: '24px',
-          background: '#181818',
-          border: '1px solid #313131',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.85)',
+          height: '590px',
+          maxHeight: 'calc(100vh - 40px)',
+          borderRadius: '16px',
+          background: '#FBF9F5',
+          border: '1px solid #E5DFD5',
+          boxShadow: '0 20px 40px -10px rgba(28, 25, 23, 0.15)',
           display: 'flex',
           flexDirection: 'column',
-          overflow: 'hidden',
-          animation: 'fadeInUp 0.25s ease-out'
+          overflow: 'hidden'
         }}>
           {/* Header */}
           <div style={{
-            padding: '16px',
-            background: '#181818',
-            borderBottom: '1px solid #313131',
+            padding: '14px 16px',
+            background: '#FFFFFF',
+            borderBottom: '1px solid #E5DFD5',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-in-between'
+            justifyContent: 'space-between'
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flex: 1 }}>
               <div style={{
-                width: '38px',
-                height: '38px',
-                borderRadius: '12px',
-                background: `${activeConfig.primaryColor}20`,
-                border: `1px solid ${activeConfig.primaryColor}40`,
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                background: '#EBF2EE',
+                border: '1px solid #D5E2DB',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-                <Bot size={20} color="#818cf8" />
+                <Building2 size={16} color="#1E3A2F" />
               </div>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#ffffff' }}>
+                  <h4 style={{ margin: 0, fontSize: '13px', fontWeight: 600, color: '#1C1917' }}>
                     {activeConfig.name}
                   </h4>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: activeConfig.accentColor }} />
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#1B4332' }} />
                 </div>
-                <p style={{ margin: 0, fontSize: '11px', color: '#908fa0' }}>
-                  Verified Copilot • Online
+                <p style={{ margin: 0, fontSize: '11px', color: '#78716C' }}>
+                  Front desk concierge • Verified
                 </p>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               {/* Language Selector */}
               <div style={{
                 display: 'flex',
-                background: '#030712',
+                background: '#FAF7F2',
                 padding: '2px',
-                borderRadius: '8px',
-                border: '1px solid #1e293b',
+                borderRadius: '6px',
+                border: '1px solid #E5DFD5',
                 fontSize: '9px',
                 fontFamily: 'monospace'
               }}>
@@ -363,13 +346,13 @@ export default function StandaloneWidget({
                     key={lang}
                     onClick={() => setSelectedLang(lang)}
                     style={{
-                      padding: '2px 5px',
-                      borderRadius: '5px',
+                      padding: '2px 4px',
+                      borderRadius: '4px',
                       textTransform: 'uppercase',
                       border: 'none',
                       background: selectedLang === lang ? activeConfig.primaryColor : 'transparent',
-                      color: selectedLang === lang ? '#ffffff' : '#908fa0',
-                      fontWeight: selectedLang === lang ? 700 : 400,
+                      color: selectedLang === lang ? '#FFFFFF' : '#78716C',
+                      fontWeight: selectedLang === lang ? 600 : 400,
                       cursor: 'pointer'
                     }}
                   >
@@ -383,16 +366,16 @@ export default function StandaloneWidget({
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#908fa0',
+                  color: '#78716C',
                   cursor: 'pointer',
-                  padding: '6px',
-                  borderRadius: '8px',
+                  padding: '4px',
+                  borderRadius: '6px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}
               >
-                <X size={18} />
+                <X size={16} />
               </button>
             </div>
           </div>
@@ -400,25 +383,24 @@ export default function StandaloneWidget({
           {/* Conversation Stream */}
           <div style={{
             flex: 1,
-            padding: '16px',
+            padding: '14px',
             overflowY: 'auto',
             display: 'flex',
             flexDirection: 'column',
-            gap: '14px',
+            gap: '12px',
             fontSize: '12px'
           }}>
             {messages.map((m) => (
-              <div key={m.id} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {/* Reasoning Thought Accordion */}
+              <div key={m.id} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {/* Quiet Protocol Verification Detail */}
                 {m.thoughts && m.thoughts.length > 0 && (
                   <div style={{
-                    borderRadius: '12px',
-                    background: '#0a0e18',
-                    border: '1px solid rgba(99, 102, 241, 0.3)',
-                    padding: '10px 12px',
-                    fontSize: '11px',
-                    fontFamily: "'JetBrains Mono', monospace",
-                    color: '#908fa0'
+                    borderRadius: '8px',
+                    background: '#FFFFFF',
+                    border: '1px solid #E5DFD5',
+                    padding: '8px 10px',
+                    fontSize: '10px',
+                    color: '#78716C'
                   }}>
                     <div 
                       onClick={() => setShowThoughts(!showThoughts)}
@@ -427,29 +409,30 @@ export default function StandaloneWidget({
                         alignItems: 'center',
                         justifyContent: 'space-between',
                         cursor: 'pointer',
-                        color: '#818cf8',
-                        fontWeight: 600
+                        color: '#1E3A2F',
+                        fontWeight: 500
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Activity size={12} color="#6366f1" />
-                        <span>LangGraph Agent Reasoning</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <ShieldCheck size={12} color="#1E3A2F" />
+                        <span>Verified against clinic documentation</span>
                       </div>
-                      {showThoughts ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                      {showThoughts ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
                     </div>
 
                     {showThoughts && (
                       <div style={{
-                        marginTop: '6px',
-                        paddingTop: '6px',
-                        borderTop: '1px solid rgba(30, 41, 59, 0.8)',
+                        marginTop: '4px',
+                        paddingTop: '4px',
+                        borderTop: '1px solid #E5DFD5',
                         display: 'flex',
                         flexDirection: 'column',
-                        gap: '4px'
+                        gap: '2px',
+                        color: '#44403C'
                       }}>
                         {m.thoughts.map((t, idx) => (
                           <div key={idx} style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                            {t}
+                            • {t}
                           </div>
                         ))}
                       </div>
@@ -464,14 +447,15 @@ export default function StandaloneWidget({
                 }}>
                   <div style={{
                     maxWidth: '85%',
-                    padding: '12px 14px',
-                    borderRadius: '16px',
-                    borderTopRightRadius: m.role === 'user' ? '2px' : '16px',
-                    borderTopLeftRadius: m.role === 'user' ? '16px' : '2px',
-                    background: m.role === 'user' ? activeConfig.primaryColor : '#272727',
-                    color: m.role === 'user' ? '#ffffff' : '#f5f5f5',
-                    border: m.role === 'user' ? 'none' : '1px solid #313131',
-                    lineHeight: '1.5'
+                    padding: '10px 12px',
+                    borderRadius: '12px',
+                    borderTopRightRadius: m.role === 'user' ? '2px' : '12px',
+                    borderTopLeftRadius: m.role === 'user' ? '12px' : '2px',
+                    background: m.role === 'user' ? activeConfig.primaryColor : '#FFFFFF',
+                    color: m.role === 'user' ? '#FFFFFF' : '#1C1917',
+                    border: m.role === 'user' ? 'none' : '1px solid #E5DFD5',
+                    lineHeight: '1.45',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
                   }}>
                     {m.content}
                   </div>
@@ -480,44 +464,44 @@ export default function StandaloneWidget({
                 {/* Interactive Slot Carousel */}
                 {m.slots && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '4px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11px', color: '#818cf8', fontWeight: 600 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '10px', color: '#1E3A2F', fontWeight: 600 }}>
                       <Calendar size={12} />
-                      <span>Available Slots • Next Available</span>
+                      <span>Available consultation slots:</span>
                     </div>
                     <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
                       {m.slots.map((slot, sIdx) => (
                         <div
                           key={sIdx}
                           style={{
-                            minWidth: '130px',
+                            minWidth: '125px',
                             padding: '10px',
-                            borderRadius: '12px',
-                            background: '#1f1f1f',
-                            border: '1px solid #313131',
+                            borderRadius: '8px',
+                            background: '#FFFFFF',
+                            border: '1px solid #E5DFD5',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'space-between',
-                            gap: '8px'
+                            gap: '6px'
                           }}
                         >
                           <div>
-                            <div style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff' }}>{slot.time}</div>
-                            <div style={{ fontSize: '10px', color: '#8c8c8c', marginTop: '2px' }}>{slot.doctor}</div>
+                            <div style={{ fontSize: '12px', fontWeight: 600, color: '#1E3A2F', fontFamily: 'monospace' }}>{slot.time}</div>
+                            <div style={{ fontSize: '10px', color: '#44403C', marginTop: '2px' }}>{slot.doctor}</div>
                           </div>
                           <button
-                            onClick={() => handleSend(`I'll take the ${slot.time} slot with ${slot.doctor}.`)}
+                            onClick={() => handleSend(`I'd like to confirm the ${slot.time} slot with ${slot.doctor}.`)}
                             style={{
                               padding: '5px 8px',
-                              borderRadius: '8px',
+                              borderRadius: '6px',
                               background: activeConfig.primaryColor,
                               border: 'none',
-                              color: '#ffffff',
+                              color: '#FFFFFF',
                               fontSize: '10px',
                               fontWeight: 600,
                               cursor: 'pointer'
                             }}
                           >
-                            Book Slot
+                            Reserve slot
                           </button>
                         </div>
                       ))}
@@ -528,18 +512,18 @@ export default function StandaloneWidget({
                 {/* Human Takeover Alert Banner */}
                 {m.requiresTakeover && (
                   <div style={{
-                    padding: '10px 12px',
-                    borderRadius: '12px',
-                    background: 'rgba(244, 63, 94, 0.15)',
-                    border: '1px solid rgba(244, 63, 94, 0.3)',
+                    padding: '8px 10px',
+                    borderRadius: '8px',
+                    background: '#FEF9C3',
+                    border: '1px solid #FDE047',
                     fontSize: '11px',
-                    color: '#ffb4ab',
+                    color: '#854D0E',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px'
+                    gap: '6px'
                   }}>
-                    <UserCheck size={16} />
-                    <span>Live support alerted. An agent will reply shortly.</span>
+                    <UserCheck size={14} />
+                    <span>Reception notified. A staff member is stepping in to assist you directly.</span>
                   </div>
                 )}
               </div>
@@ -548,24 +532,24 @@ export default function StandaloneWidget({
             {isLoading && (
               <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
                 <div style={{
-                  padding: '10px 14px',
-                  borderRadius: '16px',
+                  padding: '8px 12px',
+                  borderRadius: '10px',
                   borderTopLeftRadius: '2px',
-                  background: '#272727',
-                  border: '1px solid #313131',
-                  color: '#8c8c8c',
+                  background: '#FFFFFF',
+                  border: '1px solid #E5DFD5',
+                  color: '#78716C',
+                  fontSize: '11px',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px'
+                  gap: '6px'
                 }}>
                   <div style={{
                     width: '6px',
                     height: '6px',
                     borderRadius: '50%',
-                    backgroundColor: activeConfig.primaryColor,
-                    animation: 'pulse 1s infinite'
+                    backgroundColor: activeConfig.primaryColor
                   }} />
-                  <span>Synthesizing verified response...</span>
+                  <span>Checking clinic availability...</span>
                 </div>
               </div>
             )}
@@ -574,9 +558,9 @@ export default function StandaloneWidget({
 
           {/* Quick Action Chips */}
           <div style={{
-            padding: '8px 16px',
-            borderTop: '1px solid #313131',
-            background: '#181818',
+            padding: '6px 12px',
+            borderTop: '1px solid #E5DFD5',
+            background: '#FAF7F2',
             display: 'flex',
             gap: '6px',
             overflowX: 'auto'
@@ -587,12 +571,13 @@ export default function StandaloneWidget({
                 onClick={() => handleSend(chip)}
                 style={{
                   whiteSpace: 'nowrap',
-                  padding: '5px 10px',
-                  borderRadius: '9999px',
-                  fontSize: '11px',
-                  background: '#272727',
-                  border: '1px solid #313131',
-                  color: '#d6d6d6',
+                  padding: '4px 8px',
+                  borderRadius: '6px',
+                  fontSize: '10px',
+                  fontWeight: 500,
+                  background: '#FFFFFF',
+                  border: '1px solid #E5DFD5',
+                  color: '#1C1917',
                   cursor: 'pointer'
                 }}
               >
@@ -603,30 +588,30 @@ export default function StandaloneWidget({
 
           {/* Input Dock */}
           <div style={{
-            padding: '12px 16px',
-            borderTop: '1px solid #313131',
-            background: '#181818'
+            padding: '10px 12px',
+            borderTop: '1px solid #E5DFD5',
+            background: '#FFFFFF'
           }}>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSend();
               }}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
             >
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask questions or request appointment..."
+                placeholder="Ask about treatments or book a slot..."
                 style={{
                   flex: 1,
-                  background: '#1f1f1f',
-                  border: '1px solid #313131',
-                  borderRadius: '8px',
-                  padding: '10px 14px',
+                  background: '#FBF9F5',
+                  border: '1px solid #E5DFD5',
+                  borderRadius: '6px',
+                  padding: '8px 10px',
                   fontSize: '12px',
-                  color: '#ffffff',
+                  color: '#1C1917',
                   outline: 'none'
                 }}
               />
@@ -634,30 +619,30 @@ export default function StandaloneWidget({
                 type="button"
                 onClick={handleVoiceInput}
                 disabled={isTranscribing || isLoading}
-                title="Voice Note Input"
+                title="Voice input"
                 style={{
-                  padding: '10px',
-                  borderRadius: '8px',
-                  background: isTranscribing ? 'rgba(239, 68, 68, 0.2)' : '#272727',
-                  border: isTranscribing ? '1px solid #ef4444' : '1px solid #313131',
-                  color: isTranscribing ? '#ef4444' : '#f5f5f5',
+                  padding: '8px',
+                  borderRadius: '6px',
+                  background: isTranscribing ? '#EBF2EE' : '#FAF7F2',
+                  border: isTranscribing ? '1px solid #1E3A2F' : '1px solid #E5DFD5',
+                  color: isTranscribing ? '#1E3A2F' : '#78716C',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}
               >
-                <Mic size={16} />
+                <Mic size={14} />
               </button>
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
                 style={{
-                  padding: '10px',
-                  borderRadius: '12px',
+                  padding: '8px',
+                  borderRadius: '6px',
                   background: activeConfig.primaryColor,
                   border: 'none',
-                  color: '#ffffff',
+                  color: '#FFFFFF',
                   cursor: isLoading || !input.trim() ? 'not-allowed' : 'pointer',
                   opacity: isLoading || !input.trim() ? 0.4 : 1,
                   display: 'flex',
@@ -665,7 +650,7 @@ export default function StandaloneWidget({
                   justifyContent: 'center'
                 }}
               >
-                <Send size={16} />
+                <Send size={14} />
               </button>
             </form>
           </div>
