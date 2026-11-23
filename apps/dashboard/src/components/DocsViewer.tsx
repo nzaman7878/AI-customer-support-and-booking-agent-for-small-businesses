@@ -163,22 +163,22 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
     const flushTable = (key: string) => {
       if (!inTable) return;
       elements.push(
-        <div key={key} className="my-5 overflow-x-auto rounded-xl border border-[#1e293b] bg-[#0b0f19]">
-          <table className="w-full text-left text-xs text-[#908fa0]">
-            <thead className="bg-[#0f131d] text-white border-b border-[#1e293b]">
+        <div key={key} className="my-5 overflow-x-auto rounded-xl border border-[#E5DFD5] bg-white">
+          <table className="w-full text-left text-xs text-[#44403C]">
+            <thead className="bg-[#FAF7F2] text-[#1C1917] border-b border-[#E5DFD5]">
               <tr>
                 {tableHeaders.map((th, i) => (
-                  <th key={i} className="px-4 py-3 font-semibold tracking-wider border-r border-[#1e293b]/50 last:border-r-0">
+                  <th key={i} className="px-4 py-3 font-semibold tracking-wider border-r border-[#E5DFD5]/70 last:border-r-0">
                     {th.trim()}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#1e293b]/50">
+            <tbody className="divide-y divide-[#E5DFD5]">
               {tableRows.map((row, rIdx) => (
-                <tr key={rIdx} className="hover:bg-[#1e293b]/20 transition-colors">
+                <tr key={rIdx} className="hover:bg-[#FBF9F5] transition-colors">
                   {row.map((cell, cIdx) => (
-                    <td key={cIdx} className="px-4 py-2.5 font-normal border-r border-[#1e293b]/30 last:border-r-0">
+                    <td key={cIdx} className="px-4 py-2.5 font-normal border-r border-[#E5DFD5]/50 last:border-r-0">
                       {parseInlineFormatting(cell.trim())}
                     </td>
                   ))}
@@ -198,9 +198,9 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
       const codeSnippet = codeLines.join('\n');
       const currentSnippetIndex = snippetCount++;
       elements.push(
-        <div key={key} className="my-5 rounded-xl border border-[#1e293b] bg-[#030712] overflow-hidden group">
-          <div className="flex items-center justify-between px-4 py-2 bg-[#0f131d] border-b border-[#1e293b] text-[11px] text-[#908fa0] font-mono">
-            <span className="flex items-center space-x-1.5 uppercase font-semibold text-[#818cf8]">
+        <div key={key} className="my-5 rounded-xl border border-[#E5DFD5] bg-[#FAF7F2] overflow-hidden group">
+          <div className="flex items-center justify-between px-4 py-2 bg-[#F3EFE8] border-b border-[#E5DFD5] text-[11px] text-[#78716C] font-mono">
+            <span className="flex items-center space-x-1.5 uppercase font-semibold text-[#1E3A2F]">
               <Terminal className="h-3 w-3" />
               <span>{codeLanguage || 'code'}</span>
             </span>
@@ -210,22 +210,22 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
                 setCopiedSnippetIdx(currentSnippetIndex);
                 setTimeout(() => setCopiedSnippetIdx(null), 2000);
               }}
-              className="flex items-center space-x-1 px-2 py-0.5 rounded bg-[#1e293b]/50 hover:bg-[#1e293b] text-white hover:text-[#818cf8] transition cursor-pointer"
+              className="flex items-center space-x-1 px-2 py-0.5 rounded bg-white hover:bg-[#EBF2EE] border border-[#E5DFD5] text-[#1C1917] transition cursor-pointer"
             >
               {copiedSnippetIdx === currentSnippetIndex ? (
                 <>
-                  <Check className="h-3 w-3 text-[#10b981]" />
-                  <span className="text-[10px] text-[#10b981]">Copied</span>
+                  <Check className="h-3 w-3 text-[#1B4332]" />
+                  <span className="text-[10px] text-[#1B4332]">Copied</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-3 w-3" />
+                  <Copy className="h-3 w-3 text-[#78716C]" />
                   <span className="text-[10px]">Copy</span>
                 </>
               )}
             </button>
           </div>
-          <pre className="p-4 text-xs font-mono text-[#e2e8f0] overflow-x-auto leading-relaxed">
+          <pre className="p-4 text-xs font-mono text-[#1C1917] overflow-x-auto leading-relaxed bg-[#FAF7F2]">
             <code>{codeSnippet}</code>
           </pre>
         </div>
@@ -475,7 +475,7 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
     return codeTokens.map((token, idx) => {
       if (token.startsWith('`') && token.endsWith('`')) {
         return (
-          <code key={idx} className="font-mono text-[11px] text-[#818cf8] bg-[#6366f1]/10 border border-[#6366f1]/20 px-1.5 py-0.5 rounded">
+          <code key={idx} className="font-mono text-[11px] text-[#1E3A2F] bg-[#EBF2EE] border border-[#D5E2DB] px-1.5 py-0.5 rounded">
             {token.slice(1, -1)}
           </code>
         );
@@ -485,7 +485,7 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
       const boldTokens = token.split(/(\*\*[^*]+\*\*)/);
       return boldTokens.map((bToken, bIdx) => {
         if (bToken.startsWith('**') && bToken.endsWith('**')) {
-          return <strong key={bIdx} className="font-semibold text-white">{bToken.slice(2, -2)}</strong>;
+          return <strong key={bIdx} className="font-semibold text-[#1C1917]">{bToken.slice(2, -2)}</strong>;
         }
         return bToken;
       });
@@ -495,14 +495,14 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
   return (
     <div className="flex flex-col lg:flex-row min-h-[calc(100vh-140px)] gap-6 font-sans">
       {/* Mobile Drawer Trigger Bar */}
-      <div className="lg:hidden flex items-center justify-between p-3.5 bg-[#0b0f19] border border-[#1e293b] rounded-2xl">
+      <div className="lg:hidden flex items-center justify-between p-3.5 bg-white border border-[#E5DFD5] rounded-xl shadow-xs">
         <div className="flex items-center space-x-2.5">
-          <BookOpen className="h-4 w-4 text-[#818cf8]" />
-          <span className="text-xs font-semibold text-white truncate">{activeDoc.title}</span>
+          <BookOpen className="h-4 w-4 text-[#1E3A2F]" />
+          <span className="text-xs font-semibold text-[#1C1917] truncate">{activeDoc.title}</span>
         </div>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="p-1.5 rounded-lg bg-[#1e293b] text-white hover:text-[#818cf8] transition cursor-pointer"
+          className="p-1.5 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5] text-[#1C1917] hover:bg-[#F3EFE8] transition cursor-pointer"
         >
           {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
         </button>
@@ -511,28 +511,28 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
       {/* Sidebar: Documentation Navigation */}
       <div className={`
         ${isMobileMenuOpen ? 'block' : 'hidden'} lg:block
-        w-full lg:w-80 shrink-0 bg-[#0b0f19] border border-[#1e293b] rounded-2xl p-4 flex flex-col h-fit lg:sticky lg:top-6
+        w-full lg:w-80 shrink-0 bg-[#FAF7F2] border border-[#E5DFD5] rounded-xl p-4 flex flex-col h-fit lg:sticky lg:top-6 shadow-xs
       `}>
         {/* Navigation Header */}
-        <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#313131]">
+        <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#E5DFD5]">
           <div className="flex items-center space-x-2">
-            <BookOpen className="h-4 w-4 text-[#818cf8]" />
-            <span className="text-xs font-semibold text-white tracking-wide">Documentation navigation</span>
+            <BookOpen className="h-4 w-4 text-[#1E3A2F]" />
+            <span className="font-serif-display font-medium text-xs text-[#1C1917] tracking-wide">Documentation navigation</span>
           </div>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#272727] text-[#818cf8] border border-[#313131]">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white text-[#1E3A2F] border border-[#E5DFD5]">
             {DOCS_INDEX.length} Specs
           </span>
         </div>
 
         {/* Live Search Filter Input */}
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#8c8c8c]" />
+          <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#78716C]" />
           <input
             type="text"
             placeholder="Search specs, APIs, guides..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#1f1f1f] border border-[#313131] rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-[#8c8c8c] focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] outline-none transition"
+            className="w-full bg-white border border-[#E5DFD5] rounded-lg pl-9 pr-3 py-2 text-xs text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:border-[#1E3A2F] focus:ring-1 focus:ring-[#1E3A2F] transition"
           />
         </div>
 
@@ -540,7 +540,7 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
         <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
           {categories.map(([catKey, group]) => (
             <div key={catKey}>
-              <div className="text-[10px] font-semibold text-[#8c8c8c] px-2 mb-1.5 flex items-center justify-between">
+              <div className="text-[10px] font-semibold text-[#78716C] px-2 mb-1.5 flex items-center justify-between">
                 <span>{group.label}</span>
                 <span className="text-[9px] font-mono">{group.docs.length}</span>
               </div>
@@ -555,24 +555,24 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
                         setSelectedFilename(doc.filename);
                         setIsMobileMenuOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-2 rounded-lg transition flex items-center justify-between group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1] ${
+                      className={`w-full text-left px-3 py-2 rounded-lg transition flex items-center justify-between group cursor-pointer ${
                         isSelected
-                          ? 'bg-[#272727] border border-[#313131] text-white font-medium'
-                          : 'hover:bg-[#1f1f1f] text-[#8c8c8c] hover:text-white border border-transparent'
+                          ? 'bg-[#EBF2EE] border border-[#D5E2DB] text-[#1E3A2F] font-medium'
+                          : 'hover:bg-white text-[#78716C] hover:text-[#1C1917] border border-transparent'
                       }`}
                     >
                       <div className="flex items-center space-x-2.5 truncate">
-                        <Icon className={`h-3.5 w-3.5 shrink-0 ${isSelected ? 'text-[#818cf8]' : 'text-[#8c8c8c] group-hover:text-white'}`} />
+                        <Icon className={`h-3.5 w-3.5 shrink-0 ${isSelected ? 'text-[#1E3A2F]' : 'text-[#78716C] group-hover:text-[#1C1917]'}`} />
                         <div className="truncate">
-                          <div className={`text-xs truncate ${isSelected ? 'text-white' : ''}`}>
+                          <div className={`text-xs truncate ${isSelected ? 'text-[#1E3A2F]' : ''}`}>
                             {doc.title.split('(')[0].trim()}
                           </div>
-                          <div className="text-[10px] font-mono text-[#8c8c8c] opacity-80">
+                          <div className="text-[10px] font-mono text-[#78716C] opacity-80">
                             {doc.filename}
                           </div>
                         </div>
                       </div>
-                      <ChevronRight className={`h-3 w-3 shrink-0 ml-1 transition-transform ${isSelected ? 'text-[#818cf8] translate-x-0.5' : 'opacity-0 group-hover:opacity-100'}`} />
+                      <ChevronRight className={`h-3 w-3 shrink-0 ml-1 transition-transform ${isSelected ? 'text-[#1E3A2F] translate-x-0.5' : 'opacity-0 group-hover:opacity-100'}`} />
                     </button>
                   );
                 })}
@@ -583,68 +583,69 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
       </div>
 
       {/* Main Document Content Pane */}
-      <div className="flex-1 bg-[#181818] border border-[#313131] rounded-2xl p-6 sm:p-8 flex flex-col relative overflow-hidden">
+      <div className="flex-1 bg-white border border-[#E5DFD5] rounded-xl p-6 sm:p-8 flex flex-col relative overflow-hidden shadow-xs">
         {/* Top Breadcrumb & Metadata Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-[#313131] gap-3">
-          <div className="flex items-center space-x-2 text-xs text-[#8c8c8c]">
-            <BookOpen className="h-3.5 w-3.5 text-[#818cf8]" />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-[#E5DFD5] gap-3">
+          <div className="flex items-center space-x-2 text-xs text-[#78716C]">
+            <BookOpen className="h-3.5 w-3.5 text-[#1E3A2F]" />
             <span>Docs</span>
             <span>/</span>
-            <span className="text-white font-medium">{activeDoc.categoryLabel}</span>
+            <span className="text-[#1C1917] font-medium">{activeDoc.categoryLabel}</span>
             <span>/</span>
-            <span className="font-mono text-[#818cf8]">{activeDoc.filename}</span>
+            <span className="font-mono text-[#1E3A2F]">{activeDoc.filename}</span>
           </div>
 
           <div className="flex items-center space-x-2">
-            <span className="flex items-center space-x-1 text-[11px] text-[#8c8c8c] bg-[#1f1f1f] px-2.5 py-1 rounded-md border border-[#313131]">
-              <Clock className="h-3 w-3 text-[#818cf8]" />
+            <span className="flex items-center space-x-1 text-[11px] text-[#78716C] bg-[#FAF7F2] px-2.5 py-1 rounded-md border border-[#E5DFD5]">
+              <Clock className="h-3 w-3 text-[#1E3A2F]" />
               <span>{activeDoc.readTimeMinutes} min read</span>
             </span>
             <button
               onClick={handleCopyMarkdown}
-              className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#272727] hover:bg-[#313131] border border-[#313131] text-white text-xs font-medium transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]"
+              className="btn-clinic-secondary text-xs flex items-center space-x-1 px-3 py-1.5 cursor-pointer"
               title="Copy entire raw markdown"
             >
               {copiedDoc ? (
                 <>
-                  <Check className="h-3.5 w-3.5 text-[#10b981]" />
-                  <span className="text-[#10b981]">Copied</span>
+                  <Check className="h-3.5 w-3.5 text-[#1B4332]" />
+                  <span className="text-[#1B4332]">Copied</span>
                 </>
               ) : (
                 <>
-                  <Copy className="h-3.5 w-3.5 text-[#8c8c8c]" />
+                  <Copy className="h-3.5 w-3.5 text-[#78716C]" />
                   <span>Copy markdown</span>
                 </>
               )}
             </button>
             <button
               onClick={handleDownloadDoc}
-              className="p-1.5 rounded-lg bg-[#272727] hover:bg-[#313131] border border-[#313131] text-white transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]"
+              className="btn-clinic-secondary p-1.5 cursor-pointer"
               title="Download Markdown file"
             >
-              <Download className="h-3.5 w-3.5 text-[#8c8c8c]" />
+              <Download className="h-3.5 w-3.5 text-[#78716C]" />
             </button>
           </div>
         </div>
 
         {/* Document Tags */}
         <div className="flex flex-wrap items-center gap-1.5 mb-6">
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#272727] text-[#818cf8] border border-[#313131] font-semibold">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#EBF2EE] text-[#1B4332] border border-[#D5E2DB] font-semibold">
             {activeDoc.badge || 'Document'}
           </span>
           {activeDoc.tags.map(t => (
-            <span key={t} className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#030712] text-[#908fa0] border border-[#1e293b]">
+            <span key={t} className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#FAF7F2] text-[#78716C] border border-[#E5DFD5]">
               #{t}
             </span>
           ))}
         </div>
 
         {/* Rendered Document Body */}
-        <div className="prose prose-invert max-w-none flex-1">
+        <div className="prose max-w-none flex-1 text-[#1C1917]">
           {isLoading ? (
-            <div className="py-20 flex flex-col items-center justify-center text-[#908fa0] space-y-3">
-              <div className="h-6 w-6 border-2 border-[#6366f1] border-t-transparent rounded-full animate-spin" />
-              <div className="text-xs">Loading specification from repository...</div>
+            <div className="space-y-4 py-8">
+              <div className="skeleton-shimmer h-8 w-1/2 rounded-md" />
+              <div className="skeleton-shimmer h-20 w-full rounded-md" />
+              <div className="skeleton-shimmer h-32 w-full rounded-md" />
             </div>
           ) : (
             renderMarkdown(docContent)
@@ -652,19 +653,19 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
         </div>
 
         {/* Bottom Pagination Links */}
-        <div className="mt-12 pt-6 border-t border-[#1e293b] flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-12 pt-6 border-t border-[#E5DFD5] flex flex-col sm:flex-row items-center justify-between gap-4">
           {prevDoc ? (
             <button
               onClick={() => {
                 setSelectedFilename(prevDoc.filename);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="w-full sm:w-auto flex items-center space-x-3 p-3 rounded-xl bg-[#030712] border border-[#1e293b] hover:border-[#6366f1]/50 text-left transition group cursor-pointer"
+              className="w-full sm:w-auto flex items-center space-x-3 p-3 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5] hover:border-[#1E3A2F] text-left transition group cursor-pointer"
             >
-              <ArrowLeft className="h-4 w-4 text-[#908fa0] group-hover:text-[#818cf8] group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft className="h-4 w-4 text-[#78716C] group-hover:text-[#1E3A2F] group-hover:-translate-x-1 transition-transform" />
               <div>
-                <div className="text-[10px] uppercase font-bold text-[#908fa0] tracking-wider">Previous Specification</div>
-                <div className="text-xs font-semibold text-white group-hover:text-[#818cf8]">{prevDoc.title}</div>
+                <div className="text-[10px] uppercase font-bold text-[#78716C] tracking-wider">Previous Specification</div>
+                <div className="text-xs font-semibold text-[#1C1917] group-hover:text-[#1E3A2F]">{prevDoc.title}</div>
               </div>
             </button>
           ) : <div />}
@@ -675,13 +676,13 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
                 setSelectedFilename(nextDoc.filename);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="w-full sm:w-auto flex items-center justify-end space-x-3 p-3 rounded-xl bg-[#030712] border border-[#1e293b] hover:border-[#6366f1]/50 text-right transition group cursor-pointer"
+              className="w-full sm:w-auto flex items-center justify-end space-x-3 p-3 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5] hover:border-[#1E3A2F] text-right transition group cursor-pointer"
             >
               <div>
-                <div className="text-[10px] uppercase font-bold text-[#908fa0] tracking-wider">Next Specification</div>
-                <div className="text-xs font-semibold text-white group-hover:text-[#818cf8]">{nextDoc.title}</div>
+                <div className="text-[10px] uppercase font-bold text-[#78716C] tracking-wider">Next Specification</div>
+                <div className="text-xs font-semibold text-[#1C1917] group-hover:text-[#1E3A2F]">{nextDoc.title}</div>
               </div>
-              <ArrowRight className="h-4 w-4 text-[#908fa0] group-hover:text-[#818cf8] group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="h-4 w-4 text-[#78716C] group-hover:text-[#1E3A2F] group-hover:translate-x-1 transition-transform" />
             </button>
           ) : <div />}
         </div>

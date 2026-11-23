@@ -83,7 +83,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
         const tokenData = await tokenRes.json();
 
         if (!tokenData.success || !tokenData.token) {
-          throw new Error(tokenData.error || 'Failed to generate self-service token');
+          throw new Error(tokenData.error || 'Failed to generate self-service link');
         }
         activeToken = tokenData.token;
       }
@@ -103,10 +103,10 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
         setAppointment(verifyData.appointment);
         setPolicy(verifyData.policy);
       } else {
-        throw new Error(verifyData.error || 'Portal verification failed. Link may be invalid or expired.');
+        throw new Error(verifyData.error || 'Verification link expired or invalid.');
       }
     } catch (err: any) {
-      setStatusMessage({ type: 'error', text: err.message || 'Network error initializing portal' });
+      setStatusMessage({ type: 'error', text: err.message || 'Unable to load appointment schedule' });
     } finally {
       setLoading(false);
     }
@@ -141,7 +141,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
     fetchSlots();
   }, [token, selectedDate]);
 
-  // 4. Handle 1-Click Slot Reschedule
+  // 4. Handle Slot Reschedule
   const handleReschedule = async () => {
     if (!token || !selectedSlot) return;
     setRescheduling(true);
@@ -162,7 +162,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
         setAppointment(data.appointment);
         setStatusMessage({
           type: 'success',
-          text: `Slot updated! Your appointment has been moved to ${new Date(selectedSlot.startTime).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}. Confirmation notification sent.`
+          text: `Slot updated! Your consultation has been rescheduled to ${new Date(selectedSlot.startTime).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })}. Confirmation notification sent.`
         });
         setSelectedSlot(null);
         if (onAppointmentUpdated) onAppointmentUpdated();
@@ -197,7 +197,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
         setShowCancelConfirm(false);
         setStatusMessage({
           type: 'success',
-          text: `Appointment cancelled. Calendar slot released. Refund / Deposit Credit: INR ${data.refundAmount} (${data.refundStatus}).`
+          text: `Appointment cancelled and calendar slot released. Credit: INR ${data.refundAmount} (${data.refundStatus}).`
         });
         if (onAppointmentUpdated) onAppointmentUpdated();
       } else {
@@ -220,49 +220,50 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
   };
 
   const portalCard = (
-    <div className={`bg-[#181818] border border-[#313131] rounded-2xl w-full ${isStandalone ? 'max-w-2xl' : 'max-w-2xl max-h-[92vh]'} flex flex-col shadow-2xl overflow-hidden`}>
+    <div className={`bg-white border border-[#E5DFD5] rounded-xl w-full ${isStandalone ? 'max-w-2xl' : 'max-w-2xl max-h-[92vh]'} flex flex-col shadow-xl overflow-hidden font-sans`}>
       
       {/* Top Header */}
-      <div className="px-6 py-4 border-b border-[#313131] flex items-center justify-between bg-[#1f1f1f]/60">
+      <div className="px-6 py-4 border-b border-[#E5DFD5] flex items-center justify-between bg-[#FBF9F5]">
         <div className="flex items-center space-x-3">
-          <div className="h-9 w-9 rounded-xl bg-[#6366f1]/15 border border-[#6366f1]/30 flex items-center justify-center text-[#818cf8]">
-            <Calendar className="h-5 w-5" />
+          <div className="h-8 w-8 rounded-lg bg-[#EBF2EE] border border-[#D5E2DB] flex items-center justify-center text-[#1E3A2F]">
+            <Calendar className="h-4 w-4" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h3 className="font-bold text-white text-sm sm:text-base">Client Self-Service Portal</h3>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30 font-mono">
-                Magic-Link Verified
+              <h3 className="font-serif-display font-semibold text-[#1C1917] text-base">Patient Scheduling Portal</h3>
+              <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2] font-mono">
+                Verified Link
               </span>
             </div>
-            <p className="text-[11px] text-[#8c8c8c]">1-Click Slot Rescheduling & Self-Service Management</p>
+            <p className="text-xs text-[#78716C]">Self-service consultation rescheduling and appointment records</p>
           </div>
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#8c8c8c] hover:text-white hover:bg-[#1e293b] transition cursor-pointer"
+            className="p-1 rounded-md text-[#78716C] hover:text-[#1C1917] hover:bg-[#F3EFE8] transition cursor-pointer"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         )}
       </div>
 
       {/* Modal / Card Body */}
-      <div className="p-6 space-y-6 overflow-y-auto">
+      <div className="p-6 space-y-5 overflow-y-auto">
         {loading ? (
-          <div className="py-12 flex flex-col items-center justify-center space-y-3">
-            <RefreshCw className="h-7 w-7 text-[#818cf8] animate-spin" />
-            <p className="text-xs text-[#8c8c8c]">Decrypting magic-link session token & calendar state...</p>
+          <div className="space-y-4 py-6">
+            <div className="skeleton-shimmer h-12 w-full rounded-lg" />
+            <div className="skeleton-shimmer h-24 w-full rounded-lg" />
+            <div className="skeleton-shimmer h-32 w-full rounded-lg" />
           </div>
         ) : (
           <>
             {/* Status Alert Toast */}
             {statusMessage && (
-              <div className={`p-3.5 rounded-xl border text-xs flex items-center space-x-2.5 ${
+              <div className={`p-3.5 rounded-lg border text-xs flex items-center space-x-2.5 ${
                 statusMessage.type === 'success'
-                  ? 'bg-[#10b981]/15 border-[#10b981]/40 text-[#4edea3]'
-                  : 'bg-[#f43f5e]/15 border-[#f43f5e]/40 text-[#ffb4ab]'
+                  ? 'bg-[#EAF5EE] border-[#C6E7D2] text-[#1B4332]'
+                  : 'bg-[#FEF2F2] border-[#FECACA] text-[#991B1B]'
               }`}>
                 {statusMessage.type === 'success' ? (
                   <CheckCircle2 className="h-4 w-4 shrink-0" />
@@ -275,13 +276,13 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
 
             {!appointment && (
               <div className="py-8 px-4 flex flex-col items-center justify-center space-y-4 text-center">
-                <div className="h-12 w-12 rounded-2xl bg-[#6366f1]/15 border border-[#6366f1]/30 flex items-center justify-center text-[#818cf8]">
-                  <ShieldCheck className="h-6 w-6" />
+                <div className="h-10 w-10 rounded-lg bg-[#EBF2EE] border border-[#D5E2DB] flex items-center justify-center text-[#1E3A2F]">
+                  <ShieldCheck className="h-5 w-5" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-white text-base">Client Self-Service Verification</h4>
-                  <p className="text-xs text-[#8c8c8c] mt-1 max-w-md">
-                    Enter the secure magic-link token or appointment reference ID (e.g. <code>apt_seed_1</code>) sent to your WhatsApp or SMS to manage your booking.
+                  <h4 className="font-serif-display font-semibold text-[#1C1917] text-base">Lookup Appointment</h4>
+                  <p className="text-xs text-[#78716C] mt-1 max-w-md">
+                    Enter the booking reference ID (e.g. <code>apt_seed_1</code>) or magic link token sent to your WhatsApp or email.
                   </p>
                 </div>
                 <form
@@ -301,312 +302,294 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                     type="text"
                     value={manualInput}
                     onChange={(e) => setManualInput(e.target.value)}
-                    placeholder="Paste token or appointment ID..."
-                    className="flex-1 px-4 py-2.5 rounded-xl bg-[#1f1f1f] border border-[#313131] text-xs text-white placeholder-[#908fa0] focus:border-[#6366f1] focus:outline-none"
+                    placeholder="e.g. apt_seed_1"
+                    className="flex-1 input-clinic text-xs py-2 px-3"
                   />
                   <button
                     type="submit"
                     disabled={!manualInput.trim()}
-                    className="px-4 py-2.5 rounded-xl bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold transition cursor-pointer disabled:opacity-50"
+                    className="btn-clinic-primary text-xs py-2 px-4 cursor-pointer disabled:opacity-40"
                   >
-                    Verify
+                    Lookup
                   </button>
                 </form>
               </div>
             )}
 
-              {/* Active Appointment Summary Card */}
-              {appointment && (
-                <div className="p-4 rounded-xl bg-[#1f1f1f] border border-[#313131] space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-[#818cf8] uppercase tracking-wider">
-                      Current Booking Details
-                    </span>
-                    <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-mono ${
-                      appointment.status === 'cancelled'
-                        ? 'bg-[#f43f5e]/15 text-[#ffb4ab] border border-[#f43f5e]/30'
-                        : 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30'
-                    }`}>
-                      {appointment.status.toUpperCase()}
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <div className="text-[#8c8c8c] text-[11px]">Client Name</div>
-                      <div className="text-white font-medium flex items-center space-x-1.5 mt-0.5">
-                        <User className="h-3.5 w-3.5 text-[#818cf8]" />
-                        <span>{appointment.customerName}</span>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-[#8c8c8c] text-[11px]">Booked Service</div>
-                      <div className="text-white font-medium mt-0.5">{appointment.serviceName}</div>
-                    </div>
-                    <div>
-                      <div className="text-[#8c8c8c] text-[11px]">Current Slot (IST)</div>
-                      <div className="text-[#818cf8] font-mono font-medium mt-0.5 flex items-center space-x-1.5">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span>
-                          {new Date(appointment.startTime).toLocaleString([], {
-                            weekday: 'short',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          })}
-                        </span>
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-[#8c8c8c] text-[11px]">Deposit Status</div>
-                      <div className="text-[#10b981] font-mono font-medium mt-0.5 flex items-center space-x-1">
-                        <ShieldCheck className="h-3.5 w-3.5" />
-                        <span>INR {appointment.depositAmount || 500} Paid (Active)</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 border-t border-[#313131] flex items-center text-[11px] text-[#8c8c8c] space-x-1.5">
-                    <MapPin className="h-3.5 w-3.5 text-[#6366f1]" />
-                    <span>Apex Wellness Clinic • 104 Grand Vista Blvd, Suite 400</span>
-                  </div>
-                </div>
-              )}
-
-              {/* Clinic Policy Indicator */}
-              {policy && (
-                <div className={`p-3.5 rounded-xl border text-xs flex items-start space-x-3 ${
-                  policy.isFreeWindow
-                    ? 'bg-[#6366f1]/10 border-[#6366f1]/30 text-[#f5f5f5]'
-                    : 'bg-[#f59e0b]/10 border-[#f59e0b]/30 text-[#fde68a]'
-                }`}>
-                  <Info className="h-4 w-4 shrink-0 mt-0.5 text-[#818cf8]" />
-                  <div className="space-y-0.5">
-                    <div className="font-semibold text-white flex items-center space-x-2">
-                      <span>Reschedule & Cancellation Policy</span>
-                      <span className="text-[10px] font-mono text-[#818cf8]">
-                        ({policy.hoursUntilStart > 0 ? `${policy.hoursUntilStart}h notice` : 'Past/Immediate'})
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-[#8c8c8c]">{policy.policySummary}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Slot Rescheduling Section */}
-              {appointment && appointment.status !== 'cancelled' && (
-                <div className="space-y-4 pt-2">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div>
-                      <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-                        <span>Select New Calendar Slot</span>
-                        <span className="text-[10px] font-mono font-normal text-[#10b981] bg-[#10b981]/15 px-2 py-0.5 rounded">
-                          {availableSlots.length} Slots Open
-                        </span>
-                      </h4>
-                      <p className="text-[11px] text-[#8c8c8c]">Choose an available date and time to instantly swap your slot.</p>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs text-[#8c8c8c]">Date:</span>
-                      <input
-                        type="date"
-                        value={selectedDate}
-                        onChange={(e) => setSelectedDate(e.target.value)}
-                        className="bg-[#1f1f1f] border border-[#313131] rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-[#6366f1]"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Slot Grid */}
-                  {loadingSlots ? (
-                    <div className="py-8 flex items-center justify-center space-x-2 text-xs text-[#8c8c8c]">
-                      <RefreshCw className="h-4 w-4 animate-spin text-[#818cf8]" />
-                      <span>Checking Google Calendar real-time free/busy...</span>
-                    </div>
-                  ) : availableSlots.length === 0 ? (
-                    <div className="py-8 text-center text-xs text-[#8c8c8c] bg-[#1f1f1f]/50 border border-[#313131] rounded-xl">
-                      No open slots found for this date. Please select another date.
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-56 overflow-y-auto pr-1">
-                      {availableSlots.map((slot) => {
-                        const isSelected = selectedSlot?.startTime === slot.startTime;
-                        return (
-                          <button
-                            key={slot.startTime}
-                            type="button"
-                            onClick={() => setSelectedSlot(slot)}
-                            className={`p-2.5 rounded-xl border text-left transition text-xs flex flex-col justify-between cursor-pointer ${
-                              isSelected
-                                ? 'bg-[#6366f1]/20 border-[#6366f1] text-white shadow-md shadow-[#6366f1]/20'
-                                : 'bg-[#1f1f1f] border-[#313131] text-[#f5f5f5] hover:border-[#6366f1]/50 hover:bg-[#1e293b]/40'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between w-full">
-                              <span className="font-mono font-semibold text-white">{slot.displayTime}</span>
-                              {isSelected ? (
-                                <CheckCircle2 className="h-3.5 w-3.5 text-[#10b981]" />
-                              ) : (
-                                <Clock className="h-3.5 w-3.5 text-[#8c8c8c]" />
-                              )}
-                            </div>
-                            <span className="text-[10px] text-[#8c8c8c] mt-1 truncate">{slot.assignedDoctor}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                  {/* Confirm Reschedule Button */}
-                  {selectedSlot && (
-                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#1f1f1f] p-3 rounded-xl border border-[#313131]">
-                      <div className="text-xs">
-                        <span className="text-[#8c8c8c]">Target Slot: </span>
-                        <span className="text-[#818cf8] font-mono font-semibold">
-                          {selectedSlot.displayTime} ({selectedDate})
-                        </span>
-                        <div className="text-[10px] text-[#10b981]">100% Deposit Carried Over • No Hidden Fees</div>
-                      </div>
-                      <button
-                        onClick={handleReschedule}
-                        disabled={rescheduling}
-                        className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold transition flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
-                      >
-                        {rescheduling ? (
-                          <>
-                            <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-                            <span>Updating calendar...</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>Confirm 1-click swap</span>
-                            <ArrowRight className="h-3.5 w-3.5" />
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Cancellation Section */}
-              {appointment && appointment.status !== 'cancelled' && (
-                <div className="pt-4 border-t border-[#313131]">
-                  {!showCancelConfirm ? (
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-[#8c8c8c]">Unable to make it to any available slot?</span>
-                      <button
-                        onClick={() => setShowCancelConfirm(true)}
-                        className="text-xs text-[#ffb4ab] hover:underline cursor-pointer"
-                      >
-                        Cancel Appointment
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="p-4 rounded-xl bg-[#f43f5e]/10 border border-[#f43f5e]/30 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-[#ffb4ab] flex items-center space-x-1.5">
-                          <AlertTriangle className="h-4 w-4" />
-                          <span>Confirm Cancellation & Deposit Credit</span>
-                        </span>
-                        <button
-                          onClick={() => setShowCancelConfirm(false)}
-                          className="text-[11px] text-[#8c8c8c] hover:text-white"
-                        >
-                          Dismiss
-                        </button>
-                      </div>
-
-                      <p className="text-[11px] text-[#f5f5f5]">
-                        Cancelling releases your reserved slot. Per policy, a credit of{' '}
-                        <span className="font-mono font-bold text-white">
-                          INR {policy?.isFreeWindow ? (appointment.depositAmount || 500) : Math.round((appointment.depositAmount || 500) * 0.5)}
-                        </span>{' '}
-                        will be automatically registered on your account.
-                      </p>
-
-                      <div className="space-y-1.5">
-                        <label className="text-[11px] text-[#8c8c8c]">Reason for cancellation:</label>
-                        <input
-                          type="text"
-                          value={cancelReason}
-                          onChange={(e) => setCancelReason(e.target.value)}
-                          className="w-full bg-[#1f1f1f] border border-[#313131] rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#f43f5e]"
-                        />
-                      </div>
-
-                      <div className="flex justify-end space-x-2 pt-1">
-                        <button
-                          onClick={() => setShowCancelConfirm(false)}
-                          className="px-3 py-1.5 rounded-lg border border-[#313131] text-xs text-[#8c8c8c] hover:text-white cursor-pointer"
-                        >
-                          Keep Slot
-                        </button>
-                        <button
-                          onClick={handleCancel}
-                          disabled={cancelling}
-                          className="px-3.5 py-1.5 rounded-lg bg-[#f43f5e] hover:bg-[#e11d48] text-white text-xs font-semibold transition cursor-pointer flex items-center space-x-1.5 disabled:opacity-50"
-                        >
-                          {cancelling ? (
-                            <>
-                              <RefreshCw className="h-3 w-3 animate-spin" />
-                              <span>Processing Credit...</span>
-                            </>
-                          ) : (
-                            <span>Confirm & Release Slot</span>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Shareable Magic Link Drawer */}
-              <div className="p-3 rounded-xl bg-[#1f1f1f] border border-[#313131] flex items-center justify-between text-xs">
-                <div className="flex items-center space-x-2 overflow-hidden mr-2">
-                  <ExternalLink className="h-3.5 w-3.5 text-[#818cf8] shrink-0" />
-                  <span className="text-[#8c8c8c] truncate text-[11px]">
-                    Magic Link: {token ? `${window.location.origin}/portal?token=${token.slice(0, 16)}...` : 'Generating...'}
+            {/* Active Appointment Summary Card */}
+            {appointment && (
+              <div className="p-4 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5] space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-[#1C1917] uppercase tracking-wider">
+                    Current Reservation
+                  </span>
+                  <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                    appointment.status === 'cancelled'
+                      ? 'bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]'
+                      : 'bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]'
+                  }`}>
+                    {appointment.status.toUpperCase()}
                   </span>
                 </div>
-                <button
-                  onClick={handleCopyLink}
-                  className="px-2.5 py-1 rounded-lg bg-[#1e293b] text-[#f5f5f5] hover:text-white text-[11px] flex items-center space-x-1 shrink-0 cursor-pointer transition"
-                >
-                  {copiedLink ? (
-                    <>
-                      <Check className="h-3 w-3 text-[#10b981]" />
-                      <span className="text-[#10b981]">Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-3 w-3" />
-                      <span>Copy Client URL</span>
-                    </>
-                  )}
-                </button>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <div className="text-[#78716C] text-[11px]">Patient Name</div>
+                    <div className="text-[#1C1917] font-medium flex items-center space-x-1.5 mt-0.5">
+                      <User className="h-3.5 w-3.5 text-[#1E3A2F]" />
+                      <span>{appointment.customerName}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[#78716C] text-[11px]">Treatment & Protocol</div>
+                    <div className="text-[#1C1917] font-medium mt-0.5">{appointment.serviceName}</div>
+                  </div>
+                  <div>
+                    <div className="text-[#78716C] text-[11px]">Current Slot (IST)</div>
+                    <div className="text-[#1E3A2F] font-mono font-medium mt-0.5 flex items-center space-x-1.5">
+                      <Clock className="h-3.5 w-3.5" />
+                      <span>
+                        {new Date(appointment.startTime).toLocaleString([], {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="text-[#78716C] text-[11px]">Deposit Status</div>
+                    <div className="text-[#1B4332] font-mono font-medium mt-0.5 flex items-center space-x-1">
+                      <ShieldCheck className="h-3.5 w-3.5" />
+                      <span>INR {appointment.depositAmount || 500} Paid</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-[#E5DFD5] flex items-center text-[11px] text-[#78716C] space-x-1.5">
+                  <MapPin className="h-3.5 w-3.5 text-[#1E3A2F]" />
+                  <span>Apex Wellness Clinic • 104 Grand Vista Blvd, Suite 400</span>
+                </div>
               </div>
-            </>
-          )}
-        </div>
+            )}
 
-        {/* Footer */}
-        <div className="px-6 py-3 border-t border-[#313131] bg-[#1f1f1f]/60 flex items-center justify-between text-xs text-[#8c8c8c]">
-          <span className="text-[11px]">HMAC-SHA256 Encrypted Magic Portal</span>
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="px-3 py-1.5 rounded-lg bg-[#1e293b] text-white text-xs hover:bg-[#334155] transition cursor-pointer"
-            >
-              Close
-            </button>
-          )}
-        </div>
+            {/* Clinic Policy Indicator */}
+            {policy && (
+              <div className="p-3.5 rounded-lg border border-[#E5DFD5] bg-white text-xs flex items-start space-x-3">
+                <Info className="h-4 w-4 shrink-0 mt-0.5 text-[#1E3A2F]" />
+                <div className="space-y-0.5">
+                  <div className="font-semibold text-[#1C1917] flex items-center space-x-2">
+                    <span>Reschedule & Notice Terms</span>
+                    <span className="text-[10px] font-mono text-[#78716C]">
+                      ({policy.hoursUntilStart > 0 ? `${policy.hoursUntilStart}h notice` : 'Immediate'})
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[#44403C] leading-relaxed">{policy.policySummary}</p>
+                </div>
+              </div>
+            )}
 
+            {/* Slot Rescheduling Section */}
+            {appointment && appointment.status !== 'cancelled' && (
+              <div className="space-y-3 pt-1">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h4 className="text-xs font-semibold text-[#1C1917] flex items-center space-x-2">
+                      <span>Choose New Slot</span>
+                      <span className="text-[10px] font-mono font-normal text-[#1B4332] bg-[#EAF5EE] px-2 py-0.5 rounded">
+                        {availableSlots.length} available
+                      </span>
+                    </h4>
+                    <p className="text-[11px] text-[#78716C]">Select a date and click an available time slot.</p>
+                  </div>
+
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-[#78716C]">Date:</span>
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={(e) => setSelectedDate(e.target.value)}
+                      className="input-clinic text-xs py-1 px-2.5"
+                    />
+                  </div>
+                </div>
+
+                {/* Slot Grid with Shimmer Skeleton */}
+                {loadingSlots ? (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 py-3">
+                    <div className="skeleton-shimmer h-12 rounded-lg" />
+                    <div className="skeleton-shimmer h-12 rounded-lg" />
+                    <div className="skeleton-shimmer h-12 rounded-lg" />
+                  </div>
+                ) : availableSlots.length === 0 ? (
+                  <div className="py-6 text-center text-xs text-[#78716C] bg-[#FAF7F2] border border-[#E5DFD5] rounded-lg">
+                    No open consultation slots found for this date. Please select another day.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-52 overflow-y-auto pr-1">
+                    {availableSlots.map((slot) => {
+                      const isSelected = selectedSlot?.startTime === slot.startTime;
+                      return (
+                        <button
+                          key={slot.startTime}
+                          type="button"
+                          onClick={() => setSelectedSlot(slot)}
+                          className={`p-2.5 rounded-lg border text-left transition text-xs flex flex-col justify-between cursor-pointer ${
+                            isSelected
+                              ? 'bg-[#1E3A2F] text-white border-[#1E3A2F]'
+                              : 'bg-white border-[#E5DFD5] text-[#1C1917] hover:border-[#1E3A2F]'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span className="font-mono font-semibold">{slot.displayTime}</span>
+                            {isSelected ? (
+                              <CheckCircle2 className="h-3.5 w-3.5 text-white" />
+                            ) : (
+                              <Clock className="h-3.5 w-3.5 text-[#78716C]" />
+                            )}
+                          </div>
+                          <span className={`text-[10px] mt-1 truncate ${isSelected ? 'text-white/80' : 'text-[#78716C]'}`}>
+                            {slot.assignedDoctor}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Confirm Reschedule Action Strip */}
+                {selectedSlot && (
+                  <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#FAF7F2] p-3 rounded-lg border border-[#E5DFD5]">
+                    <div className="text-xs">
+                      <span className="text-[#78716C]">Selected slot: </span>
+                      <span className="text-[#1E3A2F] font-mono font-semibold">
+                        {selectedSlot.displayTime} ({selectedDate})
+                      </span>
+                      <div className="text-[10px] text-[#1B4332]">100% deposit carried forward</div>
+                    </div>
+                    <button
+                      onClick={handleReschedule}
+                      disabled={rescheduling}
+                      className="btn-clinic-primary text-xs py-2 px-4 cursor-pointer disabled:opacity-50"
+                    >
+                      {rescheduling ? 'Updating calendar...' : 'Confirm slot change'}
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Cancellation Section */}
+            {appointment && appointment.status !== 'cancelled' && (
+              <div className="pt-3 border-t border-[#E5DFD5]">
+                {!showCancelConfirm ? (
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-[#78716C]">Need to cancel completely?</span>
+                    <button
+                      onClick={() => setShowCancelConfirm(true)}
+                      className="text-xs text-[#991B1B] hover:underline cursor-pointer"
+                    >
+                      Cancel booking
+                    </button>
+                  </div>
+                ) : (
+                  <div className="p-3.5 rounded-lg bg-[#FEF2F2] border border-[#FECACA] space-y-2.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-[#991B1B] flex items-center space-x-1.5">
+                        <AlertTriangle className="h-4 w-4" />
+                        <span>Confirm Appointment Cancellation</span>
+                      </span>
+                      <button
+                        onClick={() => setShowCancelConfirm(false)}
+                        className="text-[11px] text-[#78716C] hover:text-[#1C1917]"
+                      >
+                        Keep booking
+                      </button>
+                    </div>
+
+                    <p className="text-[11px] text-[#44403C]">
+                      Cancelling releases your scheduled calendar slot. A credit of{' '}
+                      <span className="font-mono font-bold text-[#1C1917]">
+                        INR {policy?.isFreeWindow ? (appointment.depositAmount || 500) : Math.round((appointment.depositAmount || 500) * 0.5)}
+                      </span>{' '}
+                      will be registered to your clinic account.
+                    </p>
+
+                    <div className="space-y-1">
+                      <label className="text-[11px] text-[#78716C]">Reason for cancellation:</label>
+                      <input
+                        type="text"
+                        value={cancelReason}
+                        onChange={(e) => setCancelReason(e.target.value)}
+                        className="w-full input-clinic text-xs py-1.5 px-2.5"
+                      />
+                    </div>
+
+                    <div className="flex justify-end space-x-2 pt-1">
+                      <button
+                        onClick={() => setShowCancelConfirm(false)}
+                        className="btn-clinic-secondary text-xs py-1 px-3"
+                      >
+                        Back
+                      </button>
+                      <button
+                        onClick={handleCancel}
+                        disabled={cancelling}
+                        className="btn-clinic-urgent text-xs py-1 px-3 disabled:opacity-50"
+                      >
+                        {cancelling ? 'Releasing slot...' : 'Confirm & release slot'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Shareable Link Strip */}
+            <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5] flex items-center justify-between text-xs">
+              <div className="flex items-center space-x-2 overflow-hidden mr-2">
+                <ExternalLink className="h-3.5 w-3.5 text-[#1E3A2F] shrink-0" />
+                <span className="text-[#78716C] truncate text-[11px]">
+                  Self-service portal URL
+                </span>
+              </div>
+              <button
+                onClick={handleCopyLink}
+                className="btn-clinic-secondary text-[11px] py-1 px-2.5 flex items-center space-x-1 shrink-0"
+              >
+                {copiedLink ? (
+                  <>
+                    <Check className="h-3 w-3 text-[#1B4332]" />
+                    <span className="text-[#1B4332]">Copied</span>
+                  </>
+                ) : (
+                  <>
+                    <Copy className="h-3 w-3" />
+                    <span>Copy URL</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </>
+        )}
       </div>
+
+      {/* Footer */}
+      <div className="px-6 py-3 border-t border-[#E5DFD5] bg-[#FAF7F2] flex items-center justify-between text-xs text-[#78716C]">
+        <span className="text-[11px]">Apex Wellness Encrypted Portal</span>
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="btn-clinic-secondary text-xs py-1 px-3 cursor-pointer"
+          >
+            Close
+          </button>
+        )}
+      </div>
+
+    </div>
   );
 
   if (isStandalone) {
@@ -614,7 +597,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1C1917]/40 backdrop-blur-xs animate-in fade-in duration-200">
       {portalCard}
     </div>
   );

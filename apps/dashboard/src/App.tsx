@@ -973,8 +973,20 @@ export default function App() {
                   })}
 
                   {sortedSessions.length === 0 && (
-                    <div className="py-12 text-center text-[#78716C] text-xs">
-                      No active patient inquiries in this channel.
+                    <div className="py-14 text-center flex flex-col items-center justify-center">
+                      <div className="h-9 w-9 rounded-full bg-[#FAF7F2] border border-[#E5DFD5] flex items-center justify-center text-[#78716C] mb-2.5">
+                        <MessageSquare className="h-4 w-4" />
+                      </div>
+                      <p className="text-xs font-medium text-[#1C1917]">No inquiries in this channel</p>
+                      <p className="text-[11px] text-[#78716C] mt-1 max-w-[200px]">
+                        All patient conversations have been resolved or filtered out.
+                      </p>
+                      <button
+                        onClick={() => setChannelFilter('all')}
+                        className="mt-3 text-xs text-[#1E3A2F] underline hover:text-[#152B23] font-medium cursor-pointer"
+                      >
+                        Show all channels
+                      </button>
                     </div>
                   )}
                 </div>
@@ -1287,8 +1299,22 @@ export default function App() {
                   ))}
                   {filteredDocuments.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="py-12 text-center text-[#78716C] text-xs">
-                        No clinic guides match your search or category filter. Click "Add clinic guide" above to add guidance.
+                      <td colSpan={5} className="py-14 text-center">
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="h-9 w-9 rounded-full bg-[#FAF7F2] border border-[#E5DFD5] flex items-center justify-center text-[#78716C] mb-2.5">
+                            <FileText className="h-4 w-4" />
+                          </div>
+                          <p className="text-xs font-medium text-[#1C1917]">No clinic guides match your search</p>
+                          <p className="text-[11px] text-[#78716C] mt-1 max-w-sm">
+                            No protocols or price sheets match this category or keyword.
+                          </p>
+                          <button
+                            onClick={() => { setKnowledgeCategoryFilter('all'); setKnowledgeSearchQuery(''); }}
+                            className="mt-3 text-xs text-[#1E3A2F] underline hover:text-[#152B23] font-medium cursor-pointer"
+                          >
+                            Reset category & search filters
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   )}
@@ -1492,8 +1518,16 @@ export default function App() {
                           ))}
                         </div>
                       ) : (
-                        <div className="p-6 bg-[#FAF7F2] rounded-md text-center text-xs text-[#78716C]">
-                          No appointments scheduled for today.
+                        <div className="p-8 bg-[#FAF7F2] rounded-lg border border-dashed border-[#E5DFD5] text-center flex flex-col items-center justify-center">
+                          <Calendar className="h-6 w-6 text-[#A8A29E] mb-2" />
+                          <p className="text-xs font-medium text-[#1C1917]">No appointments scheduled for today</p>
+                          <p className="text-[11px] text-[#78716C] mt-0.5">The clinic schedule is clear for the day.</p>
+                          <button
+                            onClick={() => setShowWalkInModal(true)}
+                            className="mt-3 text-xs text-[#1E3A2F] hover:text-[#152B23] font-medium underline cursor-pointer"
+                          >
+                            + Schedule a walk-in patient
+                          </button>
                         </div>
                       )}
                     </div>
@@ -1569,8 +1603,10 @@ export default function App() {
                           ))}
                         </div>
                       ) : (
-                        <div className="p-6 bg-[#FAF7F2] rounded-md text-center text-xs text-[#78716C]">
-                          No appointments scheduled for tomorrow.
+                        <div className="p-8 bg-[#FAF7F2] rounded-lg border border-dashed border-[#E5DFD5] text-center flex flex-col items-center justify-center">
+                          <Calendar className="h-6 w-6 text-[#A8A29E] mb-2" />
+                          <p className="text-xs font-medium text-[#1C1917]">No appointments scheduled for tomorrow</p>
+                          <p className="text-[11px] text-[#78716C] mt-0.5">Slots remain open for online bookings and walk-ins.</p>
                         </div>
                       )}
                     </div>
@@ -1727,8 +1763,22 @@ export default function App() {
                         ))}
                         {filteredAppointments.length === 0 && (
                           <tr>
-                            <td colSpan={6} className="py-12 text-center text-[#78716C] text-xs">
-                              No appointments match the search or status filter.
+                            <td colSpan={6} className="py-14 text-center">
+                              <div className="flex flex-col items-center justify-center">
+                                <div className="h-9 w-9 rounded-full bg-[#FAF7F2] border border-[#E5DFD5] flex items-center justify-center text-[#78716C] mb-2.5">
+                                  <Calendar className="h-4 w-4" />
+                                </div>
+                                <p className="text-xs font-medium text-[#1C1917]">No appointments match your filters</p>
+                                <p className="text-[11px] text-[#78716C] mt-1 max-w-sm">
+                                  No records match the current status filter or search query.
+                                </p>
+                                <button
+                                  onClick={() => { setAppointmentStatusFilter('all'); setAppointmentSearchQuery(''); }}
+                                  className="mt-3 text-xs text-[#1E3A2F] underline hover:text-[#152B23] font-medium cursor-pointer"
+                                >
+                                  Reset filters
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         )}
@@ -2009,30 +2059,30 @@ export default function App() {
 
         {/* Tab 4: 20-Scenario Golden Evaluation Suite */}
         {activeTab === 'evals' && (
-          <div className="rounded-2xl bg-[#181818] border border-[#313131] p-6 space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="bg-white border border-[#E5DFD5] rounded-xl p-6 space-y-6 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5DFD5]">
               <div>
                 <div className="flex items-center space-x-2">
-                  <h2 className="text-base font-bold text-white">20-Scenario Golden Eval Benchmark Console</h2>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30">
-                    Live Automated Runner
+                  <h2 className="font-serif-display font-medium text-base text-[#1C1917]">Agent Diagnostic & Evaluation Benchmarks</h2>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]">
+                    Verified Evaluator
                   </span>
                 </div>
-                <p className="text-xs text-[#8c8c8c] mt-0.5">
-                  Automated benchmark measuring Groundedness, Hallucination Prevention, Tool Precision, and Sentiment Escalation.
+                <p className="text-xs text-[#78716C] mt-0.5">
+                  Automated benchmark measuring Groundedness, Hallucination Prevention, Tool Precision, and Sentiment Escalation across 20 golden scenarios.
                 </p>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="text-right">
-                  <div className="text-[10px] uppercase tracking-wider text-[#8c8c8c]">Overall Accuracy Score</div>
-                  <div className="text-2xl font-bold font-mono text-[#4edea3]">
+                  <div className="text-[10px] uppercase tracking-wider text-[#78716C]">Overall Accuracy Score</div>
+                  <div className="text-2xl font-bold font-mono text-[#1B4332]">
                     {evalScorecard?.overallAccuracy !== undefined ? `${evalScorecard.overallAccuracy}%` : '100.0%'}
                   </div>
                 </div>
                 <button 
                   onClick={handleRunEvals}
                   disabled={isRunningEvals}
-                  className="px-4 py-2.5 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-2 disabled:opacity-50"
+                  className="btn-clinic-primary text-xs flex items-center space-x-2 cursor-pointer disabled:opacity-50"
                 >
                   {isRunningEvals ? (
                     <>
@@ -2051,58 +2101,58 @@ export default function App() {
 
             {/* Metric Scorecard Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-4 rounded-xl bg-[#1f1f1f] border border-[#313131]">
-                <div className="flex items-center justify-between text-xs text-[#8c8c8c]">
-                  <span>1. Knowledge Base RAG</span>
-                  <span className="font-mono text-[#4edea3]">8/8</span>
+              <div className="p-4 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5]">
+                <div className="flex items-center justify-between text-xs text-[#78716C]">
+                  <span>1. Knowledge Grounding</span>
+                  <span className="font-mono text-[#1B4332] font-semibold">8/8</span>
                 </div>
-                <div className="text-2xl font-bold text-white mt-1 font-mono">
+                <div className="text-2xl font-bold text-[#1C1917] mt-1 font-mono">
                   {evalScorecard?.categoryStats?.knowledge ? `${Math.round((evalScorecard.categoryStats.knowledge.passed / evalScorecard.categoryStats.knowledge.total) * 100)}%` : '100%'}
                 </div>
-                <div className="text-[10px] text-[#4edea3] mt-1">Zero-hallucination grounded RAG</div>
+                <div className="text-[10px] text-[#1B4332] mt-1">Zero-hallucination verified</div>
               </div>
-              <div className="p-4 rounded-xl bg-[#1f1f1f] border border-[#313131]">
-                <div className="flex items-center justify-between text-xs text-[#8c8c8c]">
-                  <span>2. Booking Tool Precision</span>
-                  <span className="font-mono text-[#4edea3]">5/5</span>
+              <div className="p-4 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5]">
+                <div className="flex items-center justify-between text-xs text-[#78716C]">
+                  <span>2. Booking Precision</span>
+                  <span className="font-mono text-[#1B4332] font-semibold">5/5</span>
                 </div>
-                <div className="text-2xl font-bold text-white mt-1 font-mono">
+                <div className="text-2xl font-bold text-[#1C1917] mt-1 font-mono">
                   {evalScorecard?.categoryStats?.booking ? `${Math.round((evalScorecard.categoryStats.booking.passed / evalScorecard.categoryStats.booking.total) * 100)}%` : '100%'}
                 </div>
-                <div className="text-[10px] text-[#4edea3] mt-1">Slot discovery & calendar accuracy</div>
+                <div className="text-[10px] text-[#1B4332] mt-1">Slot discovery & calendar accuracy</div>
               </div>
-              <div className="p-4 rounded-xl bg-[#1f1f1f] border border-[#313131]">
-                <div className="flex items-center justify-between text-xs text-[#8c8c8c]">
-                  <span>3. Guardrails & Safety</span>
-                  <span className="font-mono text-[#4edea3]">4/4</span>
+              <div className="p-4 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5]">
+                <div className="flex items-center justify-between text-xs text-[#78716C]">
+                  <span>3. Safety & Guardrails</span>
+                  <span className="font-mono text-[#1B4332] font-semibold">4/4</span>
                 </div>
-                <div className="text-2xl font-bold text-white mt-1 font-mono">
+                <div className="text-2xl font-bold text-[#1C1917] mt-1 font-mono">
                   {evalScorecard?.categoryStats?.guardrail ? `${Math.round((evalScorecard.categoryStats.guardrail.passed / evalScorecard.categoryStats.guardrail.total) * 100)}%` : '100%'}
                 </div>
-                <div className="text-[10px] text-[#4edea3] mt-1">Out-of-scope & injections caught</div>
+                <div className="text-[10px] text-[#1B4332] mt-1">Out-of-scope & injections caught</div>
               </div>
-              <div className="p-4 rounded-xl bg-[#1f1f1f] border border-[#313131]">
-                <div className="flex items-center justify-between text-xs text-[#8c8c8c]">
+              <div className="p-4 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5]">
+                <div className="flex items-center justify-between text-xs text-[#78716C]">
                   <span>4. Sentiment Escalation</span>
-                  <span className="font-mono text-[#4edea3]">3/3</span>
+                  <span className="font-mono text-[#1B4332] font-semibold">3/3</span>
                 </div>
-                <div className="text-2xl font-bold text-white mt-1 font-mono">
+                <div className="text-2xl font-bold text-[#1C1917] mt-1 font-mono">
                   {evalScorecard?.categoryStats?.escalation ? `${Math.round((evalScorecard.categoryStats.escalation.passed / evalScorecard.categoryStats.escalation.total) * 100)}%` : '100%'}
                 </div>
-                <div className="text-[10px] text-[#4edea3] mt-1">High-priority handoff to human desk</div>
+                <div className="text-[10px] text-[#1B4332] mt-1">High-priority receptionist handoff</div>
               </div>
             </div>
 
             {/* Category Filter Tabs */}
-            <div className="flex items-center space-x-2 border-b border-[#313131] pb-3 overflow-x-auto">
+            <div className="flex items-center space-x-2 border-b border-[#E5DFD5] pb-3 overflow-x-auto">
               {(['all', 'knowledge', 'booking', 'guardrail', 'escalation'] as const).map(cat => (
                 <button
                   key={cat}
                   onClick={() => setEvalCategoryFilter(cat)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition cursor-pointer ${
+                  className={`px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap transition cursor-pointer ${
                     evalCategoryFilter === cat
-                      ? 'bg-[#6366f1] text-white'
-                      : 'text-[#8c8c8c] hover:text-white hover:bg-[#1e293b]'
+                      ? 'bg-[#1E3A2F] text-white'
+                      : 'text-[#78716C] hover:text-[#1C1917] hover:bg-[#F3EFE8]'
                   }`}
                 >
                   {cat === 'all' 
@@ -2121,44 +2171,44 @@ export default function App() {
                 return (
                   <div
                     key={sc.id}
-                    className="p-4 rounded-xl bg-[#1f1f1f]/70 border border-[#313131] hover:border-[#334155] transition space-y-3"
+                    className="p-4 rounded-lg bg-white border border-[#E5DFD5] hover:border-[#1E3A2F] transition space-y-3 shadow-2xs"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center space-x-2.5">
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1e293b] text-[#8c8c8c]">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#FAF7F2] text-[#78716C] border border-[#E5DFD5]">
                           #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
                         </span>
                         <span className={`text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold ${
-                          sc.category === 'knowledge' ? 'bg-[#6366f1]/15 text-[#818cf8]' :
-                          sc.category === 'booking' ? 'bg-[#10b981]/15 text-[#4edea3]' :
-                          sc.category === 'guardrail' ? 'bg-[#f59e0b]/15 text-[#fcd34d]' :
-                          'bg-[#f43f5e]/15 text-[#ffb4ab]'
+                          sc.category === 'knowledge' ? 'bg-[#EBF2EE] text-[#1B4332]' :
+                          sc.category === 'booking' ? 'bg-[#EBF2EE] text-[#1E3A2F]' :
+                          sc.category === 'guardrail' ? 'bg-[#FEF9C3] text-[#854D0E]' :
+                          'bg-[#FEF2F2] text-[#991B1B]'
                         }`}>
                           {sc.category}
                         </span>
-                        <h4 className="font-semibold text-white text-xs">{sc.name || sc.id}</h4>
+                        <h4 className="font-semibold text-[#1C1917] text-xs">{sc.name || sc.id}</h4>
                       </div>
 
                       <div className="flex items-center space-x-2">
                         {evalRunResult ? (
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold flex items-center space-x-1 ${
                             evalRunResult.passed
-                              ? 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30'
-                              : 'bg-[#f43f5e]/15 text-[#ffb4ab] border border-[#f43f5e]/30'
+                              ? 'bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]'
+                              : 'bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]'
                           }`}>
                             {evalRunResult.passed ? <CheckCircle2 className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
                             <span>{evalRunResult.passed ? 'PASSED' : 'FAILED'}</span>
-                            <span className="font-mono text-[9px] text-[#8c8c8c]">({evalRunResult.latencyMs}ms)</span>
+                            <span className="font-mono text-[9px] text-[#78716C]">({evalRunResult.latencyMs}ms)</span>
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] bg-[#1e293b] text-[#8c8c8c]">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] bg-[#FAF7F2] text-[#78716C] border border-[#E5DFD5]">
                             Ready to Benchmark
                           </span>
                         )}
 
                         <button
                           onClick={() => setExpandedScenarioId(isExpanded ? null : sc.id)}
-                          className="p-1 rounded text-[#8c8c8c] hover:text-white transition cursor-pointer"
+                          className="p-1 rounded text-[#78716C] hover:text-[#1C1917] transition cursor-pointer"
                         >
                           <ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                         </button>
@@ -2166,33 +2216,33 @@ export default function App() {
                     </div>
 
                     {/* Scenario Prompt */}
-                    <div className="p-3 rounded-lg bg-[#1f1f1f] border border-[#313131] text-xs">
-                      <span className="text-[#8c8c8c] font-mono text-[10px] block mb-1">USER PROMPT</span>
-                      <p className="text-white italic">"{sc.prompt}"</p>
+                    <div className="p-3 rounded-md bg-[#FAF7F2] border border-[#E5DFD5] text-xs">
+                      <span className="text-[#78716C] font-mono text-[10px] block mb-1">PATIENT PROMPT</span>
+                      <p className="text-[#1C1917] italic">"{sc.prompt}"</p>
                     </div>
 
                     {/* Expanded Detail Accordion */}
                     {isExpanded && (
-                      <div className="p-3 rounded-lg bg-[#080d19] border border-[#6366f1]/20 space-y-2.5 text-xs animate-in fade-in duration-150">
+                      <div className="p-3 rounded-md bg-[#FAF7F2] border border-[#E5DFD5] space-y-2.5 text-xs animate-in fade-in duration-150">
                         <div>
-                          <span className="text-[#818cf8] font-mono text-[10px] block">EXPECTED INTENT / GROUND TRUTH</span>
-                          <p className="text-[#f5f5f5] text-[11px] mt-0.5">
+                          <span className="text-[#1E3A2F] font-mono text-[10px] block font-semibold">EXPECTED BEHAVIOR / GROUND TRUTH</span>
+                          <p className="text-[#44403C] text-[11px] mt-0.5">
                             {sc.description || sc.expectedBehavior || `Expected intent: ${sc.expectedIntent}`}
                           </p>
                         </div>
 
                         {evalRunResult && (
                           <>
-                            <div className="pt-2 border-t border-[#313131]">
-                              <span className="text-[#4edea3] font-mono text-[10px] block">AGENT ACTUAL RESPONSE</span>
-                              <p className="text-white text-[11px] mt-0.5 leading-relaxed bg-[#1f1f1f] p-2.5 rounded-lg border border-[#313131]">
+                            <div className="pt-2 border-t border-[#E5DFD5]">
+                              <span className="text-[#1B4332] font-mono text-[10px] block font-semibold">AGENT ACTUAL RESPONSE</span>
+                              <p className="text-[#1C1917] text-[11px] mt-0.5 leading-relaxed bg-white p-2.5 rounded-md border border-[#E5DFD5]">
                                 {evalRunResult.agentResponse}
                               </p>
                             </div>
 
-                            <div className="pt-2 border-t border-[#313131]">
-                              <span className="text-[#8c8c8c] font-mono text-[10px] block">BENCHMARK EVALUATION RATIONALE</span>
-                              <p className="text-[#8c8c8c] text-[11px] mt-0.5">
+                            <div className="pt-2 border-t border-[#E5DFD5]">
+                              <span className="text-[#78716C] font-mono text-[10px] block">BENCHMARK EVALUATION RATIONALE</span>
+                              <p className="text-[#78716C] text-[11px] mt-0.5">
                                 {evalRunResult.evaluationRationale}
                               </p>
                             </div>
@@ -2211,34 +2261,34 @@ export default function App() {
         {activeTab === 'whitelabel' && (
           <div className="space-y-6">
             {/* Header & Value Proposition */}
-            <div className="rounded-2xl bg-[#181818] border border-[#313131] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="rounded-xl bg-white border border-[#E5DFD5] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
               <div>
                 <div className="flex items-center space-x-2">
-                  <h2 className="text-base font-bold text-white">Client White-Label Studio & Universal Embed</h2>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30">
+                  <h2 className="font-serif-display font-medium text-base text-[#1C1917]">Practice White-Label Configuration & Embed</h2>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]">
                     Shadow DOM Isolated
                   </span>
                 </div>
-                <p className="text-xs text-[#8c8c8c] mt-1">
-                  Switch business verticals in 1-click or generate a self-contained <code>&lt;script&gt;</code> embed for WordPress, Shopify, Squarespace, and Webflow clients.
+                <p className="text-xs text-[#78716C] mt-1">
+                  Customize clinic branding or copy the standalone embed script for your practice website.
                 </p>
               </div>
 
               <div className="flex items-center space-x-3">
                 <button
                   onClick={handleCopyEmbedCode}
-                  className="px-4 py-2 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-2"
+                  className="btn-clinic-primary text-xs flex items-center space-x-2 cursor-pointer"
                 >
-                  {copiedEmbed ? <Check className="h-4 w-4 text-[#4edea3]" /> : <Copy className="h-4 w-4" />}
-                  <span>{copiedEmbed ? 'Copied Embed Code!' : 'Copy Script Tag'}</span>
+                  {copiedEmbed ? <Check className="h-4 w-4 text-white" /> : <Copy className="h-4 w-4" />}
+                  <span>{copiedEmbed ? 'Copied embed snippet!' : 'Copy widget script'}</span>
                 </button>
               </div>
             </div>
 
             {/* Quick Niche Switcher Cards */}
             <div>
-              <div className="text-xs font-semibold text-[#8c8c8c] uppercase tracking-wider mb-3">
-                1-Click Niche Switcher (Preconfigured Demo Verticals)
+              <div className="text-xs font-semibold text-[#78716C] uppercase tracking-wider mb-3">
+                Preconfigured Practice Profiles
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {[
@@ -2247,32 +2297,32 @@ export default function App() {
                     name: 'Wellness Clinic',
                     preset: presets.clinic,
                     icon: '🩺',
-                    color: '#6366f1',
+                    color: '#1E3A2F',
                     badge: 'Apex Wellness'
                   },
                   {
                     key: 'salon',
-                    name: 'Hair & Glam Salon',
+                    name: 'Aesthetic Studio',
                     preset: presets.salon,
-                    icon: '✂️',
-                    color: '#ec4899',
+                    icon: '✨',
+                    color: '#A26B52',
                     badge: 'Luxe Glow'
                   },
                   {
                     key: 'real_estate',
-                    name: 'Luxury Real Estate',
+                    name: 'Private Practice',
                     preset: presets.real_estate,
-                    icon: '🏢',
-                    color: '#0ea5e9',
-                    badge: 'Skyline Premier'
+                    icon: '🏛️',
+                    color: '#3B5249',
+                    badge: 'Premier Suite'
                   },
                   {
                     key: 'coaching',
-                    name: 'Prep Coaching Academy',
+                    name: 'Consulting Group',
                     preset: presets.coaching,
-                    icon: '🎓',
-                    color: '#f59e0b',
-                    badge: 'Ascend Academy'
+                    icon: '📋',
+                    color: '#8A5D3B',
+                    badge: 'Care Advisory'
                   }
                 ].map((item) => {
                   const isCurrent = businessConfig?.industry === item.key;
@@ -2282,33 +2332,33 @@ export default function App() {
                       onClick={() => handleSelectPreset(item.key)}
                       className={`p-4 rounded-xl border transition cursor-pointer flex flex-col justify-between ${
                         isCurrent
-                          ? 'bg-[#1e1b4b]/60 border-[#6366f1] shadow-lg shadow-[#6366f1]/15 ring-1 ring-[#6366f1]'
-                          : 'bg-[#1f1f1f] border-[#313131] hover:border-[#334155]'
+                          ? 'bg-[#EBF2EE] border-[#1E3A2F] shadow-xs'
+                          : 'bg-white border-[#E5DFD5] hover:border-[#1E3A2F]'
                       }`}
                     >
                       <div>
                         <div className="flex items-center justify-between">
                           <span className="text-2xl">{item.icon}</span>
                           {isCurrent ? (
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#10b981]/20 text-[#4edea3] border border-[#10b981]/40 flex items-center space-x-1">
+                            <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#1B4332] text-white flex items-center space-x-1">
                               <CheckCircle2 className="h-3 w-3 inline" />
-                              <span>ACTIVE CLIENT</span>
+                              <span>ACTIVE</span>
                             </span>
                           ) : (
-                            <span className="text-[10px] text-[#8c8c8c] hover:text-white">Click to Activate</span>
+                            <span className="text-[10px] text-[#78716C] hover:text-[#1C1917]">Select Profile</span>
                           )}
                         </div>
-                        <h3 className="text-sm font-bold text-white mt-2.5">{item.name}</h3>
-                        <p className="text-[11px] text-[#8c8c8c] mt-1 line-clamp-2">
+                        <h3 className="text-sm font-semibold text-[#1C1917] mt-2.5">{item.name}</h3>
+                        <p className="text-[11px] text-[#44403C] mt-1 line-clamp-2">
                           {item.preset?.tagline || 'Custom client configuration'}
                         </p>
                       </div>
 
-                      <div className="mt-4 pt-3 border-t border-[#313131] flex items-center justify-between text-[11px]">
-                        <span className="font-mono text-[#818cf8]">{item.badge}</span>
+                      <div className="mt-4 pt-3 border-t border-[#E5DFD5] flex items-center justify-between text-[11px]">
+                        <span className="font-mono text-[#1E3A2F] font-medium">{item.badge}</span>
                         <div className="flex items-center space-x-1.5">
-                          <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} />
-                          <span className="text-[10px] text-[#8c8c8c] font-mono">{item.color}</span>
+                          <div className="h-3 w-3 rounded-full border border-[#E5DFD5]" style={{ backgroundColor: item.color }} />
+                          <span className="text-[10px] text-[#78716C] font-mono">{item.color}</span>
                         </div>
                       </div>
                     </div>
@@ -2320,33 +2370,33 @@ export default function App() {
             {/* Embed Script Code Box & Installation Guide */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left 7 Cols: Embed Code & Platform Tabs */}
-              <div className="lg:col-span-7 rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-[#313131]">
+              <div className="lg:col-span-7 rounded-xl bg-white border border-[#E5DFD5] p-5 space-y-4 shadow-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-[#E5DFD5]">
                   <div className="flex items-center space-x-2">
-                    <Code2 className="h-4 w-4 text-[#818cf8]" />
-                    <span className="text-xs font-semibold text-white">Universal Standalone Embed Code</span>
+                    <Code2 className="h-4 w-4 text-[#1E3A2F]" />
+                    <span className="text-xs font-semibold text-[#1C1917]">Website Embed Code</span>
                   </div>
                   <button
                     onClick={handleCopyEmbedCode}
-                    className="text-[11px] text-[#818cf8] hover:text-white flex items-center space-x-1 cursor-pointer font-medium"
+                    className="text-[11px] text-[#1E3A2F] hover:underline flex items-center space-x-1 cursor-pointer font-medium"
                   >
-                    {copiedEmbed ? <Check className="h-3.5 w-3.5 text-[#4edea3]" /> : <Copy className="h-3.5 w-3.5" />}
+                    {copiedEmbed ? <Check className="h-3.5 w-3.5 text-[#1B4332]" /> : <Copy className="h-3.5 w-3.5" />}
                     <span>{copiedEmbed ? 'Copied' : 'Copy'}</span>
                   </button>
                 </div>
 
                 {/* Code Block */}
-                <div className="relative rounded-xl bg-[#1f1f1f] border border-[#313131] p-4 font-mono text-xs text-[#f5f5f5] overflow-x-auto">
-                  <pre className="text-[12px] leading-relaxed text-[#818cf8]">
+                <div className="relative rounded-lg bg-[#FAF7F2] border border-[#E5DFD5] p-3 font-mono text-xs text-[#1C1917] overflow-x-auto">
+                  <pre className="text-[11px] leading-relaxed text-[#1E3A2F]">
                     {embedScriptTag}
                   </pre>
                 </div>
 
                 {/* CMS Install Tabs */}
                 <div>
-                  <div className="flex space-x-2 border-b border-[#313131] pb-2">
+                  <div className="flex space-x-1 border-b border-[#E5DFD5] pb-2">
                     {[
-                      { id: 'html', label: 'HTML / Webflow' },
+                      { id: 'html', label: 'HTML / Custom' },
                       { id: 'wordpress', label: 'WordPress' },
                       { id: 'shopify', label: 'Shopify' },
                       { id: 'squarespace', label: 'Squarespace' }
@@ -2354,10 +2404,10 @@ export default function App() {
                       <button
                         key={tab.id}
                         onClick={() => setActivePresetTab(tab.id as any)}
-                        className={`text-xs px-3 py-1 rounded-lg transition cursor-pointer ${
+                        className={`text-xs px-2.5 py-1 rounded-md transition cursor-pointer ${
                           activePresetTab === tab.id
-                            ? 'bg-[#6366f1]/20 text-[#818cf8] font-semibold border border-[#6366f1]/40'
-                            : 'text-[#8c8c8c] hover:text-white'
+                            ? 'bg-[#1E3A2F] text-white font-medium'
+                            : 'text-[#78716C] hover:text-[#1C1917] hover:bg-[#FAF7F2]'
                         }`}
                       >
                         {tab.label}
@@ -2365,7 +2415,7 @@ export default function App() {
                     ))}
                   </div>
 
-                  <div className="mt-3 text-xs text-[#8c8c8c] leading-relaxed">
+                  <div className="mt-3 text-xs text-[#44403C] leading-relaxed">
                     {activePresetTab === 'html' && (
                       <p>Paste the snippet directly before the closing <code>&lt;/body&gt;</code> tag of your website. The widget automatically binds to Shadow DOM without style conflicts.</p>
                     )}
@@ -2383,59 +2433,59 @@ export default function App() {
               </div>
 
               {/* Right 5 Cols: Active Brand Inspector */}
-              <div className="lg:col-span-5 rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-[#313131]">
+              <div className="lg:col-span-5 rounded-xl bg-white border border-[#E5DFD5] p-5 space-y-4 shadow-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-[#E5DFD5]">
                   <div className="flex items-center space-x-2">
-                    <Palette className="h-4 w-4 text-[#10b981]" />
-                    <span className="text-xs font-semibold text-white">Active Branding Properties</span>
+                    <Palette className="h-4 w-4 text-[#1E3A2F]" />
+                    <span className="text-xs font-semibold text-[#1C1917]">Practice Configuration</span>
                   </div>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#10b981]/15 text-[#4edea3]">
-                    SYNCED TO BACKEND
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#EAF5EE] text-[#1B4332]">
+                    SYNCED
                   </span>
                 </div>
 
                 <div className="space-y-3 text-xs">
                   <div>
-                    <div className="text-[11px] text-[#8c8c8c]">Client Business Name</div>
-                    <div className="text-sm font-semibold text-white mt-0.5">{businessConfig?.name}</div>
+                    <div className="text-[11px] text-[#78716C]">Clinic Practice Name</div>
+                    <div className="text-sm font-semibold text-[#1C1917] mt-0.5">{businessConfig?.name}</div>
                   </div>
 
                   <div>
-                    <div className="text-[11px] text-[#8c8c8c]">AI Agent Greeting</div>
-                    <div className="text-[11px] text-[#f5f5f5] bg-[#1f1f1f] p-2.5 rounded-lg border border-[#313131] mt-1 italic">
+                    <div className="text-[11px] text-[#78716C]">Concierge Greeting</div>
+                    <div className="text-[11px] text-[#44403C] bg-[#FAF7F2] p-2.5 rounded-lg border border-[#E5DFD5] mt-1 italic">
                       "{businessConfig?.welcomeMessage}"
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <div className="text-[11px] text-[#8c8c8c]">Primary Palette</div>
+                      <div className="text-[11px] text-[#78716C]">Primary Palette</div>
                       <div className="flex items-center space-x-2 mt-1">
-                        <div className="h-4 w-4 rounded-full border border-white/20" style={{ backgroundColor: businessConfig?.primaryColor }} />
-                        <span className="font-mono text-[11px] text-white">{businessConfig?.primaryColor}</span>
+                        <div className="h-4 w-4 rounded-full border border-[#E5DFD5]" style={{ backgroundColor: businessConfig?.primaryColor }} />
+                        <span className="font-mono text-[11px] text-[#1C1917]">{businessConfig?.primaryColor}</span>
                       </div>
                     </div>
                     <div>
-                      <div className="text-[11px] text-[#8c8c8c]">Slot Duration</div>
-                      <div className="text-[11px] font-mono text-white mt-1">
+                      <div className="text-[11px] text-[#78716C]">Consultation Slot</div>
+                      <div className="text-[11px] font-mono text-[#1C1917] mt-1">
                         {businessConfig?.operatingHours?.slotDurationMinutes || 30} Minutes
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-[11px] text-[#8c8c8c]">Quick Action Prompts</div>
+                    <div className="text-[11px] text-[#78716C]">Quick Actions</div>
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
                       {businessConfig?.promptChips?.map((chip, idx) => (
-                        <span key={idx} className="text-[10px] px-2 py-1 rounded bg-[#1f1f1f] border border-[#313131] text-[#818cf8]">
+                        <span key={idx} className="text-[10px] px-2 py-0.5 rounded bg-[#FAF7F2] border border-[#E5DFD5] text-[#1C1917]">
                           {chip}
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-[#313131] flex items-center justify-between text-[11px] text-[#8c8c8c]">
-                    <span>Support: {businessConfig?.contactEmail}</span>
+                  <div className="pt-2 border-t border-[#E5DFD5] flex items-center justify-between text-[11px] text-[#78716C]">
+                    <span>Contact: {businessConfig?.contactEmail}</span>
                     <span>{businessConfig?.contactPhone}</span>
                   </div>
                 </div>
@@ -2448,17 +2498,17 @@ export default function App() {
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             {/* Header with Export CTAs */}
-            <div className="rounded-2xl bg-[#181818] border border-[#313131] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="rounded-xl bg-white border border-[#E5DFD5] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-xs">
               <div>
                 <div className="flex items-center space-x-2">
-                  <BarChart3 className="h-5 w-5 text-[#818cf8]" />
-                  <h2 className="text-base font-bold text-white">ROI & Conversion Intelligence Console</h2>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30">
-                    Real-time Metrics
+                  <BarChart3 className="h-5 w-5 text-[#1E3A2F]" />
+                  <h2 className="font-serif-display font-medium text-base text-[#1C1917]">Practice Conversion & Inbound Insights</h2>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]">
+                    Real-time
                   </span>
                 </div>
-                <p className="text-xs text-[#8c8c8c] mt-1">
-                  Track client acquisition, autonomous inquiry resolution, revenue pipeline generated, and export CSV audit logs.
+                <p className="text-xs text-[#78716C] mt-1">
+                  Monitor patient acquisition, autonomous inquiry resolution, revenue pipeline generated, and export CSV logs.
                 </p>
               </div>
 
@@ -2466,16 +2516,16 @@ export default function App() {
                 <a
                   href="/api/analytics/export/appointments.csv"
                   download="omniagent-appointments.csv"
-                  className="px-3.5 py-2 bg-[#1f1f1f] hover:bg-[#1e293b] border border-[#313131] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
+                  className="btn-clinic-secondary text-xs flex items-center space-x-1.5 cursor-pointer"
                 >
-                  <Download className="h-3.5 w-3.5 text-[#818cf8]" />
+                  <Download className="h-3.5 w-3.5 text-[#1E3A2F]" />
                   <span>Appointments CSV</span>
                 </a>
 
                 <a
                   href="/api/analytics/export/leads.csv"
                   download="omniagent-leads.csv"
-                  className="px-3.5 py-2 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
+                  className="btn-clinic-primary text-xs flex items-center space-x-1.5 cursor-pointer"
                 >
                   <Download className="h-3.5 w-3.5" />
                   <span>Qualified Leads CSV</span>
@@ -2485,64 +2535,64 @@ export default function App() {
 
             {/* 4 Executive KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
+              <div className="p-4 rounded-xl bg-white border border-[#E5DFD5] shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#8c8c8c]">Pipeline Value Generated</span>
-                  <span className="p-1.5 rounded-lg bg-[#10b981]/15 text-[#4edea3]">
+                  <span className="text-xs text-[#78716C]">Pipeline Value Generated</span>
+                  <span className="p-1.5 rounded-lg bg-[#EAF5EE] text-[#1B4332]">
                     <DollarSign className="h-4 w-4" />
                   </span>
                 </div>
-                <div className="text-2xl font-bold font-mono text-white mt-2">
+                <div className="text-2xl font-bold font-mono text-[#1C1917] mt-2">
                   {analyticsData?.currency || 'INR'} {((analyticsData?.estimatedPipelineRevenue || 85000)).toLocaleString()}
                 </div>
-                <div className="text-[11px] text-[#4edea3] mt-1 flex items-center space-x-1">
+                <div className="text-[11px] text-[#1B4332] mt-1 flex items-center space-x-1">
                   <TrendingUp className="h-3 w-3 inline" />
                   <span>From {analyticsData?.totalBookings || appointments.length} bookings + {analyticsData?.totalLeads || leads.length} leads</span>
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
+              <div className="p-4 rounded-xl bg-white border border-[#E5DFD5] shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#8c8c8c]">Booking Conversion Rate</span>
-                  <span className="p-1.5 rounded-lg bg-[#6366f1]/15 text-[#818cf8]">
+                  <span className="text-xs text-[#78716C]">Booking Conversion Rate</span>
+                  <span className="p-1.5 rounded-lg bg-[#EBF2EE] text-[#1E3A2F]">
                     <Calendar className="h-4 w-4" />
                   </span>
                 </div>
-                <div className="text-2xl font-bold font-mono text-[#818cf8] mt-2">
+                <div className="text-2xl font-bold font-mono text-[#1E3A2F] mt-2">
                   {analyticsData?.bookingConversionRate || 33.3}%
                 </div>
-                <div className="text-[11px] text-[#8c8c8c] mt-1">
+                <div className="text-[11px] text-[#78716C] mt-1">
                   Inquiries converted to confirmed slots
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
+              <div className="p-4 rounded-xl bg-white border border-[#E5DFD5] shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#8c8c8c]">Autonomous Deflection Rate</span>
-                  <span className="p-1.5 rounded-lg bg-[#10b981]/15 text-[#4edea3]">
+                  <span className="text-xs text-[#78716C]">Autonomous Handling Rate</span>
+                  <span className="p-1.5 rounded-lg bg-[#EAF5EE] text-[#1B4332]">
                     <Bot className="h-4 w-4" />
                   </span>
                 </div>
-                <div className="text-2xl font-bold font-mono text-[#4edea3] mt-2">
+                <div className="text-2xl font-bold font-mono text-[#1B4332] mt-2">
                   {analyticsData?.autonomousDeflectionRate || 92.5}%
                 </div>
-                <div className="text-[11px] text-[#4edea3] mt-1">
-                  Zero human staff intervention needed
+                <div className="text-[11px] text-[#1B4332] mt-1">
+                  Resolved without receptionist takeover
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
+              <div className="p-4 rounded-xl bg-white border border-[#E5DFD5] shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#8c8c8c]">Average AI Response Speed</span>
-                  <span className="p-1.5 rounded-lg bg-[#0ea5e9]/15 text-[#38bdf8]">
+                  <span className="text-xs text-[#78716C]">Average AI Response Speed</span>
+                  <span className="p-1.5 rounded-lg bg-[#FAF7F2] text-[#1C1917] border border-[#E5DFD5]">
                     <Clock className="h-4 w-4" />
                   </span>
                 </div>
-                <div className="text-2xl font-bold font-mono text-white mt-2">
+                <div className="text-2xl font-bold font-mono text-[#1C1917] mt-2">
                   {analyticsData?.averageResponseTimeMs || 14} ms
                 </div>
-                <div className="text-[11px] text-[#8c8c8c] mt-1">
-                  Sub-second streaming SSE latency
+                <div className="text-[11px] text-[#78716C] mt-1">
+                  Sub-second streaming latency
                 </div>
               </div>
             </div>
@@ -2550,13 +2600,13 @@ export default function App() {
             {/* Middle Section: Topic Inquiries & Channel/Sentiment Split */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left 7 Cols: Top Inquired Topics */}
-              <div className="lg:col-span-7 rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-[#313131]">
+              <div className="lg:col-span-7 rounded-xl bg-white border border-[#E5DFD5] p-5 space-y-4 shadow-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-[#E5DFD5]">
                   <div className="flex items-center space-x-2">
-                    <PieChart className="h-4 w-4 text-[#818cf8]" />
-                    <span className="text-xs font-semibold text-white">Top Inquired Topics & Customer Questions</span>
+                    <PieChart className="h-4 w-4 text-[#1E3A2F]" />
+                    <span className="text-xs font-semibold text-[#1C1917]">Top Inquired Treatments & Questions</span>
                   </div>
-                  <span className="text-[10px] text-[#8c8c8c] font-mono">Semantic RAG Categorization</span>
+                  <span className="text-[10px] text-[#78716C] font-mono">Semantic Categorization</span>
                 </div>
 
                 <div className="space-y-3.5">
@@ -2569,15 +2619,15 @@ export default function App() {
                   ]).map((t, idx) => (
                     <div key={idx} className="space-y-1.5">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-[#f5f5f5] font-medium">{t.topic}</span>
+                        <span className="text-[#1C1917] font-medium">{t.topic}</span>
                         <div className="flex items-center space-x-2 font-mono text-[11px]">
-                          <span className="text-[#8c8c8c]">{t.count} queries</span>
-                          <span className="text-[#818cf8] font-bold">{t.percentage}%</span>
+                          <span className="text-[#78716C]">{t.count} queries</span>
+                          <span className="text-[#1E3A2F] font-bold">{t.percentage}%</span>
                         </div>
                       </div>
-                      <div className="h-2 w-full bg-[#1f1f1f] rounded-full overflow-hidden border border-[#313131]">
+                      <div className="h-2 w-full bg-[#FAF7F2] rounded-full overflow-hidden border border-[#E5DFD5]">
                         <div
-                          className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-[#6366f1] to-[#10b981]"
+                          className="h-full rounded-full transition-all duration-500 bg-[#1E3A2F]"
                           style={{ width: `${t.percentage}%` }}
                         />
                       </div>
@@ -2589,54 +2639,54 @@ export default function App() {
               {/* Right 5 Cols: Ingress Channels & Sentiment Ratio */}
               <div className="lg:col-span-5 space-y-4">
                 {/* Ingress Channels */}
-                <div className="rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-3">
-                  <div className="text-xs font-semibold text-white pb-2 border-b border-[#313131]">
-                    Omnichannel Customer Ingress
+                <div className="rounded-xl bg-white border border-[#E5DFD5] p-5 space-y-3 shadow-xs">
+                  <div className="text-xs font-semibold text-[#1C1917] pb-2 border-b border-[#E5DFD5]">
+                    Inbound Patient Channels
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="p-3 rounded-xl bg-[#1f1f1f] border border-[#313131]">
-                      <div className="flex items-center space-x-1.5 text-[#10b981]">
+                    <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5]">
+                      <div className="flex items-center space-x-1.5 text-[#1B4332]">
                         <Radio className="h-3.5 w-3.5" />
                         <span className="font-semibold">WhatsApp</span>
                       </div>
-                      <div className="text-xl font-bold font-mono text-white mt-1.5">
+                      <div className="text-xl font-bold font-mono text-[#1C1917] mt-1.5">
                         {analyticsData?.whatsAppConversations || sessions.filter(s => s.channel === 'whatsapp').length}
                       </div>
-                      <div className="text-[10px] text-[#8c8c8c] mt-0.5">Meta Cloud API</div>
+                      <div className="text-[10px] text-[#78716C] mt-0.5">Meta Cloud API</div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-[#1f1f1f] border border-[#313131]">
-                      <div className="flex items-center space-x-1.5 text-[#818cf8]">
+                    <div className="p-3 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5]">
+                      <div className="flex items-center space-x-1.5 text-[#1E3A2F]">
                         <MessageSquare className="h-3.5 w-3.5" />
-                        <span className="font-semibold">Web Widget</span>
+                        <span className="font-semibold">Web Concierge</span>
                       </div>
-                      <div className="text-xl font-bold font-mono text-white mt-1.5">
+                      <div className="text-xl font-bold font-mono text-[#1C1917] mt-1.5">
                         {analyticsData?.webConversations || sessions.filter(s => s.channel === 'web').length}
                       </div>
-                      <div className="text-[10px] text-[#8c8c8c] mt-0.5">Shadow DOM Embed</div>
+                      <div className="text-[10px] text-[#78716C] mt-0.5">Embed Widget</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Sentiment Distribution */}
-                <div className="rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-3">
-                  <div className="text-xs font-semibold text-white pb-2 border-b border-[#313131]">
+                <div className="rounded-xl bg-white border border-[#E5DFD5] p-5 space-y-3 shadow-xs">
+                  <div className="text-xs font-semibold text-[#1C1917] pb-2 border-b border-[#E5DFD5]">
                     Sentiment & Escalation Ratio
                   </div>
                   <div className="space-y-2 text-xs">
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-[#4edea3] flex items-center space-x-1.5">
+                      <span className="text-[#1B4332] flex items-center space-x-1.5">
                         <CheckCircle2 className="h-3.5 w-3.5" />
-                        <span>Nominal & Satisfied (AI Resolved)</span>
+                        <span>Satisfied (AI Handled)</span>
                       </span>
-                      <span className="font-mono text-white font-semibold">92%</span>
+                      <span className="font-mono text-[#1C1917] font-semibold">92%</span>
                     </div>
                     <div className="flex items-center justify-between text-[11px]">
-                      <span className="text-[#ffb4ab] flex items-center space-x-1.5">
+                      <span className="text-[#991B1B] flex items-center space-x-1.5">
                         <AlertTriangle className="h-3.5 w-3.5" />
-                        <span>Escalated to Human Concierge</span>
+                        <span>Receptionist Takeover</span>
                       </span>
-                      <span className="font-mono text-white font-semibold">8%</span>
+                      <span className="font-mono text-[#1C1917] font-semibold">8%</span>
                     </div>
                   </div>
                 </div>
@@ -2649,19 +2699,19 @@ export default function App() {
         {activeTab === 'reputation' && (
           <div className="space-y-6">
             {/* Top Command Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#181818] border border-[#313131] p-5 rounded-2xl">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-[#E5DFD5] p-5 rounded-xl shadow-xs">
               <div>
                 <div className="flex items-center space-x-2">
-                  <div className="h-7 w-7 rounded-lg bg-[#f59e0b]/15 border border-[#f59e0b]/30 flex items-center justify-center text-[#fbbf24]">
-                    <Star className="h-4 w-4 fill-[#fbbf24]" />
+                  <div className="h-7 w-7 rounded-lg bg-[#FEF9C3] border border-[#FDE047] flex items-center justify-center text-[#854D0E]">
+                    <Star className="h-4 w-4 fill-[#854D0E]" />
                   </div>
-                  <h2 className="text-base font-bold text-white">Google Reviews Booster & CSAT Funnel</h2>
-                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30">
-                    Dual Reputation Guardrail
+                  <h2 className="font-serif-display font-medium text-base text-[#1C1917]">Patient Feedback & Reputation Management</h2>
+                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]">
+                    Dual-Path Routing
                   </span>
                 </div>
-                <p className="text-xs text-[#8c8c8c] mt-1">
-                  Automated post-service survey funnel: Promoters (4–5★) are routed directly to Google Maps, while Detractors (1–3★) are shielded from public reviews and escalated to care recovery.
+                <p className="text-xs text-[#78716C] mt-1">
+                  Automated post-consultation feedback routing: Promoters (4–5★) are directed to Google Maps reviews, while Detractors (1–3★) are escalated to practice management for care recovery.
                 </p>
               </div>
 
@@ -2670,14 +2720,14 @@ export default function App() {
                   href="https://g.page/r/apex-wellness-clinic/review"
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-lg bg-[#6366f1]/15 hover:bg-[#6366f1]/25 border border-[#6366f1]/30 text-[#818cf8] text-xs font-semibold flex items-center space-x-1.5 transition"
+                  className="btn-clinic-secondary text-xs flex items-center space-x-1.5"
                 >
-                  <ExternalLink className="h-3.5 w-3.5" />
+                  <ExternalLink className="h-3.5 w-3.5 text-[#1E3A2F]" />
                   <span>Google Maps Review Page</span>
                 </a>
                 <button
                   onClick={loadData}
-                  className="p-1.5 rounded-lg bg-[#1f1f1f] border border-[#313131] text-[#8c8c8c] hover:text-white transition"
+                  className="btn-clinic-secondary p-1.5"
                   title="Refresh Metrics"
                 >
                   <RefreshCw className="h-4 w-4" />
@@ -2688,101 +2738,101 @@ export default function App() {
             {/* Top Metric Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* CSAT Score */}
-              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
+              <div className="p-4 rounded-xl bg-white border border-[#E5DFD5] shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#8c8c8c]">Patient CSAT Rating</span>
-                  <span className="p-1.5 rounded-lg bg-[#10b981]/15 text-[#4edea3]">
+                  <span className="text-xs text-[#78716C]">Patient Satisfaction (CSAT)</span>
+                  <span className="p-1.5 rounded-lg bg-[#EAF5EE] text-[#1B4332]">
                     <ThumbsUp className="h-4 w-4" />
                   </span>
                 </div>
-                <div className="text-2xl font-bold font-mono text-[#4edea3] mt-2">
+                <div className="text-2xl font-bold font-mono text-[#1B4332] mt-2">
                   {feedbackOverview?.csatScore || 86}%
                 </div>
-                <div className="text-[11px] text-[#8c8c8c] mt-1">
+                <div className="text-[11px] text-[#78716C] mt-1">
                   4 & 5 Star ratings ({feedbackOverview?.promotersCount || 6} / {feedbackOverview?.totalResponses || 7})
                 </div>
               </div>
 
               {/* Net Promoter Score (NPS) */}
-              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
+              <div className="p-4 rounded-xl bg-white border border-[#E5DFD5] shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#8c8c8c]">Net Promoter Score (NPS)</span>
-                  <span className="p-1.5 rounded-lg bg-[#6366f1]/15 text-[#818cf8]">
+                  <span className="text-xs text-[#78716C]">Net Promoter Score (NPS)</span>
+                  <span className="p-1.5 rounded-lg bg-[#EBF2EE] text-[#1E3A2F]">
                     <HeartHandshake className="h-4 w-4" />
                   </span>
                 </div>
-                <div className="text-2xl font-bold font-mono text-[#818cf8] mt-2">
+                <div className="text-2xl font-bold font-mono text-[#1E3A2F] mt-2">
                   +{(feedbackOverview?.npsScore !== undefined) ? feedbackOverview.npsScore : 43}
                 </div>
-                <div className="text-[11px] text-[#10b981] mt-1">
-                  World-Class Tier (Range: -100 to +100)
+                <div className="text-[11px] text-[#1B4332] mt-1">
+                  High Practice Tier (-100 to +100)
                 </div>
               </div>
 
               {/* Google Review Conversion Rate */}
-              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
+              <div className="p-4 rounded-xl bg-white border border-[#E5DFD5] shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#8c8c8c]">Google Review Clicks</span>
-                  <span className="p-1.5 rounded-lg bg-[#f59e0b]/15 text-[#fbbf24]">
-                    <Star className="h-4 w-4 fill-[#fbbf24]" />
+                  <span className="text-xs text-[#78716C]">Google Review Clicks</span>
+                  <span className="p-1.5 rounded-lg bg-[#FEF9C3] text-[#854D0E]">
+                    <Star className="h-4 w-4 fill-[#854D0E]" />
                   </span>
                 </div>
-                <div className="text-2xl font-bold font-mono text-white mt-2">
+                <div className="text-2xl font-bold font-mono text-[#1C1917] mt-2">
                   {feedbackOverview?.googleReviewClicks || 3}{' '}
-                  <span className="text-xs text-[#8c8c8c] font-normal font-sans">
+                  <span className="text-xs text-[#78716C] font-normal font-sans">
                     ({feedbackOverview?.googleReviewClickRate || 75}% click rate)
                   </span>
                 </div>
-                <div className="text-[11px] text-[#fbbf24] mt-1">
+                <div className="text-[11px] text-[#854D0E] mt-1">
                   From {feedbackOverview?.promotersCount || 4} 5-Star Promoters
                 </div>
               </div>
 
               {/* Urgent Care Service Recovery */}
-              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
+              <div className="p-4 rounded-xl bg-white border border-[#E5DFD5] shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#8c8c8c]">Urgent Recovery Queue</span>
-                  <span className="p-1.5 rounded-lg bg-[#f43f5e]/15 text-[#ffb4ab]">
+                  <span className="text-xs text-[#78716C]">Recovery Follow-ups</span>
+                  <span className="p-1.5 rounded-lg bg-[#FEF2F2] text-[#991B1B]">
                     <AlertTriangle className="h-4 w-4" />
                   </span>
                 </div>
-                <div className="text-2xl font-bold font-mono text-[#ffb4ab] mt-2">
+                <div className="text-2xl font-bold font-mono text-[#991B1B] mt-2">
                   {feedbackOverview?.urgentServiceRecoveryCount || 1} Pending
                 </div>
-                <div className="text-[11px] text-[#8c8c8c] mt-1">
-                  Detractors shielded from Google Maps
+                <div className="text-[11px] text-[#78716C] mt-1">
+                  Escalated directly to reception desk
                 </div>
               </div>
             </div>
 
             {/* Smart Dual-Routing Architecture Banner */}
-            <div className="p-5 rounded-2xl bg-[#1f1f1f] border border-[#313131] space-y-3">
+            <div className="p-5 rounded-xl bg-[#FAF7F2] border border-[#E5DFD5] space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-white uppercase tracking-wider">
-                  How Autonomous Reputation Routing Works
+                <span className="text-xs font-semibold text-[#1C1917] uppercase tracking-wider">
+                  How Feedback Routing Works
                 </span>
-                <span className="text-[10px] font-mono text-[#818cf8]">Zero Negative Public Leakage</span>
+                <span className="text-[10px] font-mono text-[#78716C]">Patient Privacy Protected</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                 {/* Promoter Path */}
-                <div className="p-3.5 rounded-xl bg-[#10b981]/10 border border-[#10b981]/30 space-y-1.5">
-                  <div className="flex items-center space-x-2 text-[#4edea3] font-semibold">
+                <div className="p-3.5 rounded-lg bg-[#EAF5EE] border border-[#C6E7D2] space-y-1.5">
+                  <div className="flex items-center space-x-2 text-[#1B4332] font-semibold">
                     <ThumbsUp className="h-4 w-4" />
-                    <span>Rating 4 or 5 Stars ⭐⭐⭐⭐⭐ (Promoter Path)</span>
+                    <span>Rating 4 or 5 Stars (Promoter Flow)</span>
                   </div>
-                  <p className="text-[11px] text-[#f5f5f5]">
-                    The agent expresses heartfelt gratitude and instantly provides a direct 1-click link to your verified Google Business Profile review dialog, boosting your local SEO & organic leads.
+                  <p className="text-[11px] text-[#44403C]">
+                    The concierge expresses warm gratitude and presents a direct link to your clinic's Google Business review page, helping boost local search rankings and word-of-mouth.
                   </p>
                 </div>
 
                 {/* Detractor Path */}
-                <div className="p-3.5 rounded-xl bg-[#f43f5e]/10 border border-[#f43f5e]/30 space-y-1.5">
-                  <div className="flex items-center space-x-2 text-[#ffb4ab] font-semibold">
+                <div className="p-3.5 rounded-lg bg-[#FEF2F2] border border-[#FECACA] space-y-1.5">
+                  <div className="flex items-center space-x-2 text-[#991B1B] font-semibold">
                     <ThumbsDown className="h-4 w-4" />
-                    <span>Rating 1, 2, or 3 Stars (Service Recovery Shield)</span>
+                    <span>Rating 1, 2, or 3 Stars (Service Recovery Flow)</span>
                   </div>
-                  <p className="text-[11px] text-[#f5f5f5]">
-                    The agent suppresses the public Google review link, issues an empathetic apology, logs the grievance, and dispatches a high-priority alert to the clinic director for immediate personal recovery.
+                  <p className="text-[11px] text-[#44403C]">
+                    The concierge offers an empathetic apology, logs the patient's concerns, and immediately alerts the clinic manager for a prompt, personal follow-up.
                   </p>
                 </div>
               </div>
@@ -2791,60 +2841,60 @@ export default function App() {
             {/* Simulator & Live Feedback Table Split */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left 4 Cols: Live Feedback Simulator */}
-              <div className="lg:col-span-4 rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-4">
-                <div className="flex items-center space-x-2 pb-3 border-b border-[#313131]">
-                  <Bot className="h-4 w-4 text-[#818cf8]" />
-                  <span className="text-xs font-semibold text-white">Simulate Inbound Patient Rating</span>
+              <div className="lg:col-span-4 rounded-xl bg-white border border-[#E5DFD5] p-5 space-y-4 shadow-xs">
+                <div className="flex items-center space-x-2 pb-3 border-b border-[#E5DFD5]">
+                  <Bot className="h-4 w-4 text-[#1E3A2F]" />
+                  <span className="text-xs font-semibold text-[#1C1917]">Simulate Patient Feedback</span>
                 </div>
 
                 <form onSubmit={handleSimulateFeedback} className="space-y-3.5 text-xs">
                   <div>
-                    <label className="block text-[#8c8c8c] mb-1.5">Customer Rating (Stars):</label>
+                    <label className="block text-[#78716C] mb-1.5 font-medium">Patient Rating (Stars):</label>
                     <div className="flex items-center space-x-2">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button
                           key={star}
                           type="button"
                           onClick={() => setSimRating(star)}
-                          className={`p-2 rounded-xl border flex items-center justify-center transition cursor-pointer ${
+                          className={`p-2 rounded-lg border flex items-center justify-center transition cursor-pointer ${
                             simRating >= star
-                              ? 'bg-[#f59e0b]/20 border-[#f59e0b] text-[#fbbf24]'
-                              : 'bg-[#1f1f1f] border-[#313131] text-[#8c8c8c]'
+                              ? 'bg-[#FEF9C3] border-[#FDE047] text-[#854D0E]'
+                              : 'bg-white border-[#E5DFD5] text-[#78716C]'
                           }`}
                         >
-                          <Star className={`h-4 w-4 ${simRating >= star ? 'fill-[#fbbf24]' : ''}`} />
+                          <Star className={`h-4 w-4 ${simRating >= star ? 'fill-[#854D0E]' : ''}`} />
                         </button>
                       ))}
-                      <span className="font-mono text-xs font-bold text-white ml-2">
+                      <span className="font-mono text-xs font-bold text-[#1C1917] ml-2">
                         {simRating} / 5
                       </span>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-[#8c8c8c] mb-1">Customer Review Comment:</label>
+                    <label className="block text-[#78716C] mb-1 font-medium">Patient Feedback Notes:</label>
                     <textarea
                       rows={3}
                       value={simComment}
                       onChange={(e) => setSimComment(e.target.value)}
-                      className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl p-2.5 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none text-xs"
-                      placeholder="e.g. Loved the session or experienced long wait..."
+                      className="w-full input-clinic p-2.5 text-xs"
+                      placeholder="e.g. Consultation was thorough and professional..."
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmittingFeedback}
-                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-[#6366f1] to-[#818cf8] text-white font-semibold text-xs transition cursor-pointer flex items-center justify-center space-x-2 disabled:opacity-50"
+                    className="w-full btn-clinic-primary text-xs py-2.5 flex items-center justify-center space-x-2 disabled:opacity-50 cursor-pointer"
                   >
                     {isSubmittingFeedback ? (
                       <>
                         <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-                        <span>Processing Routing...</span>
+                        <span>Processing feedback...</span>
                       </>
                     ) : (
                       <>
-                        <span>Submit Rating via WhatsApp</span>
+                        <span>Submit feedback</span>
                         <Send className="h-3 w-3" />
                       </>
                     )}
@@ -2853,18 +2903,18 @@ export default function App() {
 
                 {/* Simulated Outcome Preview */}
                 {simResult && (
-                  <div className="p-3.5 rounded-xl bg-[#1f1f1f] border border-[#313131] space-y-2 text-xs">
+                  <div className="p-3.5 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5] space-y-2 text-xs">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold uppercase text-[#818cf8]">AI Response Preview</span>
+                      <span className="text-[10px] font-semibold uppercase text-[#1E3A2F]">Concierge Reply Preview</span>
                       <span className={`text-[10px] px-2 py-0.5 rounded font-mono ${
                         simResult.submission.category === 'promoter'
-                          ? 'bg-[#10b981]/15 text-[#4edea3]'
-                          : 'bg-[#f43f5e]/15 text-[#ffb4ab]'
+                          ? 'bg-[#EAF5EE] text-[#1B4332]'
+                          : 'bg-[#FEF2F2] text-[#991B1B]'
                       }`}>
                         {simResult.submission.category.toUpperCase()}
                       </span>
                     </div>
-                    <p className="text-[11px] text-[#f5f5f5] whitespace-pre-line leading-relaxed">
+                    <p className="text-[11px] text-[#44403C] whitespace-pre-line leading-relaxed">
                       {simResult.replyMessage}
                     </p>
                   </div>
@@ -2872,14 +2922,14 @@ export default function App() {
               </div>
 
               {/* Right 8 Cols: Customer Reviews & Recovery Feed */}
-              <div className="lg:col-span-8 rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-[#313131]">
+              <div className="lg:col-span-8 rounded-xl bg-white border border-[#E5DFD5] p-5 space-y-4 shadow-xs">
+                <div className="flex items-center justify-between pb-3 border-b border-[#E5DFD5]">
                   <div className="flex items-center space-x-2">
-                    <Star className="h-4 w-4 text-[#fbbf24]" />
-                    <span className="text-xs font-semibold text-white">Recent Customer Reviews & Recovery Feed</span>
+                    <Star className="h-4 w-4 text-[#854D0E] fill-[#854D0E]" />
+                    <span className="text-xs font-semibold text-[#1C1917]">Recent Patient Reviews & Care Recovery</span>
                   </div>
-                  <span className="text-[10px] text-[#8c8c8c] font-mono">
-                    {feedbackSubmissions.length} Submissions Tracked
+                  <span className="text-[10px] text-[#78716C] font-mono">
+                    {feedbackSubmissions.length} Feedback Records
                   </span>
                 </div>
 
@@ -2887,68 +2937,68 @@ export default function App() {
                   {feedbackSubmissions.map((sub) => (
                     <div
                       key={sub.id}
-                      className={`p-4 rounded-xl border space-y-2.5 transition ${
+                      className={`p-4 rounded-lg border space-y-2.5 transition ${
                         sub.category === 'promoter'
-                          ? 'bg-[#1f1f1f] border-[#313131]'
-                          : 'bg-[#f43f5e]/5 border-[#f43f5e]/30'
+                          ? 'bg-[#FAF7F2] border-[#E5DFD5]'
+                          : 'bg-[#FEF2F2]/40 border-[#FECACA]'
                       }`}
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                         <div className="flex items-center space-x-2">
-                          <span className="font-semibold text-white text-xs">{sub.customerName}</span>
-                          <span className="text-[10px] text-[#8c8c8c] font-mono">({sub.serviceName})</span>
+                          <span className="font-semibold text-[#1C1917] text-xs">{sub.customerName}</span>
+                          <span className="text-[10px] text-[#78716C]">({sub.serviceName})</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <div className="flex items-center text-[#fbbf24]">
+                          <div className="flex items-center text-[#854D0E]">
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className={`h-3 w-3 ${i < sub.rating ? 'fill-[#fbbf24]' : 'text-[#334155]'}`}
+                                className={`h-3 w-3 ${i < sub.rating ? 'fill-[#854D0E]' : 'text-[#D5E2DB]'}`}
                               />
                             ))}
                           </div>
                           <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono ${
                             sub.routedTo === 'google_review'
-                              ? 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30'
-                              : 'bg-[#f43f5e]/15 text-[#ffb4ab] border border-[#f43f5e]/30'
+                              ? 'bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]'
+                              : 'bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]'
                           }`}>
-                            {sub.routedTo === 'google_review' ? 'Google Review Prompted' : 'Private Escalation Shield'}
+                            {sub.routedTo === 'google_review' ? 'Google Review Prompted' : 'Care Recovery Shield'}
                           </span>
                         </div>
                       </div>
 
                       {sub.comment && (
-                        <p className="text-xs text-[#f5f5f5] italic bg-[#181818]/50 p-2.5 rounded-lg border border-[#313131]">
+                        <p className="text-xs text-[#44403C] italic bg-white p-2.5 rounded border border-[#E5DFD5]">
                           "{sub.comment}"
                         </p>
                       )}
 
-                      <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#313131]">
-                        <span className="text-[#8c8c8c]">
+                      <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#E5DFD5]">
+                        <span className="text-[#78716C]">
                           {new Date(sub.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </span>
                         
                         <div className="flex items-center space-x-2">
                           {sub.routedTo === 'google_review' && sub.googleReviewClicked && (
-                            <span className="text-[#10b981] font-mono text-[10px] flex items-center space-x-1">
+                            <span className="text-[#1B4332] font-mono text-[10px] flex items-center space-x-1">
                               <CheckCircle2 className="h-3 w-3" />
-                              <span>Google Review Clicked</span>
+                              <span>Google Review Visited</span>
                             </span>
                           )}
 
                           {sub.category === 'detractor' && sub.status === 'pending' && (
                             <button
                               onClick={() => handleResolveFeedback(sub.id)}
-                              className="px-2.5 py-1 rounded-lg bg-[#f43f5e]/20 hover:bg-[#f43f5e]/30 text-[#ffb4ab] border border-[#f43f5e]/40 text-[10px] font-semibold transition cursor-pointer"
+                              className="btn-clinic-urgent text-[10px] py-1 px-2.5 cursor-pointer"
                             >
-                              Resolve / Callback Done
+                              Resolve / Follow-up Completed
                             </button>
                           )}
 
                           {sub.category === 'detractor' && sub.status === 'resolved' && (
-                            <span className="text-[#4edea3] text-[10px] flex items-center space-x-1">
+                            <span className="text-[#1B4332] text-[10px] flex items-center space-x-1">
                               <Check className="h-3 w-3" />
-                              <span>Resolved by Manager</span>
+                              <span>Resolved by Clinic Staff</span>
                             </span>
                           )}
                         </div>
