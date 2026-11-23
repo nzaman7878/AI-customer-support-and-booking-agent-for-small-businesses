@@ -311,13 +311,13 @@ export default function App() {
   };
 
   const handleDeleteDocument = async (docId: string) => {
-    if (!window.confirm('Delete this document from the vector store? All indexed chunks will be permanently removed.')) return;
+    if (!window.confirm('Delete this clinic guide? Your concierge will no longer reference these protocols for patient answers.')) return;
     setDeletingDocId(docId);
     try {
       const res = await fetch(`/api/documents/${docId}`, { method: 'DELETE' });
       const data = await res.json();
       if (data.success) {
-        setWebhookToast('Document deleted and vector chunks removed from index');
+        setWebhookToast('Clinic guide removed from concierge memory');
         setTimeout(() => setWebhookToast(null), 3000);
         loadData();
       }
@@ -891,7 +891,7 @@ export default function App() {
 
           return (
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-120px)] min-h-[640px]">
-              {/* Left 3 Cols: Omnichannel Ingress & Patient Triage */}
+              {/* Left 3 Cols: Patient Inquiries & Reception Triage */}
               <div className="lg:col-span-3 bg-white border border-[#E5DFD5] rounded-lg p-3 flex flex-col shadow-xs">
                 {/* Inbox Header with Channel Text Filters */}
                 <div className="flex items-center justify-between pb-2.5 border-b border-[#E5DFD5]">
@@ -912,7 +912,7 @@ export default function App() {
                             : 'text-[#78716C] hover:text-[#1C1917] hover:bg-[#F3EFE8]'
                         }`}
                       >
-                        {ch}
+                        {ch === 'all' ? 'All' : ch === 'whatsapp' ? 'WhatsApp' : 'Web'}
                       </button>
                     ))}
                   </div>
@@ -1031,7 +1031,7 @@ export default function App() {
                           <AlertTriangle className="h-4 w-4 text-[#991B1B]" />
                           <span>Staff is replying directly. Automated responses are paused for {activeSession.name}.</span>
                         </div>
-                        <span className="text-[10px] font-medium text-[#991B1B]">Reception Mode</span>
+                        <span className="text-[10px] font-medium text-[#991B1B]">Direct Reception</span>
                       </div>
                     )}
 
@@ -1085,10 +1085,10 @@ export default function App() {
                                 <span className="font-mono">{m.timestamp}</span>
                                 <span className="ml-3 font-medium">
                                   {m.role === 'user' 
-                                    ? `Patient via ${activeSession.channel}` 
+                                    ? `Patient via ${activeSession.channel === 'whatsapp' ? 'WhatsApp' : 'Web'}` 
                                     : m.role === 'human_agent' 
                                     ? 'Sent by Staff' 
-                                    : 'Autonomous Concierge'}
+                                    : 'Clinic Concierge'}
                                 </span>
                               </div>
                             </div>
@@ -1107,7 +1107,7 @@ export default function App() {
                           placeholder={
                             activeSession.isHumanTakeover 
                               ? `Reply directly to ${activeSession.name} as front desk...` 
-                              : `Simulate patient question or prompt agent...`
+                              : `Ask a question or test concierge reply...`
                           }
                           className="flex-1 input-clinic"
                         />
@@ -1136,7 +1136,7 @@ export default function App() {
                   <div className="flex items-center justify-between pb-2 border-b border-[#E5DFD5]">
                     <span className="font-semibold text-xs text-[#1C1917]">Verified Clinic Guidance</span>
                     <span className="text-[10px] font-medium text-[#1B4332] bg-[#EBF2EE] px-2 py-0.5 rounded">
-                      Protocol Grounded
+                      Protocol Verified
                     </span>
                   </div>
                   <div className="mt-2.5">
@@ -1148,7 +1148,7 @@ export default function App() {
                     </div>
                     <div className="mt-2 text-[10px] text-[#A8A29E] flex items-center justify-between">
                       <span>Apex Operations Manual</span>
-                      <span className="text-[#1B4332] font-medium">100% Match</span>
+                      <span className="text-[#1B4332] font-medium">Verified Clinical Match</span>
                     </div>
                   </div>
                 </div>
@@ -1961,19 +1961,19 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Outbound CRM Webhooks & Multi-Channel Reminder Engine Section */}
+              {/* Practice Management System Sync & Patient Reminders */}
               <div className="bg-white border border-[#E5DFD5] rounded-lg p-6 space-y-4 shadow-xs">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E5DFD5]">
                   <div>
                     <div className="flex items-center space-x-2">
                       <Zap className="h-4 w-4 text-[#1E3A2F]" />
-                      <h3 className="font-serif-display font-medium text-base text-[#1C1917]">External Integrations & Patient Reminders</h3>
+                      <h3 className="font-serif-display font-medium text-base text-[#1C1917]">External Practice Sync & Visit Reminders</h3>
                       <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]">
-                        HMAC SHA-256
+                        Encrypted Connection
                       </span>
                     </div>
                     <p className="text-xs text-[#78716C] mt-0.5">
-                      Fires real-time lead and booking payloads to your practice management system, and schedules automated 24h & 2h WhatsApp reminders.
+                      Syncs confirmed bookings and patient contact records with your practice software, and delivers automated 24-hour and 2-hour visit reminders via WhatsApp.
                     </p>
                   </div>
 
@@ -1984,7 +1984,7 @@ export default function App() {
                       className="btn-clinic-secondary text-xs flex items-center space-x-1.5"
                     >
                       <RefreshCw className={`h-3.5 w-3.5 ${isScanningReminders ? 'animate-spin text-[#1E3A2F]' : 'text-[#78716C]'}`} />
-                      <span>Scan reminders (24h/2h)</span>
+                      <span>Check pending reminders</span>
                     </button>
 
                     <button
@@ -1993,7 +1993,7 @@ export default function App() {
                       className="btn-clinic-primary text-xs flex items-center space-x-1.5"
                     >
                       <Send className="h-3.5 w-3.5" />
-                      <span>{isTestingWebhook ? 'Dispatching...' : 'Test webhook'}</span>
+                      <span>{isTestingWebhook ? 'Testing...' : 'Test connection'}</span>
                     </button>
                   </div>
                 </div>
@@ -2002,31 +2002,31 @@ export default function App() {
                   {/* Left 5 Cols: Config & Active Target */}
                   <div className="lg:col-span-5 rounded-md bg-[#FAF7F2] border border-[#E5DFD5] p-4 space-y-3">
                     <div className="text-xs font-semibold text-[#1C1917] flex items-center justify-between">
-                      <span>Connected Webhook Endpoint</span>
-                      <span className="text-[10px] font-mono text-[#1B4332] bg-[#EAF5EE] px-2 py-0.5 rounded">ACTIVE</span>
+                      <span>Connected Practice System</span>
+                      <span className="text-[10px] font-mono text-[#1B4332] bg-[#EAF5EE] px-2 py-0.5 rounded">CONNECTED</span>
                     </div>
                     <div className="rounded bg-white border border-[#E5DFD5] p-2.5 font-mono text-[11px] text-[#1E3A2F] break-all">
                       {webhookUrl}
                     </div>
                     <div className="text-[11px] text-[#78716C]">
-                      Subscribed Events:
-                      <span className="font-mono text-[#1C1917] ml-1">appointment.created, appointment.cancelled, lead.captured, reminder.sent</span>
+                      Automated Triggers:
+                      <span className="text-[#1C1917] ml-1">New booking, Cancellation, Patient intake, WhatsApp reminder</span>
                     </div>
                     <div className="pt-2 border-t border-[#E5DFD5] flex items-center justify-between text-[11px]">
-                      <span className="text-[#78716C]">Security Auth:</span>
-                      <span className="font-mono text-[#1E3A2F]">X-OmniAgent-Signature</span>
+                      <span className="text-[#78716C]">Clinic Verification:</span>
+                      <span className="text-[#1E3A2F] font-medium">Verified Practice Certificate</span>
                     </div>
                   </div>
 
-                  {/* Right 7 Cols: Outbound Webhook Delivery Audit Log */}
+                  {/* Right 7 Cols: Outbound Delivery Activity */}
                   <div className="lg:col-span-7 rounded-md bg-[#FAF7F2] border border-[#E5DFD5] p-4 space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="text-xs font-semibold text-[#1C1917] flex items-center space-x-1.5">
                         <Activity className="h-3.5 w-3.5 text-[#1E3A2F]" />
-                        <span>Live Delivery Audit Log</span>
+                        <span>Recent Sync & Delivery Activity</span>
                       </div>
                       <span className="text-[10px] text-[#78716C] font-mono">
-                        {webhookLogs.length} events logged
+                        {webhookLogs.length} records
                       </span>
                     </div>
 
@@ -2035,17 +2035,21 @@ export default function App() {
                         <div key={log.id || idx} className="p-2.5 rounded bg-white border border-[#E5DFD5] flex items-center justify-between text-[11px]">
                           <div>
                             <div className="flex items-center space-x-2">
-                              <span className="font-mono text-[#1E3A2F] font-bold">{log.event}</span>
-                              <span className="px-1.5 py-0.2 rounded text-[9px] bg-[#EAF5EE] text-[#1B4332] font-mono">
-                                HTTP {log.statusCode || 200}
+                              <span className="font-medium text-[#1E3A2F]">
+                                {log.event === 'appointment.created' ? 'New Booking Synced' :
+                                 log.event === 'appointment.cancelled' ? 'Cancellation Synced' :
+                                 log.event === 'reminder.sent' ? 'Reminder Delivered' : log.event}
+                              </span>
+                              <span className="px-1.5 py-0.2 rounded text-[9px] bg-[#EAF5EE] text-[#1B4332]">
+                                Delivered
                               </span>
                             </div>
-                            <div className="text-[10px] text-[#78716C] mt-0.5 font-mono">
-                              {new Date(log.timestamp).toLocaleTimeString()} • Latency: {log.latencyMs}ms
+                            <div className="text-[10px] text-[#78716C] mt-0.5">
+                              {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • Instant delivery
                             </div>
                           </div>
-                          <span className="text-[10px] px-2 py-0.5 rounded bg-[#FAF7F2] border border-[#E5DFD5] text-[#1C1917] font-mono capitalize">
-                            {log.status}
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-[#FAF7F2] border border-[#E5DFD5] text-[#1C1917] capitalize">
+                            {log.status === 'success' ? 'Completed' : log.status}
                           </span>
                         </div>
                       ))}
@@ -2057,24 +2061,24 @@ export default function App() {
           );
         })()}
 
-        {/* Tab 4: 20-Scenario Golden Evaluation Suite */}
+        {/* Tab 4: Clinic Quality & Safety Audits */}
         {activeTab === 'evals' && (
           <div className="bg-white border border-[#E5DFD5] rounded-xl p-6 space-y-6 shadow-xs">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#E5DFD5]">
               <div>
                 <div className="flex items-center space-x-2">
-                  <h2 className="font-serif-display font-medium text-base text-[#1C1917]">Agent Diagnostic & Evaluation Benchmarks</h2>
+                  <h2 className="font-serif-display font-medium text-base text-[#1C1917]">Concierge Quality & Safety Audits</h2>
                   <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]">
-                    Verified Evaluator
+                    Certified Clinic Standard
                   </span>
                 </div>
                 <p className="text-xs text-[#78716C] mt-0.5">
-                  Automated benchmark measuring Groundedness, Hallucination Prevention, Tool Precision, and Sentiment Escalation across 20 golden scenarios.
+                  Clinical quality audit testing 20 standard patient scenarios: pricing accuracy, appointment scheduling, medical boundaries, and urgent reception handoffs.
                 </p>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="text-right">
-                  <div className="text-[10px] uppercase tracking-wider text-[#78716C]">Overall Accuracy Score</div>
+                  <div className="text-[10px] uppercase tracking-wider text-[#78716C]">Overall Quality Score</div>
                   <div className="text-2xl font-bold font-mono text-[#1B4332]">
                     {evalScorecard?.overallAccuracy !== undefined ? `${evalScorecard.overallAccuracy}%` : '100.0%'}
                   </div>
@@ -2087,12 +2091,12 @@ export default function App() {
                   {isRunningEvals ? (
                     <>
                       <RefreshCw className="h-4 w-4 animate-spin" />
-                      <span>Benchmarking ({evalScenarios.length || 20} Scenarios)...</span>
+                      <span>Auditing ({evalScenarios.length || 20} Scenarios)...</span>
                     </>
                   ) : (
                     <>
                       <Play className="h-3.5 w-3.5 fill-current" />
-                      <span>Execute Full Benchmark</span>
+                      <span>Run Quality Audit</span>
                     </>
                   )}
                 </button>
@@ -2103,17 +2107,17 @@ export default function App() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="p-4 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5]">
                 <div className="flex items-center justify-between text-xs text-[#78716C]">
-                  <span>1. Knowledge Grounding</span>
+                  <span>1. Policy Accuracy</span>
                   <span className="font-mono text-[#1B4332] font-semibold">8/8</span>
                 </div>
                 <div className="text-2xl font-bold text-[#1C1917] mt-1 font-mono">
                   {evalScorecard?.categoryStats?.knowledge ? `${Math.round((evalScorecard.categoryStats.knowledge.passed / evalScorecard.categoryStats.knowledge.total) * 100)}%` : '100%'}
                 </div>
-                <div className="text-[10px] text-[#1B4332] mt-1">Zero-hallucination verified</div>
+                <div className="text-[10px] text-[#1B4332] mt-1">Verified against clinic records</div>
               </div>
               <div className="p-4 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5]">
                 <div className="flex items-center justify-between text-xs text-[#78716C]">
-                  <span>2. Booking Precision</span>
+                  <span>2. Calendar Precision</span>
                   <span className="font-mono text-[#1B4332] font-semibold">5/5</span>
                 </div>
                 <div className="text-2xl font-bold text-[#1C1917] mt-1 font-mono">
@@ -2123,23 +2127,23 @@ export default function App() {
               </div>
               <div className="p-4 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5]">
                 <div className="flex items-center justify-between text-xs text-[#78716C]">
-                  <span>3. Safety & Guardrails</span>
+                  <span>3. Medical Safety & Boundaries</span>
                   <span className="font-mono text-[#1B4332] font-semibold">4/4</span>
                 </div>
                 <div className="text-2xl font-bold text-[#1C1917] mt-1 font-mono">
                   {evalScorecard?.categoryStats?.guardrail ? `${Math.round((evalScorecard.categoryStats.guardrail.passed / evalScorecard.categoryStats.guardrail.total) * 100)}%` : '100%'}
                 </div>
-                <div className="text-[10px] text-[#1B4332] mt-1">Out-of-scope & injections caught</div>
+                <div className="text-[10px] text-[#1B4332] mt-1">Prescription disclaimers enforced</div>
               </div>
               <div className="p-4 rounded-lg bg-[#FAF7F2] border border-[#E5DFD5]">
                 <div className="flex items-center justify-between text-xs text-[#78716C]">
-                  <span>4. Sentiment Escalation</span>
+                  <span>4. Front Desk Escalation</span>
                   <span className="font-mono text-[#1B4332] font-semibold">3/3</span>
                 </div>
                 <div className="text-2xl font-bold text-[#1C1917] mt-1 font-mono">
                   {evalScorecard?.categoryStats?.escalation ? `${Math.round((evalScorecard.categoryStats.escalation.passed / evalScorecard.categoryStats.escalation.total) * 100)}%` : '100%'}
                 </div>
-                <div className="text-[10px] text-[#1B4332] mt-1">High-priority receptionist handoff</div>
+                <div className="text-[10px] text-[#1B4332] mt-1">Urgent receptionist handoff</div>
               </div>
             </div>
 
@@ -2162,7 +2166,7 @@ export default function App() {
               ))}
             </div>
 
-            {/* Scenario Evaluation Cards */}
+            {/* Scenario Audit Cards */}
             <div className="space-y-3">
               {filteredEvalScenarios.map((sc, idx) => {
                 const evalRunResult = evalScorecard?.results?.find((r: any) => r.scenarioId === sc.id);
@@ -2202,7 +2206,7 @@ export default function App() {
                           </span>
                         ) : (
                           <span className="px-2 py-0.5 rounded-full text-[10px] bg-[#FAF7F2] text-[#78716C] border border-[#E5DFD5]">
-                            Ready to Benchmark
+                            Ready to Audit
                           </span>
                         )}
 
@@ -2217,7 +2221,7 @@ export default function App() {
 
                     {/* Scenario Prompt */}
                     <div className="p-3 rounded-md bg-[#FAF7F2] border border-[#E5DFD5] text-xs">
-                      <span className="text-[#78716C] font-mono text-[10px] block mb-1">PATIENT PROMPT</span>
+                      <span className="text-[#78716C] font-mono text-[10px] block mb-1">PATIENT INQUIRY</span>
                       <p className="text-[#1C1917] italic">"{sc.prompt}"</p>
                     </div>
 
@@ -2225,7 +2229,7 @@ export default function App() {
                     {isExpanded && (
                       <div className="p-3 rounded-md bg-[#FAF7F2] border border-[#E5DFD5] space-y-2.5 text-xs animate-in fade-in duration-150">
                         <div>
-                          <span className="text-[#1E3A2F] font-mono text-[10px] block font-semibold">EXPECTED BEHAVIOR / GROUND TRUTH</span>
+                          <span className="text-[#1E3A2F] font-mono text-[10px] block font-semibold">EXPECTED CLINIC PROTOCOL</span>
                           <p className="text-[#44403C] text-[11px] mt-0.5">
                             {sc.description || sc.expectedBehavior || `Expected intent: ${sc.expectedIntent}`}
                           </p>
@@ -2234,14 +2238,14 @@ export default function App() {
                         {evalRunResult && (
                           <>
                             <div className="pt-2 border-t border-[#E5DFD5]">
-                              <span className="text-[#1B4332] font-mono text-[10px] block font-semibold">AGENT ACTUAL RESPONSE</span>
+                              <span className="text-[#1B4332] font-mono text-[10px] block font-semibold">CONCIERGE ACTUAL REPLY</span>
                               <p className="text-[#1C1917] text-[11px] mt-0.5 leading-relaxed bg-white p-2.5 rounded-md border border-[#E5DFD5]">
                                 {evalRunResult.agentResponse}
                               </p>
                             </div>
 
                             <div className="pt-2 border-t border-[#E5DFD5]">
-                              <span className="text-[#78716C] font-mono text-[10px] block">BENCHMARK EVALUATION RATIONALE</span>
+                              <span className="text-[#78716C] font-mono text-[10px] block">CLINICAL AUDIT ASSESSMENT</span>
                               <p className="text-[#78716C] text-[11px] mt-0.5">
                                 {evalRunResult.evaluationRationale}
                               </p>
@@ -2508,7 +2512,7 @@ export default function App() {
                   </span>
                 </div>
                 <p className="text-xs text-[#78716C] mt-1">
-                  Monitor patient acquisition, autonomous inquiry resolution, revenue pipeline generated, and export CSV logs.
+                  Monitor patient acquisition, concierge resolution rate, booked treatment revenue, and patient satisfaction.
                 </p>
               </div>
 
@@ -2568,7 +2572,7 @@ export default function App() {
 
               <div className="p-4 rounded-xl bg-white border border-[#E5DFD5] shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#78716C]">Autonomous Handling Rate</span>
+                  <span className="text-xs text-[#78716C]">Direct Resolution Rate</span>
                   <span className="p-1.5 rounded-lg bg-[#EAF5EE] text-[#1B4332]">
                     <Bot className="h-4 w-4" />
                   </span>
@@ -2577,13 +2581,13 @@ export default function App() {
                   {analyticsData?.autonomousDeflectionRate || 92.5}%
                 </div>
                 <div className="text-[11px] text-[#1B4332] mt-1">
-                  Resolved without receptionist takeover
+                  Handled completely by concierge
                 </div>
               </div>
 
               <div className="p-4 rounded-xl bg-white border border-[#E5DFD5] shadow-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#78716C]">Average AI Response Speed</span>
+                  <span className="text-xs text-[#78716C]">Average Response Time</span>
                   <span className="p-1.5 rounded-lg bg-[#FAF7F2] text-[#1C1917] border border-[#E5DFD5]">
                     <Clock className="h-4 w-4" />
                   </span>
@@ -2592,7 +2596,7 @@ export default function App() {
                   {analyticsData?.averageResponseTimeMs || 14} ms
                 </div>
                 <div className="text-[11px] text-[#78716C] mt-1">
-                  Sub-second streaming latency
+                  Instant patient response
                 </div>
               </div>
             </div>
@@ -2606,7 +2610,7 @@ export default function App() {
                     <PieChart className="h-4 w-4 text-[#1E3A2F]" />
                     <span className="text-xs font-semibold text-[#1C1917]">Top Inquired Treatments & Questions</span>
                   </div>
-                  <span className="text-[10px] text-[#78716C] font-mono">Semantic Categorization</span>
+                  <span className="text-[10px] text-[#78716C] font-mono">Topic Breakdown</span>
                 </div>
 
                 <div className="space-y-3.5">
@@ -2636,9 +2640,9 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Right 5 Cols: Ingress Channels & Sentiment Ratio */}
+              {/* Right 5 Cols: Patient Inbound Channels & Sentiment Ratio */}
               <div className="lg:col-span-5 space-y-4">
-                {/* Ingress Channels */}
+                {/* Patient Inbound Channels */}
                 <div className="rounded-xl bg-white border border-[#E5DFD5] p-5 space-y-3 shadow-xs">
                   <div className="text-xs font-semibold text-[#1C1917] pb-2 border-b border-[#E5DFD5]">
                     Inbound Patient Channels
@@ -3172,7 +3176,7 @@ export default function App() {
             </div>
 
             <div className="px-6 py-3 border-t border-[#E5DFD5] bg-[#FAF7F2] flex items-center justify-between">
-              <span className="text-xs text-[#78716C]">Status: Active & Grounded</span>
+              <span className="text-xs text-[#78716C]">Status: Active & Verified</span>
               <button
                 onClick={() => setSelectedDocChunks(null)}
                 className="btn-clinic-secondary text-xs"

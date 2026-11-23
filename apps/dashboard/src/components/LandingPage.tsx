@@ -50,8 +50,8 @@ export default function LandingPage({ onLaunchDemo, onOpenAdmin, onOpenDocs }: L
 
   // Core Promise Reveal Words
   const taglineWords = [
-    'Autonomous', 'patient', 'bookings', 'without', 'calendar', 'conflicts.',
-    'Instant', 'answers', 'grounded', 'strictly', 'in', 'your', 'verified', 'clinic', 'protocols.'
+    'Seamless', 'patient', 'bookings', 'without', 'calendar', 'conflicts.',
+    'Instant', 'answers', 'based', 'strictly', 'on', 'your', 'verified', 'clinic', 'protocols.'
   ];
   const [visibleWordCount, setVisibleWordCount] = useState<number>(0);
   const taglineRef = useRef<HTMLDivElement>(null);
@@ -692,7 +692,7 @@ export default function LandingPage({ onLaunchDemo, onOpenAdmin, onOpenDocs }: L
                 },
                 {
                   q: 'How difficult is it to connect our WhatsApp Business line?',
-                  a: 'Connection takes under ten minutes using Meta WhatsApp Cloud API webhooks. OmniAgent provides a dedicated webhook endpoint and token that pairs directly with your Meta Business Manager.'
+                  a: 'Connection takes under ten minutes. OmniAgent provides a guided setup wizard that pairs directly with your WhatsApp Business account without technical complexity.'
                 },
                 {
                   q: 'Is patient data secure and private?',
@@ -700,7 +700,7 @@ export default function LandingPage({ onLaunchDemo, onOpenAdmin, onOpenDocs }: L
                 },
                 {
                   q: 'How are consultation deposits collected?',
-                  a: 'OmniAgent generates direct payment links via Stripe or Razorpay. When a patient completes payment, a secure webhook automatically confirms the reservation and issues an official receipt.'
+                  a: 'OmniAgent generates direct payment links via Stripe or Razorpay. When a patient completes payment, the transaction automatically confirms the reservation and issues an official receipt.'
                 },
                 {
                   q: 'What happens when a patient needs to reschedule?',
@@ -752,12 +752,12 @@ export default function LandingPage({ onLaunchDemo, onOpenAdmin, onOpenDocs }: L
                 onClick={onOpenDocs}
                 className="btn-clinic-secondary text-sm py-3 px-5 cursor-pointer"
               >
-                <span>Explore architecture specs</span>
+                <span>Explore practice features</span>
               </button>
             </div>
 
             <div className="pt-3 text-xs text-[#78716C]">
-              14-day evaluation • Cancel anytime with one click • Zero credit card required
+              14-day clinic trial • Cancel anytime with one click • No credit card required
             </div>
           </div>
         </section>
@@ -899,7 +899,7 @@ export default function LandingPage({ onLaunchDemo, onOpenAdmin, onOpenDocs }: L
               <p>
                 By connecting OmniAgent to your clinic communications or calendar systems, you agree to these operational provisions.
               </p>
-              <h4 className="font-semibold text-[#1C1917] text-xs">1. Autonomous booking guarantee</h4>
+              <h4 className="font-semibold text-[#1C1917] text-xs">1. Direct booking guarantee</h4>
               <p>
                 OmniAgent verifies open slots in real time against Google Calendar. The subscribing clinic remains responsible for maintaining practitioner availability hours.
               </p>
@@ -907,7 +907,7 @@ export default function LandingPage({ onLaunchDemo, onOpenAdmin, onOpenDocs }: L
               <p>
                 OmniAgent is a scheduling and practice concierge, not an acute emergency diagnostic tool. Inquiries indicating severe distress trigger immediate human handover protocols.
               </p>
-              <h4 className="font-semibold text-[#1C1917] text-xs">3. 14-day evaluation period</h4>
+              <h4 className="font-semibold text-[#1C1917] text-xs">3. 14-day clinic trial period</h4>
               <p>
                 New clinic subscriptions include 14 days of unrestricted access. Subscriptions may be cancelled at any point during this period with zero fees.
               </p>
