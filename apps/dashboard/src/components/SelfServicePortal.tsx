@@ -220,10 +220,10 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
   };
 
   const portalCard = (
-    <div className={`bg-[#0b0f19] border border-[#1e293b] rounded-2xl w-full ${isStandalone ? 'max-w-2xl' : 'max-w-2xl max-h-[92vh]'} flex flex-col shadow-2xl overflow-hidden`}>
+    <div className={`bg-[#181818] border border-[#313131] rounded-2xl w-full ${isStandalone ? 'max-w-2xl' : 'max-w-2xl max-h-[92vh]'} flex flex-col shadow-2xl overflow-hidden`}>
       
       {/* Top Header */}
-      <div className="px-6 py-4 border-b border-[#1e293b] flex items-center justify-between bg-[#0f172a]/60">
+      <div className="px-6 py-4 border-b border-[#313131] flex items-center justify-between bg-[#1f1f1f]/60">
         <div className="flex items-center space-x-3">
           <div className="h-9 w-9 rounded-xl bg-[#6366f1]/15 border border-[#6366f1]/30 flex items-center justify-center text-[#818cf8]">
             <Calendar className="h-5 w-5" />
@@ -235,13 +235,13 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                 Magic-Link Verified
               </span>
             </div>
-            <p className="text-[11px] text-[#908fa0]">1-Click Slot Rescheduling & Self-Service Management</p>
+            <p className="text-[11px] text-[#8c8c8c]">1-Click Slot Rescheduling & Self-Service Management</p>
           </div>
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#908fa0] hover:text-white hover:bg-[#1e293b] transition cursor-pointer"
+            className="p-1.5 rounded-lg text-[#8c8c8c] hover:text-white hover:bg-[#1e293b] transition cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -253,7 +253,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
         {loading ? (
           <div className="py-12 flex flex-col items-center justify-center space-y-3">
             <RefreshCw className="h-7 w-7 text-[#818cf8] animate-spin" />
-            <p className="text-xs text-[#908fa0]">Decrypting magic-link session token & calendar state...</p>
+            <p className="text-xs text-[#8c8c8c]">Decrypting magic-link session token & calendar state...</p>
           </div>
         ) : (
           <>
@@ -280,7 +280,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                 </div>
                 <div>
                   <h4 className="font-bold text-white text-base">Client Self-Service Verification</h4>
-                  <p className="text-xs text-[#908fa0] mt-1 max-w-md">
+                  <p className="text-xs text-[#8c8c8c] mt-1 max-w-md">
                     Enter the secure magic-link token or appointment reference ID (e.g. <code>apt_seed_1</code>) sent to your WhatsApp or SMS to manage your booking.
                   </p>
                 </div>
@@ -302,12 +302,12 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                     value={manualInput}
                     onChange={(e) => setManualInput(e.target.value)}
                     placeholder="Paste token or appointment ID..."
-                    className="flex-1 px-4 py-2.5 rounded-xl bg-[#030712] border border-[#1e293b] text-xs text-white placeholder-[#908fa0] focus:border-[#6366f1] focus:outline-none"
+                    className="flex-1 px-4 py-2.5 rounded-xl bg-[#1f1f1f] border border-[#313131] text-xs text-white placeholder-[#908fa0] focus:border-[#6366f1] focus:outline-none"
                   />
                   <button
                     type="submit"
                     disabled={!manualInput.trim()}
-                    className="px-4 py-2.5 rounded-xl bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold transition cursor-pointer disabled:opacity-50"
+                    className="px-4 py-2.5 rounded-xl bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold transition cursor-pointer disabled:opacity-50"
                   >
                     Verify
                   </button>
@@ -317,7 +317,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
 
               {/* Active Appointment Summary Card */}
               {appointment && (
-                <div className="p-4 rounded-xl bg-[#030712] border border-[#1e293b] space-y-3">
+                <div className="p-4 rounded-xl bg-[#1f1f1f] border border-[#313131] space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-[#818cf8] uppercase tracking-wider">
                       Current Booking Details
@@ -333,18 +333,18 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                     <div>
-                      <div className="text-[#908fa0] text-[11px]">Client Name</div>
+                      <div className="text-[#8c8c8c] text-[11px]">Client Name</div>
                       <div className="text-white font-medium flex items-center space-x-1.5 mt-0.5">
                         <User className="h-3.5 w-3.5 text-[#818cf8]" />
                         <span>{appointment.customerName}</span>
                       </div>
                     </div>
                     <div>
-                      <div className="text-[#908fa0] text-[11px]">Booked Service</div>
+                      <div className="text-[#8c8c8c] text-[11px]">Booked Service</div>
                       <div className="text-white font-medium mt-0.5">{appointment.serviceName}</div>
                     </div>
                     <div>
-                      <div className="text-[#908fa0] text-[11px]">Current Slot (IST)</div>
+                      <div className="text-[#8c8c8c] text-[11px]">Current Slot (IST)</div>
                       <div className="text-[#818cf8] font-mono font-medium mt-0.5 flex items-center space-x-1.5">
                         <Clock className="h-3.5 w-3.5" />
                         <span>
@@ -359,7 +359,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                       </div>
                     </div>
                     <div>
-                      <div className="text-[#908fa0] text-[11px]">Deposit Status</div>
+                      <div className="text-[#8c8c8c] text-[11px]">Deposit Status</div>
                       <div className="text-[#10b981] font-mono font-medium mt-0.5 flex items-center space-x-1">
                         <ShieldCheck className="h-3.5 w-3.5" />
                         <span>INR {appointment.depositAmount || 500} Paid (Active)</span>
@@ -367,7 +367,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-[#1e293b]/60 flex items-center text-[11px] text-[#908fa0] space-x-1.5">
+                  <div className="pt-2 border-t border-[#313131] flex items-center text-[11px] text-[#8c8c8c] space-x-1.5">
                     <MapPin className="h-3.5 w-3.5 text-[#6366f1]" />
                     <span>Apex Wellness Clinic • 104 Grand Vista Blvd, Suite 400</span>
                   </div>
@@ -378,7 +378,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
               {policy && (
                 <div className={`p-3.5 rounded-xl border text-xs flex items-start space-x-3 ${
                   policy.isFreeWindow
-                    ? 'bg-[#6366f1]/10 border-[#6366f1]/30 text-[#dfe2f1]'
+                    ? 'bg-[#6366f1]/10 border-[#6366f1]/30 text-[#f5f5f5]'
                     : 'bg-[#f59e0b]/10 border-[#f59e0b]/30 text-[#fde68a]'
                 }`}>
                   <Info className="h-4 w-4 shrink-0 mt-0.5 text-[#818cf8]" />
@@ -389,7 +389,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                         ({policy.hoursUntilStart > 0 ? `${policy.hoursUntilStart}h notice` : 'Past/Immediate'})
                       </span>
                     </div>
-                    <p className="text-[11px] text-[#908fa0]">{policy.policySummary}</p>
+                    <p className="text-[11px] text-[#8c8c8c]">{policy.policySummary}</p>
                   </div>
                 </div>
               )}
@@ -405,28 +405,28 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                           {availableSlots.length} Slots Open
                         </span>
                       </h4>
-                      <p className="text-[11px] text-[#908fa0]">Choose an available date and time to instantly swap your slot.</p>
+                      <p className="text-[11px] text-[#8c8c8c]">Choose an available date and time to instantly swap your slot.</p>
                     </div>
 
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs text-[#908fa0]">Date:</span>
+                      <span className="text-xs text-[#8c8c8c]">Date:</span>
                       <input
                         type="date"
                         value={selectedDate}
                         onChange={(e) => setSelectedDate(e.target.value)}
-                        className="bg-[#030712] border border-[#1e293b] rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-[#6366f1]"
+                        className="bg-[#1f1f1f] border border-[#313131] rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-[#6366f1]"
                       />
                     </div>
                   </div>
 
                   {/* Slot Grid */}
                   {loadingSlots ? (
-                    <div className="py-8 flex items-center justify-center space-x-2 text-xs text-[#908fa0]">
+                    <div className="py-8 flex items-center justify-center space-x-2 text-xs text-[#8c8c8c]">
                       <RefreshCw className="h-4 w-4 animate-spin text-[#818cf8]" />
                       <span>Checking Google Calendar real-time free/busy...</span>
                     </div>
                   ) : availableSlots.length === 0 ? (
-                    <div className="py-8 text-center text-xs text-[#908fa0] bg-[#030712]/50 border border-[#1e293b] rounded-xl">
+                    <div className="py-8 text-center text-xs text-[#8c8c8c] bg-[#1f1f1f]/50 border border-[#313131] rounded-xl">
                       No open slots found for this date. Please select another date.
                     </div>
                   ) : (
@@ -441,7 +441,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                             className={`p-2.5 rounded-xl border text-left transition text-xs flex flex-col justify-between cursor-pointer ${
                               isSelected
                                 ? 'bg-[#6366f1]/20 border-[#6366f1] text-white shadow-md shadow-[#6366f1]/20'
-                                : 'bg-[#0f172a] border-[#1e293b] text-[#dfe2f1] hover:border-[#6366f1]/50 hover:bg-[#1e293b]/40'
+                                : 'bg-[#1f1f1f] border-[#313131] text-[#f5f5f5] hover:border-[#6366f1]/50 hover:bg-[#1e293b]/40'
                             }`}
                           >
                             <div className="flex items-center justify-between w-full">
@@ -449,10 +449,10 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                               {isSelected ? (
                                 <CheckCircle2 className="h-3.5 w-3.5 text-[#10b981]" />
                               ) : (
-                                <Clock className="h-3.5 w-3.5 text-[#908fa0]" />
+                                <Clock className="h-3.5 w-3.5 text-[#8c8c8c]" />
                               )}
                             </div>
-                            <span className="text-[10px] text-[#908fa0] mt-1 truncate">{slot.assignedDoctor}</span>
+                            <span className="text-[10px] text-[#8c8c8c] mt-1 truncate">{slot.assignedDoctor}</span>
                           </button>
                         );
                       })}
@@ -461,9 +461,9 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
 
                   {/* Confirm Reschedule Button */}
                   {selectedSlot && (
-                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#030712] p-3 rounded-xl border border-[#1e293b]">
+                    <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 bg-[#1f1f1f] p-3 rounded-xl border border-[#313131]">
                       <div className="text-xs">
-                        <span className="text-[#908fa0]">Target Slot: </span>
+                        <span className="text-[#8c8c8c]">Target Slot: </span>
                         <span className="text-[#818cf8] font-mono font-semibold">
                           {selectedSlot.displayTime} ({selectedDate})
                         </span>
@@ -472,16 +472,16 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                       <button
                         onClick={handleReschedule}
                         disabled={rescheduling}
-                        className="w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-[#6366f1] to-[#818cf8] text-white text-xs font-semibold hover:opacity-95 transition flex items-center justify-center space-x-2 cursor-pointer shadow-lg shadow-[#6366f1]/20 disabled:opacity-50"
+                        className="w-full sm:w-auto px-4 py-2 rounded-lg bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold transition flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1] focus-visible:ring-offset-2 focus-visible:ring-offset-[#181818]"
                       >
                         {rescheduling ? (
                           <>
                             <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-                            <span>Updating Calendar...</span>
+                            <span>Updating calendar...</span>
                           </>
                         ) : (
                           <>
-                            <span>Confirm 1-Click Swap</span>
+                            <span>Confirm 1-click swap</span>
                             <ArrowRight className="h-3.5 w-3.5" />
                           </>
                         )}
@@ -493,10 +493,10 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
 
               {/* Cancellation Section */}
               {appointment && appointment.status !== 'cancelled' && (
-                <div className="pt-4 border-t border-[#1e293b]/80">
+                <div className="pt-4 border-t border-[#313131]">
                   {!showCancelConfirm ? (
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-[#908fa0]">Unable to make it to any available slot?</span>
+                      <span className="text-xs text-[#8c8c8c]">Unable to make it to any available slot?</span>
                       <button
                         onClick={() => setShowCancelConfirm(true)}
                         className="text-xs text-[#ffb4ab] hover:underline cursor-pointer"
@@ -513,13 +513,13 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                         </span>
                         <button
                           onClick={() => setShowCancelConfirm(false)}
-                          className="text-[11px] text-[#908fa0] hover:text-white"
+                          className="text-[11px] text-[#8c8c8c] hover:text-white"
                         >
                           Dismiss
                         </button>
                       </div>
 
-                      <p className="text-[11px] text-[#dfe2f1]">
+                      <p className="text-[11px] text-[#f5f5f5]">
                         Cancelling releases your reserved slot. Per policy, a credit of{' '}
                         <span className="font-mono font-bold text-white">
                           INR {policy?.isFreeWindow ? (appointment.depositAmount || 500) : Math.round((appointment.depositAmount || 500) * 0.5)}
@@ -528,19 +528,19 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
                       </p>
 
                       <div className="space-y-1.5">
-                        <label className="text-[11px] text-[#908fa0]">Reason for cancellation:</label>
+                        <label className="text-[11px] text-[#8c8c8c]">Reason for cancellation:</label>
                         <input
                           type="text"
                           value={cancelReason}
                           onChange={(e) => setCancelReason(e.target.value)}
-                          className="w-full bg-[#030712] border border-[#1e293b] rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#f43f5e]"
+                          className="w-full bg-[#1f1f1f] border border-[#313131] rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#f43f5e]"
                         />
                       </div>
 
                       <div className="flex justify-end space-x-2 pt-1">
                         <button
                           onClick={() => setShowCancelConfirm(false)}
-                          className="px-3 py-1.5 rounded-lg border border-[#1e293b] text-xs text-[#908fa0] hover:text-white cursor-pointer"
+                          className="px-3 py-1.5 rounded-lg border border-[#313131] text-xs text-[#8c8c8c] hover:text-white cursor-pointer"
                         >
                           Keep Slot
                         </button>
@@ -565,16 +565,16 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
               )}
 
               {/* Shareable Magic Link Drawer */}
-              <div className="p-3 rounded-xl bg-[#030712] border border-[#1e293b] flex items-center justify-between text-xs">
+              <div className="p-3 rounded-xl bg-[#1f1f1f] border border-[#313131] flex items-center justify-between text-xs">
                 <div className="flex items-center space-x-2 overflow-hidden mr-2">
                   <ExternalLink className="h-3.5 w-3.5 text-[#818cf8] shrink-0" />
-                  <span className="text-[#908fa0] truncate text-[11px]">
+                  <span className="text-[#8c8c8c] truncate text-[11px]">
                     Magic Link: {token ? `${window.location.origin}/portal?token=${token.slice(0, 16)}...` : 'Generating...'}
                   </span>
                 </div>
                 <button
                   onClick={handleCopyLink}
-                  className="px-2.5 py-1 rounded-lg bg-[#1e293b] text-[#dfe2f1] hover:text-white text-[11px] flex items-center space-x-1 shrink-0 cursor-pointer transition"
+                  className="px-2.5 py-1 rounded-lg bg-[#1e293b] text-[#f5f5f5] hover:text-white text-[11px] flex items-center space-x-1 shrink-0 cursor-pointer transition"
                 >
                   {copiedLink ? (
                     <>
@@ -594,7 +594,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-[#1e293b] bg-[#0f172a]/60 flex items-center justify-between text-xs text-[#908fa0]">
+        <div className="px-6 py-3 border-t border-[#313131] bg-[#1f1f1f]/60 flex items-center justify-between text-xs text-[#8c8c8c]">
           <span className="text-[11px]">HMAC-SHA256 Encrypted Magic Portal</span>
           {onClose && (
             <button
@@ -614,7 +614,7 @@ export const SelfServicePortal: React.FC<SelfServicePortalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 animate-in fade-in duration-200">
       {portalCard}
     </div>
   );

@@ -659,18 +659,18 @@ export default function App() {
   // Standalone Direct Magic-Link Customer Landing View
   if (standalonePortalToken) {
     return (
-      <div className="min-h-screen bg-[#030712] text-[#dfe2f1] flex flex-col font-sans selection:bg-[#6366f1] selection:text-white p-4 sm:p-6 justify-center items-center">
+      <div className="min-h-screen bg-[#1f1f1f] text-[#f5f5f5] flex flex-col font-sans selection:bg-[#6366f1] selection:text-white p-4 sm:p-6 justify-center items-center">
         {/* Top Minimal Client Bar */}
         <div className="w-full max-w-2xl flex items-center justify-between mb-4 px-1">
           <div className="flex items-center space-x-3">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-[#6366f1] via-[#818cf8] to-[#10b981] p-[1.5px] shadow-lg shadow-[#6366f1]/25">
-              <div className="h-full w-full bg-[#030712] rounded-[10px] flex items-center justify-center">
+            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-[#6366f1] via-[#818cf8] to-[#10b981] p-[1.5px]">
+              <div className="h-full w-full bg-[#1f1f1f] rounded-[10px] flex items-center justify-center">
                 <Bot className="h-5 w-5 text-[#818cf8]" />
               </div>
             </div>
             <div>
               <h2 className="font-bold text-sm tracking-tight text-white">{businessConfig?.name || 'Apex Wellness Clinic'}</h2>
-              <p className="text-[11px] text-[#908fa0]">Client Self-Service & Rescheduling Hub</p>
+              <p className="text-[11px] text-[#8c8c8c]">Client Self-Service & Rescheduling Hub</p>
             </div>
           </div>
           <button
@@ -678,7 +678,7 @@ export default function App() {
               window.history.pushState({}, '', '/');
               setStandalonePortalToken(null);
             }}
-            className="text-xs text-[#908fa0] hover:text-white transition flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-[#1e293b] hover:bg-[#1e293b]/50 cursor-pointer"
+            className="text-xs text-[#8c8c8c] hover:text-white transition flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border border-[#313131] hover:bg-[#1e293b]/50 cursor-pointer"
           >
             <span>Admin Console</span>
             <ChevronRight className="h-3.5 w-3.5" />
@@ -700,27 +700,25 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#030712] text-[#dfe2f1] flex flex-col font-sans selection:bg-[#6366f1] selection:text-white">
+    <div className="min-h-screen bg-[#000000] text-[#f5f5f5] flex flex-col font-sans selection:bg-[#6366f1] selection:text-white">
       {/* Top Command Deck Header */}
-      <header className="border-b border-[#1e293b] bg-[#0b0f19]/80 backdrop-blur-xl sticky top-0 z-40">
+      <header className="border-b border-[#313131] bg-[#181818] sticky top-0 z-40">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           {/* Brand & Studio ID */}
           <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-[#6366f1] via-[#818cf8] to-[#10b981] p-[1.5px] shadow-lg shadow-[#6366f1]/25">
-              <div className="h-full w-full bg-[#030712] rounded-[10px] flex items-center justify-center">
-                <Bot className="h-5 w-5 text-[#818cf8]" />
-              </div>
+            <div className="h-10 w-10 rounded-xl bg-[#272727] border border-[#313131] flex items-center justify-center">
+              <Bot className="h-5 w-5 text-[#818cf8]" />
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="font-bold text-base tracking-tight text-white">
+                <span className="font-bold text-base tracking-tight bg-gradient-to-r from-[#ffffff] to-[#9b9b9b] bg-clip-text text-transparent">
                   {businessConfig?.name || 'Apex Wellness Clinic'}
                 </span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#6366f1]/15 text-[#818cf8] border border-[#6366f1]/30">
+                <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold bg-[#272727] text-[#818cf8] border border-[#313131]">
                   AI Agent v2.4 (Active)
                 </span>
               </div>
-              <p className="text-[11px] text-[#908fa0]">
+              <p className="text-[11px] text-[#8c8c8c]">
                 {businessConfig?.tagline || 'Obsidian Autonomous Command • RAG & Booking Orchestrator'}
               </p>
             </div>
@@ -729,33 +727,33 @@ export default function App() {
           {/* Telemetry Chips */}
           <div className="flex items-center space-x-3">
             {/* Atlas Vector Store */}
-            <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#0f172a] border border-[#1e293b] text-xs">
+            <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#1f1f1f] border border-[#313131] text-xs">
               <Database className="h-3.5 w-3.5 text-[#10b981]" />
-              <span className="text-[#908fa0]">Atlas Vector:</span>
+              <span className="text-[#8c8c8c]">Atlas Vector:</span>
               <span className="text-[#10b981] font-mono text-[11px]">
                 {health?.database.connected ? 'Atlas Cluster Synced' : 'Simulation Mode'} ({documents.reduce((acc, d) => acc + (d.chunkCount || 0), 0)} chunks)
               </span>
             </div>
 
             {/* WhatsApp Webhook Status */}
-            <div className="hidden lg:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#0f172a] border border-[#1e293b] text-xs">
+            <div className="hidden lg:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#1f1f1f] border border-[#313131] text-xs">
               <Radio className="h-3.5 w-3.5 text-[#10b981]" />
-              <span className="text-[#908fa0]">WhatsApp Cloud API:</span>
+              <span className="text-[#8c8c8c]">WhatsApp Cloud API:</span>
               <span className="text-white font-mono text-[11px]">Active (Webhook Ready)</span>
             </div>
 
             {/* Autonomous Mode Pill */}
             <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition ${
               activeSession?.isHumanTakeover 
-                ? 'bg-[#f43f5e]/15 border-[#f43f5e]/40 text-[#ffb4ab]' 
+                ? 'bg-[#ef4444]/15 border-[#ef4444]/40 text-[#ffb4ab]' 
                 : 'bg-[#10b981]/15 border-[#10b981]/40 text-[#4edea3]'
             }`}>
               <span className="relative flex h-2 w-2">
                 <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                  activeSession?.isHumanTakeover ? 'bg-[#f43f5e]' : 'bg-[#10b981]'
+                  activeSession?.isHumanTakeover ? 'bg-[#ef4444]' : 'bg-[#10b981]'
                 }`}></span>
                 <span className={`relative inline-flex rounded-full h-2 w-2 ${
-                  activeSession?.isHumanTakeover ? 'bg-[#f43f5e]' : 'bg-[#10b981]'
+                  activeSession?.isHumanTakeover ? 'bg-[#ef4444]' : 'bg-[#10b981]'
                 }`}></span>
               </span>
               <span>{activeSession?.isHumanTakeover ? 'Human Takeover Active' : 'AI Autonomous Mode'}</span>
@@ -764,16 +762,16 @@ export default function App() {
         </div>
 
         {/* Modular Navigation Tabs */}
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 flex space-x-1 overflow-x-auto border-t border-[#1e293b]/60">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 flex space-x-1 overflow-x-auto border-t border-[#313131]">
           {[
-            { id: 'live', label: 'Live Conversations & Takeover', icon: MessageSquare, badge: `${sessions.length} Active` },
-            { id: 'knowledge', label: 'Knowledge Base (Atlas RAG)', icon: BookOpen, badge: `${documents.length} Docs` },
-            { id: 'appointments', label: 'Bookings & Calendar Matrix', icon: Calendar, badge: `${appointments.length} Slots` },
-            { id: 'evals', label: '20-Scenario Eval Benchmark', icon: ShieldCheck, badge: '100% Pass' },
-            { id: 'whitelabel', label: 'White-Label & Embed Script', icon: Palette, badge: `${(businessConfig?.industry || 'clinic').toUpperCase()}` },
-            { id: 'analytics', label: 'ROI & Conversion Intelligence', icon: TrendingUp, badge: `${analyticsData?.bookingConversionRate || 33}% Conv` },
-            { id: 'reputation', label: 'Reputation & Google Reviews', icon: Star, badge: `${feedbackOverview?.csatScore || 86}% CSAT` },
-            { id: 'docs', label: 'Docs & Architecture Specs', icon: FileText, badge: '15 Specs' },
+            { id: 'live', label: 'Live conversations & takeover', icon: MessageSquare, badge: `${sessions.length} Active` },
+            { id: 'knowledge', label: 'Knowledge base (Atlas RAG)', icon: BookOpen, badge: `${documents.length} Docs` },
+            { id: 'appointments', label: 'Bookings & calendar matrix', icon: Calendar, badge: `${appointments.length} Slots` },
+            { id: 'evals', label: '20-scenario eval benchmark', icon: ShieldCheck, badge: '100% Pass' },
+            { id: 'whitelabel', label: 'White-label & embed script', icon: Palette, badge: `${(businessConfig?.industry || 'clinic').toUpperCase()}` },
+            { id: 'analytics', label: 'ROI & conversion intelligence', icon: TrendingUp, badge: `${analyticsData?.bookingConversionRate || 33}% Conv` },
+            { id: 'reputation', label: 'Reputation & Google reviews', icon: Star, badge: `${feedbackOverview?.csatScore || 86}% CSAT` },
+            { id: 'docs', label: 'Docs & architecture specs', icon: FileText, badge: '15 Specs' },
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -781,19 +779,19 @@ export default function App() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center space-x-2 py-2.5 px-4 text-xs font-medium border-b-2 transition whitespace-nowrap cursor-pointer ${
+                className={`flex items-center space-x-2 py-2.5 px-4 text-xs font-medium border-b-2 transition whitespace-nowrap cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1] ${
                   isActive
-                    ? 'border-[#6366f1] text-[#818cf8] bg-[#6366f1]/5'
-                    : 'border-transparent text-[#908fa0] hover:text-white hover:border-[#334155]'
+                    ? 'border-[#6366f1] text-[#f5f5f5] bg-[#1f1f1f]'
+                    : 'border-transparent text-[#8c8c8c] hover:text-white hover:border-[#454545]'
                 }`}
               >
-                <Icon className={`h-4 w-4 ${isActive ? 'text-[#818cf8]' : 'text-[#908fa0]'}`} />
+                <Icon className={`h-4 w-4 ${isActive ? 'text-[#818cf8]' : 'text-[#8c8c8c]'}`} />
                 <span>{tab.label}</span>
                 {tab.badge && (
                   <span className={`text-[10px] px-1.5 py-0.2 rounded-md ${
                     tab.badge.includes('Active')
                       ? 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30' 
-                      : 'bg-[#6366f1]/15 text-[#818cf8] border border-[#6366f1]/30'
+                      : 'bg-[#272727] text-[#818cf8] border border-[#313131]'
                   }`}>
                     {tab.badge}
                   </span>
@@ -810,11 +808,11 @@ export default function App() {
         {activeTab === 'live' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-[calc(100vh-140px)] min-h-[680px]">
             {/* Left 3 Cols: Omnichannel Ingress & Threads */}
-            <div className="lg:col-span-3 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-3.5 flex flex-col backdrop-blur-md">
-              <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+            <div className="lg:col-span-3 rounded-2xl bg-[#181818] border border-[#313131] p-3.5 flex flex-col">
+              <div className="flex items-center justify-between pb-3 border-b border-[#313131]">
                 <div className="flex items-center space-x-2">
                   <span className="font-semibold text-xs text-white">Omnichannel Inbox</span>
-                  <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#1e293b] text-[#908fa0] font-mono">
+                  <span className="px-1.5 py-0.5 rounded text-[10px] bg-[#1e293b] text-[#8c8c8c] font-mono">
                     {filteredSessions.length}
                   </span>
                 </div>
@@ -826,7 +824,7 @@ export default function App() {
                       className={`text-[10px] px-2 py-0.5 rounded capitalize transition cursor-pointer ${
                         channelFilter === ch 
                           ? 'bg-[#6366f1] text-white font-medium' 
-                          : 'text-[#908fa0] hover:text-white hover:bg-[#1e293b]'
+                          : 'text-[#8c8c8c] hover:text-white hover:bg-[#1e293b]'
                       }`}
                     >
                       {ch}
@@ -846,7 +844,7 @@ export default function App() {
                       className={`p-3 rounded-xl border transition cursor-pointer ${
                         isSelected
                           ? 'bg-[#6366f1]/10 border-[#6366f1]/50 shadow-sm shadow-[#6366f1]/10'
-                          : 'bg-[#0f172a]/50 border-[#1e293b]/80 hover:border-[#334155]'
+                          : 'bg-[#1f1f1f] border-[#313131] hover:border-[#334155]'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -860,9 +858,9 @@ export default function App() {
                             {session.channel}
                           </span>
                         </div>
-                        <span className="text-[10px] text-[#908fa0]">{session.time}</span>
+                        <span className="text-[10px] text-[#8c8c8c]">{session.time}</span>
                       </div>
-                      <p className="text-[11px] text-[#908fa0] mt-1.5 line-clamp-2 leading-relaxed">
+                      <p className="text-[11px] text-[#8c8c8c] mt-1.5 line-clamp-2 leading-relaxed">
                         {session.snippet}
                       </p>
                       <div className="mt-2.5 flex items-center justify-between text-[10px]">
@@ -875,7 +873,7 @@ export default function App() {
                         }`}>
                           {session.sentimentText}
                         </span>
-                        <span className="text-[#908fa0]">{session.vip}</span>
+                        <span className="text-[#8c8c8c]">{session.vip}</span>
                       </div>
                     </div>
                   );
@@ -884,20 +882,20 @@ export default function App() {
             </div>
 
             {/* Center 6 Cols: Active Conversation & LangGraph Thought Stream */}
-            <div className="lg:col-span-6 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] flex flex-col backdrop-blur-md">
+            <div className="lg:col-span-6 rounded-2xl bg-[#181818] border border-[#313131] flex flex-col">
               {activeSession ? (
                 <>
                   {/* Header */}
-                  <div className="p-3.5 border-b border-[#1e293b] flex items-center justify-between bg-[#0f131d]/60 rounded-t-2xl">
+                  <div className="p-3.5 border-b border-[#313131] flex items-center justify-between bg-[#181818] rounded-t-2xl">
                     <div>
                       <div className="flex items-center space-x-2">
                         <h3 className="font-semibold text-sm text-white">{activeSession.name}</h3>
-                        <span className="text-xs text-[#908fa0]">• {activeSession.phone}</span>
+                        <span className="text-xs text-[#8c8c8c]">• {activeSession.phone}</span>
                         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1e293b] text-[#818cf8]">
                           #{activeSession.id}
                         </span>
                       </div>
-                      <p className="text-[11px] text-[#908fa0] mt-0.5">
+                      <p className="text-[11px] text-[#8c8c8c] mt-0.5">
                         Tier: {activeSession.vip} • Active Channel: {activeSession.channel.toUpperCase()}
                       </p>
                     </div>
@@ -935,7 +933,7 @@ export default function App() {
                       <div key={m.id} className="space-y-2">
                         {/* Thoughts accordion */}
                         {m.thoughts && m.thoughts.length > 0 && (
-                          <div className="rounded-xl bg-[#0a0e18] border border-[#6366f1]/30 p-3 shadow-lg shadow-[#6366f1]/5 text-xs">
+                          <div className="rounded-xl bg-[#1f1f1f] border border-[#6366f1]/30 p-3 text-xs">
                             <div 
                               className="flex items-center justify-between cursor-pointer select-none"
                               onClick={() => setShowThoughtDetails(!showThoughtDetails)}
@@ -944,11 +942,11 @@ export default function App() {
                                 <Activity className="h-3.5 w-3.5 animate-pulse text-[#6366f1]" />
                                 <span>LangGraph Agent Thought Stream</span>
                               </div>
-                              {showThoughtDetails ? <ChevronDown className="h-4 w-4 text-[#908fa0]" /> : <ChevronRight className="h-4 w-4 text-[#908fa0]" />}
+                              {showThoughtDetails ? <ChevronDown className="h-4 w-4 text-[#8c8c8c]" /> : <ChevronRight className="h-4 w-4 text-[#8c8c8c]" />}
                             </div>
 
                             {showThoughtDetails && (
-                              <div className="mt-2.5 space-y-1.5 border-t border-[#1e293b]/80 pt-2 font-mono text-[11px] text-[#908fa0]">
+                              <div className="mt-2.5 space-y-1.5 border-t border-[#313131] pt-2 font-mono text-[11px] text-[#8c8c8c]">
                                 {m.thoughts.map((t, idx) => (
                                   <div key={idx} className="line-clamp-2">{t}</div>
                                 ))}
@@ -961,15 +959,15 @@ export default function App() {
                           <div
                             className={`max-w-md p-3.5 text-xs rounded-2xl ${
                               m.role === 'user'
-                                ? 'bg-[#171b26] border border-[#1e293b] rounded-tl-sm text-[#dfe2f1]'
+                                ? 'bg-[#272727] border border-[#313131] rounded-tl-sm text-[#f5f5f5]'
                                 : m.role === 'human_agent'
                                 ? 'bg-[#10b981] text-[#030712] font-medium rounded-tr-sm shadow-md'
-                                : 'bg-[#6366f1] text-white rounded-tr-sm shadow-md shadow-[#6366f1]/20'
+                                : 'bg-[#6366f1] text-white rounded-tr-sm'
                             }`}
                           >
                             {m.content}
                             <div className={`text-[10px] mt-1.5 flex items-center justify-between ${
-                              m.role === 'user' ? 'text-[#908fa0]' : m.role === 'human_agent' ? 'text-[#030712]/70' : 'text-indigo-200'
+                              m.role === 'user' ? 'text-[#8c8c8c]' : m.role === 'human_agent' ? 'text-[#030712]/70' : 'text-indigo-200'
                             }`}>
                               <span>{m.timestamp}</span>
                               <span>
@@ -987,7 +985,7 @@ export default function App() {
                   </div>
 
                   {/* Bottom Input Area */}
-                  <div className="p-3 border-t border-[#1e293b] bg-[#0f131d]/60 rounded-b-2xl">
+                  <div className="p-3 border-t border-[#313131] bg-[#181818] rounded-b-2xl">
                     <form onSubmit={handleSendMessage} className="flex items-center space-x-2">
                       <input
                         type="text"
@@ -998,12 +996,12 @@ export default function App() {
                             ? `Type response to ${activeSession.name} as human agent...` 
                             : `Simulate customer response or prompt AI...`
                         }
-                        className="flex-1 bg-[#030712] border border-[#1e293b] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#6366f1] placeholder-[#908fa0]"
+                        className="flex-1 bg-[#1f1f1f] border border-[#313131] rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-[#6366f1] placeholder-[#908fa0]"
                       />
                       <button 
                         type="submit"
                         disabled={!chatInput.trim()}
-                        className="px-4 py-2.5 bg-[#6366f1] hover:bg-[#818cf8] disabled:opacity-40 text-white rounded-xl text-xs font-semibold transition cursor-pointer flex items-center space-x-1.5"
+                        className="px-4 py-2.5 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] disabled:opacity-40 text-white rounded-xl text-xs font-semibold transition cursor-pointer flex items-center space-x-1.5"
                       >
                         <span>Send</span>
                         <Send className="h-3.5 w-3.5" />
@@ -1012,7 +1010,7 @@ export default function App() {
                   </div>
                 </>
               ) : (
-                <div className="flex-1 flex items-center justify-center text-xs text-[#908fa0]">
+                <div className="flex-1 flex items-center justify-center text-xs text-[#8c8c8c]">
                   No active session selected.
                 </div>
               )}
@@ -1021,8 +1019,8 @@ export default function App() {
             {/* Right 3 Cols: RAG Inspector & Live Appointments */}
             <div className="lg:col-span-3 space-y-4 flex flex-col">
               {/* RAG Grounding Summary */}
-              <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-4 backdrop-blur-md">
-                <div className="flex items-center justify-between pb-2.5 border-b border-[#1e293b]">
+              <div className="rounded-2xl bg-[#181818] border border-[#313131] p-4">
+                <div className="flex items-center justify-between pb-2.5 border-b border-[#313131]">
                   <span className="font-semibold text-xs text-white">Active RAG Grounding</span>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#10b981]/15 text-[#4edea3]">
                     Verified Clinic Policy
@@ -1032,10 +1030,10 @@ export default function App() {
                   <div className="text-[11px] font-semibold text-white">
                     Rescheduling & Cancellation Policy v2.1
                   </div>
-                  <div className="mt-1 text-[11px] text-[#908fa0] leading-relaxed bg-[#030712] p-2.5 rounded-lg border border-[#1e293b] font-mono">
+                  <div className="mt-1 text-[11px] text-[#8c8c8c] leading-relaxed bg-[#1f1f1f] p-2.5 rounded-lg border border-[#313131] font-mono">
                     "...Patients may reschedule recovery and cryotherapy sessions up to 4 hours in advance at zero penalty..."
                   </div>
-                  <div className="mt-2.5 flex items-center justify-between text-[10px] text-[#908fa0]">
+                  <div className="mt-2.5 flex items-center justify-between text-[10px] text-[#8c8c8c]">
                     <span>Source: Apex_Ops_Manual_2025.pdf</span>
                     <span className="text-[#4edea3]">Confidence: 89%</span>
                   </div>
@@ -1043,21 +1041,21 @@ export default function App() {
               </div>
 
               {/* Real-time Appointments Sidebar */}
-              <div className="flex-1 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-4 backdrop-blur-md flex flex-col">
-                <div className="flex items-center justify-between pb-2.5 border-b border-[#1e293b]">
+              <div className="flex-1 rounded-2xl bg-[#181818] border border-[#313131] p-4 flex flex-col">
+                <div className="flex items-center justify-between pb-2.5 border-b border-[#313131]">
                   <span className="font-semibold text-xs text-white">Upcoming Appointments</span>
                   <span className="text-[10px] text-[#818cf8] font-mono">{appointments.length} Booked</span>
                 </div>
                 <div className="mt-3 space-y-2 flex-1 overflow-y-auto">
                   {appointments.slice(0, 4).map(apt => (
-                    <div key={apt.id} className="p-2.5 rounded-lg bg-[#0f172a] border border-[#1e293b] text-xs">
+                    <div key={apt.id} className="p-2.5 rounded-lg bg-[#1f1f1f] border border-[#313131] text-xs">
                       <div className="flex items-center justify-between text-[11px]">
                         <span className="font-semibold text-white">{apt.customerName}</span>
                         <span className="text-[#818cf8] font-mono text-[10px]">
                           {new Date(apt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
-                      <div className="text-[10px] text-[#908fa0] mt-0.5 truncate">{apt.serviceName}</div>
+                      <div className="text-[10px] text-[#8c8c8c] mt-0.5 truncate">{apt.serviceName}</div>
                     </div>
                   ))}
                 </div>
@@ -1068,18 +1066,18 @@ export default function App() {
 
         {/* Tab 2: Knowledge Base & Document Manager */}
         {activeTab === 'knowledge' && (
-          <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 space-y-6 backdrop-blur-md">
+          <div className="rounded-2xl bg-[#181818] border border-[#313131] p-6 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h2 className="text-base font-bold text-white">Atlas Vector Store & Document Ingestion</h2>
-                <p className="text-xs text-[#908fa0] mt-0.5">
+                <p className="text-xs text-[#8c8c8c] mt-0.5">
                   Manage indexed knowledge chunks for zero-hallucination LangGraph RAG support across multiple business verticals.
                 </p>
               </div>
               <div className="flex items-center space-x-2">
                 <button 
                   onClick={() => setShowUploadModal(true)}
-                  className="px-4 py-2 bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5 shadow-md shadow-[#6366f1]/20"
+                  className="px-4 py-2 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
                 >
                   <Plus className="h-3.5 w-3.5" />
                   <span>Upload Document</span>
@@ -1088,16 +1086,16 @@ export default function App() {
             </div>
 
             {/* Knowledge Base Search & Category Filter Toolbar */}
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-xl bg-[#030712] border border-[#1e293b]">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-xl bg-[#1f1f1f] border border-[#313131]">
               {/* Search Bar */}
               <div className="relative flex-1">
-                <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#908fa0]" />
+                <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#8c8c8c]" />
                 <input
                   type="text"
                   value={knowledgeSearchQuery}
                   onChange={(e) => setKnowledgeSearchQuery(e.target.value)}
                   placeholder="Search indexed knowledge documents by title or keywords..."
-                  className="w-full pl-9 pr-4 py-2 bg-[#0b0f19] border border-[#1e293b] rounded-lg text-xs text-white placeholder-[#908fa0] focus:outline-none focus:border-[#6366f1]"
+                  className="w-full pl-9 pr-4 py-2 bg-[#181818] border border-[#313131] rounded-lg text-xs text-white placeholder-[#908fa0] focus:outline-none focus:border-[#6366f1]"
                 />
               </div>
 
@@ -1110,7 +1108,7 @@ export default function App() {
                     className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition cursor-pointer ${
                       knowledgeCategoryFilter === cat
                         ? 'bg-[#6366f1] text-white'
-                        : 'bg-[#0b0f19] text-[#908fa0] hover:text-white border border-[#1e293b]'
+                        : 'bg-[#181818] text-[#8c8c8c] hover:text-white border border-[#313131]'
                     }`}
                   >
                     {cat === 'all' ? `All Docs (${documents.length})` : cat.replace('_', ' ').toUpperCase()}
@@ -1122,7 +1120,7 @@ export default function App() {
             {/* Document Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredDocuments.map(doc => (
-                <div key={doc.id} className="p-4 rounded-xl bg-[#0f172a]/70 border border-[#1e293b] hover:border-[#334155] transition flex flex-col justify-between group">
+                <div key={doc.id} className="p-4 rounded-xl bg-[#1f1f1f]/70 border border-[#313131] hover:border-[#334155] transition flex flex-col justify-between group">
                   <div>
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#6366f1]/15 text-[#818cf8] uppercase">
@@ -1137,7 +1135,7 @@ export default function App() {
                           onClick={() => handleDeleteDocument(doc.id)}
                           disabled={deletingDocId === doc.id}
                           title="Delete from Vector Store"
-                          className="p-1 rounded text-[#908fa0] hover:text-[#f43f5e] hover:bg-[#f43f5e]/10 transition cursor-pointer"
+                          className="p-1 rounded text-[#8c8c8c] hover:text-[#f43f5e] hover:bg-[#f43f5e]/10 transition cursor-pointer"
                         >
                           {deletingDocId === doc.id ? (
                             <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -1148,11 +1146,11 @@ export default function App() {
                       </div>
                     </div>
                     <h4 className="text-sm font-semibold text-white mt-2.5">{doc.title}</h4>
-                    <p className="text-[11px] text-[#908fa0] mt-1.5 line-clamp-3 leading-relaxed">
+                    <p className="text-[11px] text-[#8c8c8c] mt-1.5 line-clamp-3 leading-relaxed">
                       {doc.content}
                     </p>
                   </div>
-                  <div className="mt-4 pt-3 border-t border-[#1e293b] flex items-center justify-between text-xs text-[#908fa0]">
+                  <div className="mt-4 pt-3 border-t border-[#313131] flex items-center justify-between text-xs text-[#8c8c8c]">
                     <span className="font-mono text-[11px]">{doc.chunkCount} Vector Chunks</span>
                     <button
                       onClick={() => handleInspectChunks(doc)}
@@ -1166,7 +1164,7 @@ export default function App() {
             </div>
 
             {filteredDocuments.length === 0 && (
-              <div className="py-12 text-center text-[#908fa0] text-xs">
+              <div className="py-12 text-center text-[#8c8c8c] text-xs">
                 No indexed documents match the selected category or search query.
               </div>
             )}
@@ -1176,11 +1174,11 @@ export default function App() {
         {/* Tab 3: Appointments & Calendar Matrix */}
         {activeTab === 'appointments' && (
           <div className="space-y-6">
-            <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 space-y-4 backdrop-blur-md">
+            <div className="rounded-2xl bg-[#181818] border border-[#313131] p-6 space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h2 className="text-base font-bold text-white">Google Calendar Sync & Bookings Table</h2>
-                  <p className="text-xs text-[#908fa0] mt-0.5">
+                  <p className="text-xs text-[#8c8c8c] mt-0.5">
                     Synchronized in real-time via Google Calendar FreeBusy and Events API.
                   </p>
                 </div>
@@ -1190,7 +1188,7 @@ export default function App() {
                   </span>
                   <button
                     onClick={() => setShowWalkInModal(true)}
-                    className="px-3.5 py-1.5 rounded-lg bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer shadow-md shadow-[#6366f1]/20"
+                    className="px-3.5 py-1.5 rounded-lg bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     <span>+ New Walk-In</span>
@@ -1199,16 +1197,16 @@ export default function App() {
               </div>
 
               {/* Appointments Search & Filter Toolbar */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-xl bg-[#030712] border border-[#1e293b]">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-xl bg-[#1f1f1f] border border-[#313131]">
                 {/* Search Bar */}
                 <div className="relative flex-1">
-                  <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#908fa0]" />
+                  <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#8c8c8c]" />
                   <input
                     type="text"
                     value={appointmentSearchQuery}
                     onChange={(e) => setAppointmentSearchQuery(e.target.value)}
                     placeholder="Search bookings by customer name, service, phone or email..."
-                    className="w-full pl-9 pr-4 py-2 bg-[#0b0f19] border border-[#1e293b] rounded-lg text-xs text-white placeholder-[#908fa0] focus:outline-none focus:border-[#6366f1]"
+                    className="w-full pl-9 pr-4 py-2 bg-[#181818] border border-[#313131] rounded-lg text-xs text-white placeholder-[#908fa0] focus:outline-none focus:border-[#6366f1]"
                   />
                 </div>
 
@@ -1221,7 +1219,7 @@ export default function App() {
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition cursor-pointer ${
                         appointmentStatusFilter === status
                           ? 'bg-[#6366f1] text-white'
-                          : 'bg-[#0b0f19] text-[#908fa0] hover:text-white border border-[#1e293b]'
+                          : 'bg-[#181818] text-[#8c8c8c] hover:text-white border border-[#313131]'
                       }`}
                     >
                       {status === 'all'
@@ -1246,7 +1244,7 @@ export default function App() {
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead>
-                    <tr className="border-b border-[#1e293b] text-[#908fa0] uppercase tracking-wider text-[10px]">
+                    <tr className="border-b border-[#313131] text-[#8c8c8c] uppercase tracking-wider text-[10px]">
                       <th className="py-3 px-4">Customer</th>
                       <th className="py-3 px-4">Service</th>
                       <th className="py-3 px-4">Scheduled Slot</th>
@@ -1256,7 +1254,7 @@ export default function App() {
                       <th className="py-3 px-4 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#1e293b]/70 text-[#dfe2f1]">
+                  <tbody className="divide-y divide-[#1e293b]/70 text-[#f5f5f5]">
                     {filteredAppointments.map(apt => (
                       <tr key={apt.id}>
                         <td className="py-3.5 px-4 font-medium text-white">{apt.customerName}</td>
@@ -1264,8 +1262,8 @@ export default function App() {
                         <td className="py-3.5 px-4 font-mono text-[#818cf8]">
                           {new Date(apt.startTime).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </td>
-                        <td className="py-3.5 px-4 text-[#908fa0]">{apt.customerPhone || apt.customerEmail}</td>
-                        <td className="py-3.5 px-4 font-mono text-[#908fa0] text-[11px]">{apt.calendarEventId}</td>
+                        <td className="py-3.5 px-4 text-[#8c8c8c]">{apt.customerPhone || apt.customerEmail}</td>
+                        <td className="py-3.5 px-4 font-mono text-[#8c8c8c] text-[11px]">{apt.calendarEventId}</td>
                         <td className="py-3.5 px-4">
                           <span className={`px-2 py-0.5 rounded-full text-[10px] ${
                             apt.status === 'cancelled'
@@ -1307,14 +1305,14 @@ export default function App() {
                               </button>
                             </div>
                           ) : (
-                            <span className="text-[10px] text-[#908fa0] italic">Slot Freed</span>
+                            <span className="text-[10px] text-[#8c8c8c] italic">Slot Freed</span>
                           )}
                         </td>
                       </tr>
                     ))}
                     {filteredAppointments.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="py-8 text-center text-[#908fa0] text-xs">
+                        <td colSpan={7} className="py-8 text-center text-[#8c8c8c] text-xs">
                           No bookings match the search criteria or status filter.
                         </td>
                       </tr>
@@ -1324,11 +1322,11 @@ export default function App() {
               </div>
 
               {/* Leads Section */}
-              <div className="mt-6 pt-6 border-t border-[#1e293b]">
+              <div className="mt-6 pt-6 border-t border-[#313131]">
                 <h3 className="text-sm font-bold text-white mb-3">Captured High-Intent Leads</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {leads.map(lead => (
-                    <div key={lead.id} className="p-3.5 rounded-xl bg-[#0f172a] border border-[#1e293b] text-xs">
+                    <div key={lead.id} className="p-3.5 rounded-xl bg-[#1f1f1f] border border-[#313131] text-xs">
                       <div className="flex items-center justify-between">
                         <span className="font-semibold text-white">{lead.name}</span>
                         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#10b981]/15 text-[#4edea3]">
@@ -1336,15 +1334,15 @@ export default function App() {
                         </span>
                       </div>
                       <div className="text-[11px] text-[#818cf8] mt-1 font-medium">{lead.interest}</div>
-                      <div className="text-[11px] text-[#908fa0] mt-1">{lead.summary}</div>
-                      <div className="mt-2 text-[10px] text-[#908fa0]">Contact: {lead.phone || lead.email}</div>
+                      <div className="text-[11px] text-[#8c8c8c] mt-1">{lead.summary}</div>
+                      <div className="mt-2 text-[10px] text-[#8c8c8c]">Contact: {lead.phone || lead.email}</div>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Deposit Payments & Gateway Ledger Section */}
-              <div className="mt-6 pt-6 border-t border-[#1e293b] space-y-3">
+              <div className="mt-6 pt-6 border-t border-[#313131] space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <CreditCard className="h-4 w-4 text-[#10b981]" />
@@ -1353,15 +1351,15 @@ export default function App() {
                       Razorpay & Stripe
                     </span>
                   </div>
-                  <span className="text-[11px] text-[#908fa0]">
+                  <span className="text-[11px] text-[#8c8c8c]">
                     Auto-Confirmation on Paid Deposit
                   </span>
                 </div>
 
-                <div className="overflow-x-auto rounded-xl border border-[#1e293b] bg-[#030712]">
+                <div className="overflow-x-auto rounded-xl border border-[#313131] bg-[#1f1f1f]">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-[#1e293b] text-[#908fa0] uppercase tracking-wider text-[10px] bg-[#0b0f19]">
+                      <tr className="border-b border-[#313131] text-[#8c8c8c] uppercase tracking-wider text-[10px] bg-[#181818]">
                         <th className="py-2.5 px-3">Transaction</th>
                         <th className="py-2.5 px-3">Customer</th>
                         <th className="py-2.5 px-3">Deposit</th>
@@ -1370,7 +1368,7 @@ export default function App() {
                         <th className="py-2.5 px-3 text-right">Receipt / Action</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#1e293b]/60 text-[#dfe2f1]">
+                    <tbody className="divide-y divide-[#1e293b]/60 text-[#f5f5f5]">
                       {transactions.slice(0, 4).map(tx => (
                         <tr key={tx.id}>
                           <td className="py-2.5 px-3 font-mono text-[11px] text-[#818cf8]">{tx.id}</td>
@@ -1378,7 +1376,7 @@ export default function App() {
                           <td className="py-2.5 px-3 font-mono font-semibold text-[#10b981]">
                             {tx.currency} {tx.amount.toLocaleString()}
                           </td>
-                          <td className="py-2.5 px-3 uppercase text-[10px] font-mono text-[#908fa0]">{tx.provider}</td>
+                          <td className="py-2.5 px-3 uppercase text-[10px] font-mono text-[#8c8c8c]">{tx.provider}</td>
                           <td className="py-2.5 px-3">
                             <span className={`px-2 py-0.5 rounded text-[9px] font-mono uppercase ${
                               tx.status === 'paid'
@@ -1409,8 +1407,8 @@ export default function App() {
             </div>
 
             {/* Outbound CRM Webhooks & Multi-Channel Reminder Engine Section */}
-            <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 space-y-5 backdrop-blur-md">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#1e293b]">
+            <div className="rounded-2xl bg-[#181818] border border-[#313131] p-6 space-y-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#313131]">
                 <div>
                   <div className="flex items-center space-x-2">
                     <Zap className="h-4 w-4 text-[#f59e0b]" />
@@ -1419,7 +1417,7 @@ export default function App() {
                       HMAC SHA-256
                     </span>
                   </div>
-                  <p className="text-xs text-[#908fa0] mt-0.5">
+                  <p className="text-xs text-[#8c8c8c] mt-0.5">
                     Fires real-time lead and booking payloads to HubSpot, Zapier, Make, or Slack, and schedules automated 24h & 2h WhatsApp reminders.
                   </p>
                 </div>
@@ -1428,16 +1426,16 @@ export default function App() {
                   <button
                     onClick={handleScanReminders}
                     disabled={isScanningReminders}
-                    className="px-3.5 py-1.5 bg-[#0f172a] hover:bg-[#1e293b] border border-[#1e293b] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
+                    className="px-3.5 py-1.5 bg-[#1f1f1f] hover:bg-[#1e293b] border border-[#313131] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
                   >
-                    <RefreshCw className={`h-3.5 w-3.5 ${isScanningReminders ? 'animate-spin text-[#818cf8]' : 'text-[#908fa0]'}`} />
+                    <RefreshCw className={`h-3.5 w-3.5 ${isScanningReminders ? 'animate-spin text-[#818cf8]' : 'text-[#8c8c8c]'}`} />
                     <span>Scan Reminders (24h/2h)</span>
                   </button>
 
                   <button
                     onClick={handleTestWebhook}
                     disabled={isTestingWebhook}
-                    className="px-3.5 py-1.5 bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5 shadow-md shadow-[#6366f1]/20"
+                    className="px-3.5 py-1.5 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
                   >
                     <Send className="h-3.5 w-3.5" />
                     <span>{isTestingWebhook ? 'Firing Payload...' : 'Test Webhook Dispatch'}</span>
@@ -1447,39 +1445,39 @@ export default function App() {
 
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
                 {/* Left 5 Cols: Config & Active Target */}
-                <div className="lg:col-span-5 rounded-xl bg-[#0f172a]/60 border border-[#1e293b] p-4 space-y-3">
+                <div className="lg:col-span-5 rounded-xl bg-[#1f1f1f] border border-[#313131] p-4 space-y-3">
                   <div className="text-xs font-semibold text-white flex items-center justify-between">
                     <span>Connected CRM Webhook Endpoint</span>
                     <span className="text-[10px] font-mono text-[#10b981] bg-[#10b981]/15 px-2 py-0.5 rounded">ACTIVE</span>
                   </div>
-                  <div className="rounded-lg bg-[#030712] border border-[#1e293b] p-2.5 font-mono text-[11px] text-[#818cf8] break-all">
+                  <div className="rounded-lg bg-[#1f1f1f] border border-[#313131] p-2.5 font-mono text-[11px] text-[#818cf8] break-all">
                     {webhookUrl}
                   </div>
-                  <div className="text-[11px] text-[#908fa0]">
+                  <div className="text-[11px] text-[#8c8c8c]">
                     Subscribed Events:
                     <span className="font-mono text-white ml-1">appointment.created, appointment.cancelled, lead.captured, reminder.sent</span>
                   </div>
-                  <div className="pt-2 border-t border-[#1e293b] flex items-center justify-between text-[11px]">
-                    <span className="text-[#908fa0]">Security Auth:</span>
+                  <div className="pt-2 border-t border-[#313131] flex items-center justify-between text-[11px]">
+                    <span className="text-[#8c8c8c]">Security Auth:</span>
                     <span className="font-mono text-[#4edea3]">X-OmniAgent-Signature</span>
                   </div>
                 </div>
 
                 {/* Right 7 Cols: Outbound Webhook Delivery Audit Log */}
-                <div className="lg:col-span-7 rounded-xl bg-[#0f172a]/60 border border-[#1e293b] p-4 space-y-3">
+                <div className="lg:col-span-7 rounded-xl bg-[#1f1f1f] border border-[#313131] p-4 space-y-3">
                   <div className="flex items-center justify-between">
                     <div className="text-xs font-semibold text-white flex items-center space-x-1.5">
                       <Activity className="h-3.5 w-3.5 text-[#10b981]" />
                       <span>Live Delivery Audit Log</span>
                     </div>
-                    <span className="text-[10px] text-[#908fa0] font-mono">
+                    <span className="text-[10px] text-[#8c8c8c] font-mono">
                       {webhookLogs.length} events logged
                     </span>
                   </div>
 
                   <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
                     {webhookLogs.slice(0, 5).map((log, idx) => (
-                      <div key={log.id || idx} className="p-2.5 rounded-lg bg-[#030712] border border-[#1e293b] flex items-center justify-between text-[11px]">
+                      <div key={log.id || idx} className="p-2.5 rounded-lg bg-[#1f1f1f] border border-[#313131] flex items-center justify-between text-[11px]">
                         <div>
                           <div className="flex items-center space-x-2">
                             <span className="font-mono text-[#818cf8] font-bold">{log.event}</span>
@@ -1487,11 +1485,11 @@ export default function App() {
                               HTTP {log.statusCode || 200}
                             </span>
                           </div>
-                          <div className="text-[10px] text-[#908fa0] mt-0.5 font-mono">
+                          <div className="text-[10px] text-[#8c8c8c] mt-0.5 font-mono">
                             {new Date(log.timestamp).toLocaleTimeString()} • Latency: {log.latencyMs}ms
                           </div>
                         </div>
-                        <span className="text-[10px] px-2 py-0.5 rounded bg-[#1e293b] text-[#dfe2f1] font-mono capitalize">
+                        <span className="text-[10px] px-2 py-0.5 rounded bg-[#1e293b] text-[#f5f5f5] font-mono capitalize">
                           {log.status}
                         </span>
                       </div>
@@ -1505,7 +1503,7 @@ export default function App() {
 
         {/* Tab 4: 20-Scenario Golden Evaluation Suite */}
         {activeTab === 'evals' && (
-          <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 space-y-6 backdrop-blur-md">
+          <div className="rounded-2xl bg-[#181818] border border-[#313131] p-6 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center space-x-2">
@@ -1514,13 +1512,13 @@ export default function App() {
                     Live Automated Runner
                   </span>
                 </div>
-                <p className="text-xs text-[#908fa0] mt-0.5">
+                <p className="text-xs text-[#8c8c8c] mt-0.5">
                   Automated benchmark measuring Groundedness, Hallucination Prevention, Tool Precision, and Sentiment Escalation.
                 </p>
               </div>
               <div className="flex items-center space-x-4">
                 <div className="text-right">
-                  <div className="text-[10px] uppercase tracking-wider text-[#908fa0]">Overall Accuracy Score</div>
+                  <div className="text-[10px] uppercase tracking-wider text-[#8c8c8c]">Overall Accuracy Score</div>
                   <div className="text-2xl font-bold font-mono text-[#4edea3]">
                     {evalScorecard?.overallAccuracy !== undefined ? `${evalScorecard.overallAccuracy}%` : '100.0%'}
                   </div>
@@ -1528,7 +1526,7 @@ export default function App() {
                 <button 
                   onClick={handleRunEvals}
                   disabled={isRunningEvals}
-                  className="px-4 py-2.5 bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-2 shadow-lg shadow-[#6366f1]/25 disabled:opacity-50"
+                  className="px-4 py-2.5 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-2 disabled:opacity-50"
                 >
                   {isRunningEvals ? (
                     <>
@@ -1547,8 +1545,8 @@ export default function App() {
 
             {/* Metric Scorecard Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-4 rounded-xl bg-[#0f172a] border border-[#1e293b]">
-                <div className="flex items-center justify-between text-xs text-[#908fa0]">
+              <div className="p-4 rounded-xl bg-[#1f1f1f] border border-[#313131]">
+                <div className="flex items-center justify-between text-xs text-[#8c8c8c]">
                   <span>1. Knowledge Base RAG</span>
                   <span className="font-mono text-[#4edea3]">8/8</span>
                 </div>
@@ -1557,8 +1555,8 @@ export default function App() {
                 </div>
                 <div className="text-[10px] text-[#4edea3] mt-1">Zero-hallucination grounded RAG</div>
               </div>
-              <div className="p-4 rounded-xl bg-[#0f172a] border border-[#1e293b]">
-                <div className="flex items-center justify-between text-xs text-[#908fa0]">
+              <div className="p-4 rounded-xl bg-[#1f1f1f] border border-[#313131]">
+                <div className="flex items-center justify-between text-xs text-[#8c8c8c]">
                   <span>2. Booking Tool Precision</span>
                   <span className="font-mono text-[#4edea3]">5/5</span>
                 </div>
@@ -1567,8 +1565,8 @@ export default function App() {
                 </div>
                 <div className="text-[10px] text-[#4edea3] mt-1">Slot discovery & calendar accuracy</div>
               </div>
-              <div className="p-4 rounded-xl bg-[#0f172a] border border-[#1e293b]">
-                <div className="flex items-center justify-between text-xs text-[#908fa0]">
+              <div className="p-4 rounded-xl bg-[#1f1f1f] border border-[#313131]">
+                <div className="flex items-center justify-between text-xs text-[#8c8c8c]">
                   <span>3. Guardrails & Safety</span>
                   <span className="font-mono text-[#4edea3]">4/4</span>
                 </div>
@@ -1577,8 +1575,8 @@ export default function App() {
                 </div>
                 <div className="text-[10px] text-[#4edea3] mt-1">Out-of-scope & injections caught</div>
               </div>
-              <div className="p-4 rounded-xl bg-[#0f172a] border border-[#1e293b]">
-                <div className="flex items-center justify-between text-xs text-[#908fa0]">
+              <div className="p-4 rounded-xl bg-[#1f1f1f] border border-[#313131]">
+                <div className="flex items-center justify-between text-xs text-[#8c8c8c]">
                   <span>4. Sentiment Escalation</span>
                   <span className="font-mono text-[#4edea3]">3/3</span>
                 </div>
@@ -1590,7 +1588,7 @@ export default function App() {
             </div>
 
             {/* Category Filter Tabs */}
-            <div className="flex items-center space-x-2 border-b border-[#1e293b] pb-3 overflow-x-auto">
+            <div className="flex items-center space-x-2 border-b border-[#313131] pb-3 overflow-x-auto">
               {(['all', 'knowledge', 'booking', 'guardrail', 'escalation'] as const).map(cat => (
                 <button
                   key={cat}
@@ -1598,7 +1596,7 @@ export default function App() {
                   className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition cursor-pointer ${
                     evalCategoryFilter === cat
                       ? 'bg-[#6366f1] text-white'
-                      : 'text-[#908fa0] hover:text-white hover:bg-[#1e293b]'
+                      : 'text-[#8c8c8c] hover:text-white hover:bg-[#1e293b]'
                   }`}
                 >
                   {cat === 'all' 
@@ -1617,11 +1615,11 @@ export default function App() {
                 return (
                   <div
                     key={sc.id}
-                    className="p-4 rounded-xl bg-[#0f172a]/70 border border-[#1e293b] hover:border-[#334155] transition space-y-3"
+                    className="p-4 rounded-xl bg-[#1f1f1f]/70 border border-[#313131] hover:border-[#334155] transition space-y-3"
                   >
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <div className="flex items-center space-x-2.5">
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1e293b] text-[#908fa0]">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#1e293b] text-[#8c8c8c]">
                           #{idx + 1 < 10 ? `0${idx + 1}` : idx + 1}
                         </span>
                         <span className={`text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold ${
@@ -1644,17 +1642,17 @@ export default function App() {
                           }`}>
                             {evalRunResult.passed ? <CheckCircle2 className="h-3 w-3" /> : <AlertTriangle className="h-3 w-3" />}
                             <span>{evalRunResult.passed ? 'PASSED' : 'FAILED'}</span>
-                            <span className="font-mono text-[9px] text-[#908fa0]">({evalRunResult.latencyMs}ms)</span>
+                            <span className="font-mono text-[9px] text-[#8c8c8c]">({evalRunResult.latencyMs}ms)</span>
                           </span>
                         ) : (
-                          <span className="px-2 py-0.5 rounded-full text-[10px] bg-[#1e293b] text-[#908fa0]">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] bg-[#1e293b] text-[#8c8c8c]">
                             Ready to Benchmark
                           </span>
                         )}
 
                         <button
                           onClick={() => setExpandedScenarioId(isExpanded ? null : sc.id)}
-                          className="p-1 rounded text-[#908fa0] hover:text-white transition cursor-pointer"
+                          className="p-1 rounded text-[#8c8c8c] hover:text-white transition cursor-pointer"
                         >
                           <ChevronDown className={`h-4 w-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                         </button>
@@ -1662,8 +1660,8 @@ export default function App() {
                     </div>
 
                     {/* Scenario Prompt */}
-                    <div className="p-3 rounded-lg bg-[#030712] border border-[#1e293b] text-xs">
-                      <span className="text-[#908fa0] font-mono text-[10px] block mb-1">USER PROMPT</span>
+                    <div className="p-3 rounded-lg bg-[#1f1f1f] border border-[#313131] text-xs">
+                      <span className="text-[#8c8c8c] font-mono text-[10px] block mb-1">USER PROMPT</span>
                       <p className="text-white italic">"{sc.prompt}"</p>
                     </div>
 
@@ -1672,23 +1670,23 @@ export default function App() {
                       <div className="p-3 rounded-lg bg-[#080d19] border border-[#6366f1]/20 space-y-2.5 text-xs animate-in fade-in duration-150">
                         <div>
                           <span className="text-[#818cf8] font-mono text-[10px] block">EXPECTED INTENT / GROUND TRUTH</span>
-                          <p className="text-[#dfe2f1] text-[11px] mt-0.5">
+                          <p className="text-[#f5f5f5] text-[11px] mt-0.5">
                             {sc.description || sc.expectedBehavior || `Expected intent: ${sc.expectedIntent}`}
                           </p>
                         </div>
 
                         {evalRunResult && (
                           <>
-                            <div className="pt-2 border-t border-[#1e293b]">
+                            <div className="pt-2 border-t border-[#313131]">
                               <span className="text-[#4edea3] font-mono text-[10px] block">AGENT ACTUAL RESPONSE</span>
-                              <p className="text-white text-[11px] mt-0.5 leading-relaxed bg-[#030712] p-2.5 rounded-lg border border-[#1e293b]">
+                              <p className="text-white text-[11px] mt-0.5 leading-relaxed bg-[#1f1f1f] p-2.5 rounded-lg border border-[#313131]">
                                 {evalRunResult.agentResponse}
                               </p>
                             </div>
 
-                            <div className="pt-2 border-t border-[#1e293b]">
-                              <span className="text-[#908fa0] font-mono text-[10px] block">BENCHMARK EVALUATION RATIONALE</span>
-                              <p className="text-[#908fa0] text-[11px] mt-0.5">
+                            <div className="pt-2 border-t border-[#313131]">
+                              <span className="text-[#8c8c8c] font-mono text-[10px] block">BENCHMARK EVALUATION RATIONALE</span>
+                              <p className="text-[#8c8c8c] text-[11px] mt-0.5">
                                 {evalRunResult.evaluationRationale}
                               </p>
                             </div>
@@ -1707,7 +1705,7 @@ export default function App() {
         {activeTab === 'whitelabel' && (
           <div className="space-y-6">
             {/* Header & Value Proposition */}
-            <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="rounded-2xl bg-[#181818] border border-[#313131] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center space-x-2">
                   <h2 className="text-base font-bold text-white">Client White-Label Studio & Universal Embed</h2>
@@ -1715,7 +1713,7 @@ export default function App() {
                     Shadow DOM Isolated
                   </span>
                 </div>
-                <p className="text-xs text-[#908fa0] mt-1">
+                <p className="text-xs text-[#8c8c8c] mt-1">
                   Switch business verticals in 1-click or generate a self-contained <code>&lt;script&gt;</code> embed for WordPress, Shopify, Squarespace, and Webflow clients.
                 </p>
               </div>
@@ -1723,7 +1721,7 @@ export default function App() {
               <div className="flex items-center space-x-3">
                 <button
                   onClick={handleCopyEmbedCode}
-                  className="px-4 py-2 bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-2 shadow-lg shadow-[#6366f1]/20"
+                  className="px-4 py-2 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-2"
                 >
                   {copiedEmbed ? <Check className="h-4 w-4 text-[#4edea3]" /> : <Copy className="h-4 w-4" />}
                   <span>{copiedEmbed ? 'Copied Embed Code!' : 'Copy Script Tag'}</span>
@@ -1733,7 +1731,7 @@ export default function App() {
 
             {/* Quick Niche Switcher Cards */}
             <div>
-              <div className="text-xs font-semibold text-[#908fa0] uppercase tracking-wider mb-3">
+              <div className="text-xs font-semibold text-[#8c8c8c] uppercase tracking-wider mb-3">
                 1-Click Niche Switcher (Preconfigured Demo Verticals)
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -1779,7 +1777,7 @@ export default function App() {
                       className={`p-4 rounded-xl border transition cursor-pointer flex flex-col justify-between ${
                         isCurrent
                           ? 'bg-[#1e1b4b]/60 border-[#6366f1] shadow-lg shadow-[#6366f1]/15 ring-1 ring-[#6366f1]'
-                          : 'bg-[#0f172a]/60 border-[#1e293b] hover:border-[#334155]'
+                          : 'bg-[#1f1f1f] border-[#313131] hover:border-[#334155]'
                       }`}
                     >
                       <div>
@@ -1791,20 +1789,20 @@ export default function App() {
                               <span>ACTIVE CLIENT</span>
                             </span>
                           ) : (
-                            <span className="text-[10px] text-[#908fa0] hover:text-white">Click to Activate</span>
+                            <span className="text-[10px] text-[#8c8c8c] hover:text-white">Click to Activate</span>
                           )}
                         </div>
                         <h3 className="text-sm font-bold text-white mt-2.5">{item.name}</h3>
-                        <p className="text-[11px] text-[#908fa0] mt-1 line-clamp-2">
+                        <p className="text-[11px] text-[#8c8c8c] mt-1 line-clamp-2">
                           {item.preset?.tagline || 'Custom client configuration'}
                         </p>
                       </div>
 
-                      <div className="mt-4 pt-3 border-t border-[#1e293b] flex items-center justify-between text-[11px]">
+                      <div className="mt-4 pt-3 border-t border-[#313131] flex items-center justify-between text-[11px]">
                         <span className="font-mono text-[#818cf8]">{item.badge}</span>
                         <div className="flex items-center space-x-1.5">
                           <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.color }} />
-                          <span className="text-[10px] text-[#908fa0] font-mono">{item.color}</span>
+                          <span className="text-[10px] text-[#8c8c8c] font-mono">{item.color}</span>
                         </div>
                       </div>
                     </div>
@@ -1816,8 +1814,8 @@ export default function App() {
             {/* Embed Script Code Box & Installation Guide */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left 7 Cols: Embed Code & Platform Tabs */}
-              <div className="lg:col-span-7 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-5 backdrop-blur-md space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+              <div className="lg:col-span-7 rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#313131]">
                   <div className="flex items-center space-x-2">
                     <Code2 className="h-4 w-4 text-[#818cf8]" />
                     <span className="text-xs font-semibold text-white">Universal Standalone Embed Code</span>
@@ -1832,7 +1830,7 @@ export default function App() {
                 </div>
 
                 {/* Code Block */}
-                <div className="relative rounded-xl bg-[#030712] border border-[#1e293b] p-4 font-mono text-xs text-[#dfe2f1] overflow-x-auto">
+                <div className="relative rounded-xl bg-[#1f1f1f] border border-[#313131] p-4 font-mono text-xs text-[#f5f5f5] overflow-x-auto">
                   <pre className="text-[12px] leading-relaxed text-[#818cf8]">
                     {embedScriptTag}
                   </pre>
@@ -1840,7 +1838,7 @@ export default function App() {
 
                 {/* CMS Install Tabs */}
                 <div>
-                  <div className="flex space-x-2 border-b border-[#1e293b] pb-2">
+                  <div className="flex space-x-2 border-b border-[#313131] pb-2">
                     {[
                       { id: 'html', label: 'HTML / Webflow' },
                       { id: 'wordpress', label: 'WordPress' },
@@ -1853,7 +1851,7 @@ export default function App() {
                         className={`text-xs px-3 py-1 rounded-lg transition cursor-pointer ${
                           activePresetTab === tab.id
                             ? 'bg-[#6366f1]/20 text-[#818cf8] font-semibold border border-[#6366f1]/40'
-                            : 'text-[#908fa0] hover:text-white'
+                            : 'text-[#8c8c8c] hover:text-white'
                         }`}
                       >
                         {tab.label}
@@ -1861,7 +1859,7 @@ export default function App() {
                     ))}
                   </div>
 
-                  <div className="mt-3 text-xs text-[#908fa0] leading-relaxed">
+                  <div className="mt-3 text-xs text-[#8c8c8c] leading-relaxed">
                     {activePresetTab === 'html' && (
                       <p>Paste the snippet directly before the closing <code>&lt;/body&gt;</code> tag of your website. The widget automatically binds to Shadow DOM without style conflicts.</p>
                     )}
@@ -1879,8 +1877,8 @@ export default function App() {
               </div>
 
               {/* Right 5 Cols: Active Brand Inspector */}
-              <div className="lg:col-span-5 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-5 backdrop-blur-md space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+              <div className="lg:col-span-5 rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#313131]">
                   <div className="flex items-center space-x-2">
                     <Palette className="h-4 w-4 text-[#10b981]" />
                     <span className="text-xs font-semibold text-white">Active Branding Properties</span>
@@ -1892,27 +1890,27 @@ export default function App() {
 
                 <div className="space-y-3 text-xs">
                   <div>
-                    <div className="text-[11px] text-[#908fa0]">Client Business Name</div>
+                    <div className="text-[11px] text-[#8c8c8c]">Client Business Name</div>
                     <div className="text-sm font-semibold text-white mt-0.5">{businessConfig?.name}</div>
                   </div>
 
                   <div>
-                    <div className="text-[11px] text-[#908fa0]">AI Agent Greeting</div>
-                    <div className="text-[11px] text-[#dfe2f1] bg-[#030712] p-2.5 rounded-lg border border-[#1e293b] mt-1 italic">
+                    <div className="text-[11px] text-[#8c8c8c]">AI Agent Greeting</div>
+                    <div className="text-[11px] text-[#f5f5f5] bg-[#1f1f1f] p-2.5 rounded-lg border border-[#313131] mt-1 italic">
                       "{businessConfig?.welcomeMessage}"
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <div className="text-[11px] text-[#908fa0]">Primary Palette</div>
+                      <div className="text-[11px] text-[#8c8c8c]">Primary Palette</div>
                       <div className="flex items-center space-x-2 mt-1">
                         <div className="h-4 w-4 rounded-full border border-white/20" style={{ backgroundColor: businessConfig?.primaryColor }} />
                         <span className="font-mono text-[11px] text-white">{businessConfig?.primaryColor}</span>
                       </div>
                     </div>
                     <div>
-                      <div className="text-[11px] text-[#908fa0]">Slot Duration</div>
+                      <div className="text-[11px] text-[#8c8c8c]">Slot Duration</div>
                       <div className="text-[11px] font-mono text-white mt-1">
                         {businessConfig?.operatingHours?.slotDurationMinutes || 30} Minutes
                       </div>
@@ -1920,17 +1918,17 @@ export default function App() {
                   </div>
 
                   <div>
-                    <div className="text-[11px] text-[#908fa0]">Quick Action Prompts</div>
+                    <div className="text-[11px] text-[#8c8c8c]">Quick Action Prompts</div>
                     <div className="flex flex-wrap gap-1.5 mt-1.5">
                       {businessConfig?.promptChips?.map((chip, idx) => (
-                        <span key={idx} className="text-[10px] px-2 py-1 rounded bg-[#0f172a] border border-[#1e293b] text-[#818cf8]">
+                        <span key={idx} className="text-[10px] px-2 py-1 rounded bg-[#1f1f1f] border border-[#313131] text-[#818cf8]">
                           {chip}
                         </span>
                       ))}
                     </div>
                   </div>
 
-                  <div className="pt-2 border-t border-[#1e293b] flex items-center justify-between text-[11px] text-[#908fa0]">
+                  <div className="pt-2 border-t border-[#313131] flex items-center justify-between text-[11px] text-[#8c8c8c]">
                     <span>Support: {businessConfig?.contactEmail}</span>
                     <span>{businessConfig?.contactPhone}</span>
                   </div>
@@ -1944,7 +1942,7 @@ export default function App() {
         {activeTab === 'analytics' && (
           <div className="space-y-6">
             {/* Header with Export CTAs */}
-            <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-6 backdrop-blur-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="rounded-2xl bg-[#181818] border border-[#313131] p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <div className="flex items-center space-x-2">
                   <BarChart3 className="h-5 w-5 text-[#818cf8]" />
@@ -1953,7 +1951,7 @@ export default function App() {
                     Real-time Metrics
                   </span>
                 </div>
-                <p className="text-xs text-[#908fa0] mt-1">
+                <p className="text-xs text-[#8c8c8c] mt-1">
                   Track client acquisition, autonomous inquiry resolution, revenue pipeline generated, and export CSV audit logs.
                 </p>
               </div>
@@ -1962,7 +1960,7 @@ export default function App() {
                 <a
                   href="/api/analytics/export/appointments.csv"
                   download="omniagent-appointments.csv"
-                  className="px-3.5 py-2 bg-[#0f172a] hover:bg-[#1e293b] border border-[#1e293b] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
+                  className="px-3.5 py-2 bg-[#1f1f1f] hover:bg-[#1e293b] border border-[#313131] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
                 >
                   <Download className="h-3.5 w-3.5 text-[#818cf8]" />
                   <span>Appointments CSV</span>
@@ -1971,7 +1969,7 @@ export default function App() {
                 <a
                   href="/api/analytics/export/leads.csv"
                   download="omniagent-leads.csv"
-                  className="px-3.5 py-2 bg-[#6366f1] hover:bg-[#818cf8] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5 shadow-md shadow-[#6366f1]/20"
+                  className="px-3.5 py-2 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
                 >
                   <Download className="h-3.5 w-3.5" />
                   <span>Qualified Leads CSV</span>
@@ -1981,9 +1979,9 @@ export default function App() {
 
             {/* 4 Executive KPI Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="p-4 rounded-xl bg-[#0b0f19]/80 border border-[#1e293b] backdrop-blur-md">
+              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#908fa0]">Pipeline Value Generated</span>
+                  <span className="text-xs text-[#8c8c8c]">Pipeline Value Generated</span>
                   <span className="p-1.5 rounded-lg bg-[#10b981]/15 text-[#4edea3]">
                     <DollarSign className="h-4 w-4" />
                   </span>
@@ -1997,9 +1995,9 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#0b0f19]/80 border border-[#1e293b] backdrop-blur-md">
+              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#908fa0]">Booking Conversion Rate</span>
+                  <span className="text-xs text-[#8c8c8c]">Booking Conversion Rate</span>
                   <span className="p-1.5 rounded-lg bg-[#6366f1]/15 text-[#818cf8]">
                     <Calendar className="h-4 w-4" />
                   </span>
@@ -2007,14 +2005,14 @@ export default function App() {
                 <div className="text-2xl font-bold font-mono text-[#818cf8] mt-2">
                   {analyticsData?.bookingConversionRate || 33.3}%
                 </div>
-                <div className="text-[11px] text-[#908fa0] mt-1">
+                <div className="text-[11px] text-[#8c8c8c] mt-1">
                   Inquiries converted to confirmed slots
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#0b0f19]/80 border border-[#1e293b] backdrop-blur-md">
+              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#908fa0]">Autonomous Deflection Rate</span>
+                  <span className="text-xs text-[#8c8c8c]">Autonomous Deflection Rate</span>
                   <span className="p-1.5 rounded-lg bg-[#10b981]/15 text-[#4edea3]">
                     <Bot className="h-4 w-4" />
                   </span>
@@ -2027,9 +2025,9 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="p-4 rounded-xl bg-[#0b0f19]/80 border border-[#1e293b] backdrop-blur-md">
+              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#908fa0]">Average AI Response Speed</span>
+                  <span className="text-xs text-[#8c8c8c]">Average AI Response Speed</span>
                   <span className="p-1.5 rounded-lg bg-[#0ea5e9]/15 text-[#38bdf8]">
                     <Clock className="h-4 w-4" />
                   </span>
@@ -2037,7 +2035,7 @@ export default function App() {
                 <div className="text-2xl font-bold font-mono text-white mt-2">
                   {analyticsData?.averageResponseTimeMs || 14} ms
                 </div>
-                <div className="text-[11px] text-[#908fa0] mt-1">
+                <div className="text-[11px] text-[#8c8c8c] mt-1">
                   Sub-second streaming SSE latency
                 </div>
               </div>
@@ -2046,13 +2044,13 @@ export default function App() {
             {/* Middle Section: Topic Inquiries & Channel/Sentiment Split */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left 7 Cols: Top Inquired Topics */}
-              <div className="lg:col-span-7 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-5 backdrop-blur-md space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+              <div className="lg:col-span-7 rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#313131]">
                   <div className="flex items-center space-x-2">
                     <PieChart className="h-4 w-4 text-[#818cf8]" />
                     <span className="text-xs font-semibold text-white">Top Inquired Topics & Customer Questions</span>
                   </div>
-                  <span className="text-[10px] text-[#908fa0] font-mono">Semantic RAG Categorization</span>
+                  <span className="text-[10px] text-[#8c8c8c] font-mono">Semantic RAG Categorization</span>
                 </div>
 
                 <div className="space-y-3.5">
@@ -2065,13 +2063,13 @@ export default function App() {
                   ]).map((t, idx) => (
                     <div key={idx} className="space-y-1.5">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-[#dfe2f1] font-medium">{t.topic}</span>
+                        <span className="text-[#f5f5f5] font-medium">{t.topic}</span>
                         <div className="flex items-center space-x-2 font-mono text-[11px]">
-                          <span className="text-[#908fa0]">{t.count} queries</span>
+                          <span className="text-[#8c8c8c]">{t.count} queries</span>
                           <span className="text-[#818cf8] font-bold">{t.percentage}%</span>
                         </div>
                       </div>
-                      <div className="h-2 w-full bg-[#030712] rounded-full overflow-hidden border border-[#1e293b]/60">
+                      <div className="h-2 w-full bg-[#1f1f1f] rounded-full overflow-hidden border border-[#313131]">
                         <div
                           className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-[#6366f1] to-[#10b981]"
                           style={{ width: `${t.percentage}%` }}
@@ -2085,12 +2083,12 @@ export default function App() {
               {/* Right 5 Cols: Ingress Channels & Sentiment Ratio */}
               <div className="lg:col-span-5 space-y-4">
                 {/* Ingress Channels */}
-                <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-5 backdrop-blur-md space-y-3">
-                  <div className="text-xs font-semibold text-white pb-2 border-b border-[#1e293b]">
+                <div className="rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-3">
+                  <div className="text-xs font-semibold text-white pb-2 border-b border-[#313131]">
                     Omnichannel Customer Ingress
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-xs">
-                    <div className="p-3 rounded-xl bg-[#030712] border border-[#1e293b]">
+                    <div className="p-3 rounded-xl bg-[#1f1f1f] border border-[#313131]">
                       <div className="flex items-center space-x-1.5 text-[#10b981]">
                         <Radio className="h-3.5 w-3.5" />
                         <span className="font-semibold">WhatsApp</span>
@@ -2098,10 +2096,10 @@ export default function App() {
                       <div className="text-xl font-bold font-mono text-white mt-1.5">
                         {analyticsData?.whatsAppConversations || sessions.filter(s => s.channel === 'whatsapp').length}
                       </div>
-                      <div className="text-[10px] text-[#908fa0] mt-0.5">Meta Cloud API</div>
+                      <div className="text-[10px] text-[#8c8c8c] mt-0.5">Meta Cloud API</div>
                     </div>
 
-                    <div className="p-3 rounded-xl bg-[#030712] border border-[#1e293b]">
+                    <div className="p-3 rounded-xl bg-[#1f1f1f] border border-[#313131]">
                       <div className="flex items-center space-x-1.5 text-[#818cf8]">
                         <MessageSquare className="h-3.5 w-3.5" />
                         <span className="font-semibold">Web Widget</span>
@@ -2109,14 +2107,14 @@ export default function App() {
                       <div className="text-xl font-bold font-mono text-white mt-1.5">
                         {analyticsData?.webConversations || sessions.filter(s => s.channel === 'web').length}
                       </div>
-                      <div className="text-[10px] text-[#908fa0] mt-0.5">Shadow DOM Embed</div>
+                      <div className="text-[10px] text-[#8c8c8c] mt-0.5">Shadow DOM Embed</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Sentiment Distribution */}
-                <div className="rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-5 backdrop-blur-md space-y-3">
-                  <div className="text-xs font-semibold text-white pb-2 border-b border-[#1e293b]">
+                <div className="rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-3">
+                  <div className="text-xs font-semibold text-white pb-2 border-b border-[#313131]">
                     Sentiment & Escalation Ratio
                   </div>
                   <div className="space-y-2 text-xs">
@@ -2145,7 +2143,7 @@ export default function App() {
         {activeTab === 'reputation' && (
           <div className="space-y-6">
             {/* Top Command Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#0b0f19]/80 border border-[#1e293b] p-5 rounded-2xl backdrop-blur-md">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#181818] border border-[#313131] p-5 rounded-2xl">
               <div>
                 <div className="flex items-center space-x-2">
                   <div className="h-7 w-7 rounded-lg bg-[#f59e0b]/15 border border-[#f59e0b]/30 flex items-center justify-center text-[#fbbf24]">
@@ -2156,7 +2154,7 @@ export default function App() {
                     Dual Reputation Guardrail
                   </span>
                 </div>
-                <p className="text-xs text-[#908fa0] mt-1">
+                <p className="text-xs text-[#8c8c8c] mt-1">
                   Automated post-service survey funnel: Promoters (4–5★) are routed directly to Google Maps, while Detractors (1–3★) are shielded from public reviews and escalated to care recovery.
                 </p>
               </div>
@@ -2173,7 +2171,7 @@ export default function App() {
                 </a>
                 <button
                   onClick={loadData}
-                  className="p-1.5 rounded-lg bg-[#0f172a] border border-[#1e293b] text-[#908fa0] hover:text-white transition"
+                  className="p-1.5 rounded-lg bg-[#1f1f1f] border border-[#313131] text-[#8c8c8c] hover:text-white transition"
                   title="Refresh Metrics"
                 >
                   <RefreshCw className="h-4 w-4" />
@@ -2184,9 +2182,9 @@ export default function App() {
             {/* Top Metric Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* CSAT Score */}
-              <div className="p-4 rounded-xl bg-[#0b0f19]/80 border border-[#1e293b] backdrop-blur-md">
+              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#908fa0]">Patient CSAT Rating</span>
+                  <span className="text-xs text-[#8c8c8c]">Patient CSAT Rating</span>
                   <span className="p-1.5 rounded-lg bg-[#10b981]/15 text-[#4edea3]">
                     <ThumbsUp className="h-4 w-4" />
                   </span>
@@ -2194,15 +2192,15 @@ export default function App() {
                 <div className="text-2xl font-bold font-mono text-[#4edea3] mt-2">
                   {feedbackOverview?.csatScore || 86}%
                 </div>
-                <div className="text-[11px] text-[#908fa0] mt-1">
+                <div className="text-[11px] text-[#8c8c8c] mt-1">
                   4 & 5 Star ratings ({feedbackOverview?.promotersCount || 6} / {feedbackOverview?.totalResponses || 7})
                 </div>
               </div>
 
               {/* Net Promoter Score (NPS) */}
-              <div className="p-4 rounded-xl bg-[#0b0f19]/80 border border-[#1e293b] backdrop-blur-md">
+              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#908fa0]">Net Promoter Score (NPS)</span>
+                  <span className="text-xs text-[#8c8c8c]">Net Promoter Score (NPS)</span>
                   <span className="p-1.5 rounded-lg bg-[#6366f1]/15 text-[#818cf8]">
                     <HeartHandshake className="h-4 w-4" />
                   </span>
@@ -2216,16 +2214,16 @@ export default function App() {
               </div>
 
               {/* Google Review Conversion Rate */}
-              <div className="p-4 rounded-xl bg-[#0b0f19]/80 border border-[#1e293b] backdrop-blur-md">
+              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#908fa0]">Google Review Clicks</span>
+                  <span className="text-xs text-[#8c8c8c]">Google Review Clicks</span>
                   <span className="p-1.5 rounded-lg bg-[#f59e0b]/15 text-[#fbbf24]">
                     <Star className="h-4 w-4 fill-[#fbbf24]" />
                   </span>
                 </div>
                 <div className="text-2xl font-bold font-mono text-white mt-2">
                   {feedbackOverview?.googleReviewClicks || 3}{' '}
-                  <span className="text-xs text-[#908fa0] font-normal font-sans">
+                  <span className="text-xs text-[#8c8c8c] font-normal font-sans">
                     ({feedbackOverview?.googleReviewClickRate || 75}% click rate)
                   </span>
                 </div>
@@ -2235,9 +2233,9 @@ export default function App() {
               </div>
 
               {/* Urgent Care Service Recovery */}
-              <div className="p-4 rounded-xl bg-[#0b0f19]/80 border border-[#1e293b] backdrop-blur-md">
+              <div className="p-4 rounded-xl bg-[#181818] border border-[#313131]">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-[#908fa0]">Urgent Recovery Queue</span>
+                  <span className="text-xs text-[#8c8c8c]">Urgent Recovery Queue</span>
                   <span className="p-1.5 rounded-lg bg-[#f43f5e]/15 text-[#ffb4ab]">
                     <AlertTriangle className="h-4 w-4" />
                   </span>
@@ -2245,14 +2243,14 @@ export default function App() {
                 <div className="text-2xl font-bold font-mono text-[#ffb4ab] mt-2">
                   {feedbackOverview?.urgentServiceRecoveryCount || 1} Pending
                 </div>
-                <div className="text-[11px] text-[#908fa0] mt-1">
+                <div className="text-[11px] text-[#8c8c8c] mt-1">
                   Detractors shielded from Google Maps
                 </div>
               </div>
             </div>
 
             {/* Smart Dual-Routing Architecture Banner */}
-            <div className="p-5 rounded-2xl bg-[#030712] border border-[#1e293b] space-y-3">
+            <div className="p-5 rounded-2xl bg-[#1f1f1f] border border-[#313131] space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-white uppercase tracking-wider">
                   How Autonomous Reputation Routing Works
@@ -2266,7 +2264,7 @@ export default function App() {
                     <ThumbsUp className="h-4 w-4" />
                     <span>Rating 4 or 5 Stars ⭐⭐⭐⭐⭐ (Promoter Path)</span>
                   </div>
-                  <p className="text-[11px] text-[#dfe2f1]">
+                  <p className="text-[11px] text-[#f5f5f5]">
                     The agent expresses heartfelt gratitude and instantly provides a direct 1-click link to your verified Google Business Profile review dialog, boosting your local SEO & organic leads.
                   </p>
                 </div>
@@ -2277,7 +2275,7 @@ export default function App() {
                     <ThumbsDown className="h-4 w-4" />
                     <span>Rating 1, 2, or 3 Stars (Service Recovery Shield)</span>
                   </div>
-                  <p className="text-[11px] text-[#dfe2f1]">
+                  <p className="text-[11px] text-[#f5f5f5]">
                     The agent suppresses the public Google review link, issues an empathetic apology, logs the grievance, and dispatches a high-priority alert to the clinic director for immediate personal recovery.
                   </p>
                 </div>
@@ -2287,15 +2285,15 @@ export default function App() {
             {/* Simulator & Live Feedback Table Split */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Left 4 Cols: Live Feedback Simulator */}
-              <div className="lg:col-span-4 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-5 backdrop-blur-md space-y-4">
-                <div className="flex items-center space-x-2 pb-3 border-b border-[#1e293b]">
+              <div className="lg:col-span-4 rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-4">
+                <div className="flex items-center space-x-2 pb-3 border-b border-[#313131]">
                   <Bot className="h-4 w-4 text-[#818cf8]" />
                   <span className="text-xs font-semibold text-white">Simulate Inbound Patient Rating</span>
                 </div>
 
                 <form onSubmit={handleSimulateFeedback} className="space-y-3.5 text-xs">
                   <div>
-                    <label className="block text-[#908fa0] mb-1.5">Customer Rating (Stars):</label>
+                    <label className="block text-[#8c8c8c] mb-1.5">Customer Rating (Stars):</label>
                     <div className="flex items-center space-x-2">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <button
@@ -2305,7 +2303,7 @@ export default function App() {
                           className={`p-2 rounded-xl border flex items-center justify-center transition cursor-pointer ${
                             simRating >= star
                               ? 'bg-[#f59e0b]/20 border-[#f59e0b] text-[#fbbf24]'
-                              : 'bg-[#030712] border-[#1e293b] text-[#908fa0]'
+                              : 'bg-[#1f1f1f] border-[#313131] text-[#8c8c8c]'
                           }`}
                         >
                           <Star className={`h-4 w-4 ${simRating >= star ? 'fill-[#fbbf24]' : ''}`} />
@@ -2318,12 +2316,12 @@ export default function App() {
                   </div>
 
                   <div>
-                    <label className="block text-[#908fa0] mb-1">Customer Review Comment:</label>
+                    <label className="block text-[#8c8c8c] mb-1">Customer Review Comment:</label>
                     <textarea
                       rows={3}
                       value={simComment}
                       onChange={(e) => setSimComment(e.target.value)}
-                      className="w-full bg-[#030712] border border-[#1e293b] rounded-xl p-2.5 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none text-xs"
+                      className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl p-2.5 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none text-xs"
                       placeholder="e.g. Loved the session or experienced long wait..."
                     />
                   </div>
@@ -2349,7 +2347,7 @@ export default function App() {
 
                 {/* Simulated Outcome Preview */}
                 {simResult && (
-                  <div className="p-3.5 rounded-xl bg-[#030712] border border-[#1e293b] space-y-2 text-xs">
+                  <div className="p-3.5 rounded-xl bg-[#1f1f1f] border border-[#313131] space-y-2 text-xs">
                     <div className="flex items-center justify-between">
                       <span className="text-[10px] font-bold uppercase text-[#818cf8]">AI Response Preview</span>
                       <span className={`text-[10px] px-2 py-0.5 rounded font-mono ${
@@ -2360,7 +2358,7 @@ export default function App() {
                         {simResult.submission.category.toUpperCase()}
                       </span>
                     </div>
-                    <p className="text-[11px] text-[#dfe2f1] whitespace-pre-line leading-relaxed">
+                    <p className="text-[11px] text-[#f5f5f5] whitespace-pre-line leading-relaxed">
                       {simResult.replyMessage}
                     </p>
                   </div>
@@ -2368,13 +2366,13 @@ export default function App() {
               </div>
 
               {/* Right 8 Cols: Customer Reviews & Recovery Feed */}
-              <div className="lg:col-span-8 rounded-2xl bg-[#0b0f19]/80 border border-[#1e293b] p-5 backdrop-blur-md space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+              <div className="lg:col-span-8 rounded-2xl bg-[#181818] border border-[#313131] p-5 space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-[#313131]">
                   <div className="flex items-center space-x-2">
                     <Star className="h-4 w-4 text-[#fbbf24]" />
                     <span className="text-xs font-semibold text-white">Recent Customer Reviews & Recovery Feed</span>
                   </div>
-                  <span className="text-[10px] text-[#908fa0] font-mono">
+                  <span className="text-[10px] text-[#8c8c8c] font-mono">
                     {feedbackSubmissions.length} Submissions Tracked
                   </span>
                 </div>
@@ -2385,14 +2383,14 @@ export default function App() {
                       key={sub.id}
                       className={`p-4 rounded-xl border space-y-2.5 transition ${
                         sub.category === 'promoter'
-                          ? 'bg-[#030712] border-[#1e293b]'
+                          ? 'bg-[#1f1f1f] border-[#313131]'
                           : 'bg-[#f43f5e]/5 border-[#f43f5e]/30'
                       }`}
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
                         <div className="flex items-center space-x-2">
                           <span className="font-semibold text-white text-xs">{sub.customerName}</span>
-                          <span className="text-[10px] text-[#908fa0] font-mono">({sub.serviceName})</span>
+                          <span className="text-[10px] text-[#8c8c8c] font-mono">({sub.serviceName})</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <div className="flex items-center text-[#fbbf24]">
@@ -2414,13 +2412,13 @@ export default function App() {
                       </div>
 
                       {sub.comment && (
-                        <p className="text-xs text-[#dfe2f1] italic bg-[#0b0f19]/50 p-2.5 rounded-lg border border-[#1e293b]/60">
+                        <p className="text-xs text-[#f5f5f5] italic bg-[#181818]/50 p-2.5 rounded-lg border border-[#313131]">
                           "{sub.comment}"
                         </p>
                       )}
 
-                      <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#1e293b]/50">
-                        <span className="text-[#908fa0]">
+                      <div className="flex items-center justify-between text-[11px] pt-1 border-t border-[#313131]">
+                        <span className="text-[#8c8c8c]">
                           {new Date(sub.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                         </span>
                         
@@ -2465,13 +2463,13 @@ export default function App() {
 
       {/* Document Upload Modal */}
       {showUploadModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-lg bg-[#0b0f19] border border-[#1e293b] rounded-2xl p-6 shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-[#181818] border border-[#313131] rounded-2xl p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-bold text-white">Upload New Policy / FAQ Document</h3>
               <button 
                 onClick={() => setShowUploadModal(false)}
-                className="text-[#908fa0] hover:text-white"
+                className="text-[#8c8c8c] hover:text-white"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -2479,23 +2477,23 @@ export default function App() {
 
             <form onSubmit={handleUploadDocument} className="space-y-3.5 text-xs">
               <div>
-                <label className="block text-[#908fa0] mb-1">Document Title</label>
+                <label className="block text-[#8c8c8c] mb-1">Document Title</label>
                 <input
                   type="text"
                   required
                   value={uploadTitle}
                   onChange={(e) => setUploadTitle(e.target.value)}
                   placeholder="e.g. VIP Membership Perks & Cryo Add-ons"
-                  className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                  className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
                 />
               </div>
 
               <div>
-                <label className="block text-[#908fa0] mb-1">Category</label>
+                <label className="block text-[#8c8c8c] mb-1">Category</label>
                 <select
                   value={uploadCategory}
                   onChange={(e) => setUploadCategory(e.target.value as any)}
-                  className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none"
+                  className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none"
                 >
                   <option value="faq">FAQ</option>
                   <option value="pricing">Pricing & Menu</option>
@@ -2505,14 +2503,14 @@ export default function App() {
               </div>
 
               <div>
-                <label className="block text-[#908fa0] mb-1">Document Content</label>
+                <label className="block text-[#8c8c8c] mb-1">Document Content</label>
                 <textarea
                   required
                   rows={6}
                   value={uploadContent}
                   onChange={(e) => setUploadContent(e.target.value)}
                   placeholder="Paste policies, pricing tables, or treatment guidance text here..."
-                  className="w-full bg-[#030712] border border-[#1e293b] rounded-xl p-3.5 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none font-mono text-[11px]"
+                  className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl p-3.5 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none font-mono text-[11px]"
                 />
               </div>
 
@@ -2520,14 +2518,14 @@ export default function App() {
                 <button
                   type="button"
                   onClick={() => setShowUploadModal(false)}
-                  className="px-4 py-2 rounded-xl text-[#908fa0] hover:bg-[#1e293b] transition cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-[#8c8c8c] hover:bg-[#1e293b] transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isUploading}
-                  className="px-4 py-2 rounded-xl bg-[#6366f1] hover:bg-[#818cf8] text-white font-semibold transition cursor-pointer disabled:opacity-50"
+                  className="px-4 py-2 rounded-xl bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white font-semibold transition cursor-pointer disabled:opacity-50"
                 >
                   {isUploading ? 'Chunking & Embedding...' : 'Index Document'}
                 </button>
@@ -2539,46 +2537,46 @@ export default function App() {
 
       {/* Vector Chunks Inspector Modal */}
       {selectedDocChunks && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-2xl bg-[#0b0f19] border border-[#1e293b] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-            <div className="px-6 py-4 border-b border-[#1e293b] flex items-center justify-between bg-[#0f172a]/60">
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-2xl bg-[#181818] border border-[#313131] rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="px-6 py-4 border-b border-[#313131] flex items-center justify-between bg-[#1f1f1f]">
               <div className="flex items-center space-x-3">
                 <div className="h-8 w-8 rounded-lg bg-[#6366f1]/20 border border-[#6366f1]/40 flex items-center justify-center text-[#818cf8]">
                   <Layers className="h-4 w-4" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">Vector Chunks Inspector</h3>
-                  <p className="text-xs text-[#908fa0] truncate max-w-md">{selectedDocChunks.title}</p>
+                  <p className="text-xs text-[#8c8c8c] truncate max-w-md">{selectedDocChunks.title}</p>
                 </div>
               </div>
               <button
                 onClick={() => setSelectedDocChunks(null)}
-                className="p-1.5 rounded-lg text-[#908fa0] hover:text-white hover:bg-[#1e293b] transition cursor-pointer"
+                className="p-1.5 rounded-lg text-[#8c8c8c] hover:text-white hover:bg-[#1e293b] transition cursor-pointer"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
             <div className="p-6 space-y-3 overflow-y-auto">
-              <div className="text-xs text-[#908fa0]">
+              <div className="text-xs text-[#8c8c8c]">
                 Document has <span className="font-semibold text-white">{selectedDocChunks.chunks.length}</span> indexed TF-IDF vector embeddings for zero-hallucination cosine retrieval:
               </div>
 
               {selectedDocChunks.chunks.map((chunk, idx) => (
-                <div key={idx} className="p-3.5 rounded-xl bg-[#030712] border border-[#1e293b] space-y-2">
+                <div key={idx} className="p-3.5 rounded-xl bg-[#1f1f1f] border border-[#313131] space-y-2">
                   <div className="flex items-center justify-between text-[10px] text-[#818cf8] font-mono">
                     <span className="font-semibold">Chunk #{idx + 1} ({chunk.chunkId})</span>
                     <span>Tokens: ~{Math.round(chunk.text.length / 4)}</span>
                   </div>
-                  <p className="text-[#dfe2f1] text-xs leading-relaxed font-mono bg-[#0b0f19] p-3 rounded-lg border border-[#1e293b]/70 whitespace-pre-wrap">
+                  <p className="text-[#f5f5f5] text-xs leading-relaxed font-mono bg-[#181818] p-3 rounded-lg border border-[#313131]/70 whitespace-pre-wrap">
                     {chunk.text}
                   </p>
                 </div>
               ))}
             </div>
 
-            <div className="px-6 py-3.5 border-t border-[#1e293b] bg-[#0f172a]/40 flex items-center justify-between">
-              <span className="text-[11px] text-[#908fa0]">Threshold: 0.50 Cosine Confidence</span>
+            <div className="px-6 py-3.5 border-t border-[#313131] bg-[#1f1f1f] flex items-center justify-between">
+              <span className="text-[11px] text-[#8c8c8c]">Threshold: 0.50 Cosine Confidence</span>
               <button
                 onClick={() => setSelectedDocChunks(null)}
                 className="px-3.5 py-1.5 rounded-lg bg-[#1e293b] hover:bg-[#334155] text-white text-xs font-semibold transition cursor-pointer"
@@ -2604,21 +2602,21 @@ export default function App() {
 
       {/* Walk-in Booking Creation Modal */}
       {showWalkInModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-lg bg-[#0b0f19] border border-[#1e293b] rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-[#1e293b]">
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-lg bg-[#181818] border border-[#313131] rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#313131]">
               <div className="flex items-center space-x-2.5">
                 <div className="h-8 w-8 rounded-lg bg-[#6366f1]/20 border border-[#6366f1]/40 flex items-center justify-center text-[#818cf8]">
                   <Calendar className="h-4 w-4" />
                 </div>
                 <div>
                   <h3 className="text-sm font-bold text-white">Create Walk-in / Direct Reservation</h3>
-                  <p className="text-[11px] text-[#908fa0]">Lock in calendar slot and trigger instant confirmation</p>
+                  <p className="text-[11px] text-[#8c8c8c]">Lock in calendar slot and trigger instant confirmation</p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowWalkInModal(false)}
-                className="p-1 rounded-lg text-[#908fa0] hover:text-white hover:bg-[#1e293b] transition cursor-pointer"
+                className="p-1 rounded-lg text-[#8c8c8c] hover:text-white hover:bg-[#1e293b] transition cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -2627,47 +2625,47 @@ export default function App() {
             <form onSubmit={handleCreateWalkIn} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[#908fa0] mb-1 font-medium">Customer Full Name *</label>
+                  <label className="block text-[#8c8c8c] mb-1 font-medium">Customer Full Name *</label>
                   <input
                     type="text"
                     required
                     value={walkInName}
                     onChange={(e) => setWalkInName(e.target.value)}
                     placeholder="e.g. Liam Henderson"
-                    className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                    className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-[#908fa0] mb-1 font-medium">Phone Number *</label>
+                  <label className="block text-[#8c8c8c] mb-1 font-medium">Phone Number *</label>
                   <input
                     type="tel"
                     required
                     value={walkInPhone}
                     onChange={(e) => setWalkInPhone(e.target.value)}
                     placeholder="e.g. +1 (415) 555-0199"
-                    className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                    className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[#908fa0] mb-1 font-medium">Email Address (Optional)</label>
+                <label className="block text-[#8c8c8c] mb-1 font-medium">Email Address (Optional)</label>
                 <input
                   type="email"
                   value={walkInEmail}
                   onChange={(e) => setWalkInEmail(e.target.value)}
                   placeholder="e.g. liam.h@example.com"
-                  className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                  className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[#908fa0] mb-1 font-medium">Service / Treatment *</label>
+                  <label className="block text-[#8c8c8c] mb-1 font-medium">Service / Treatment *</label>
                   <select
                     value={walkInService}
                     onChange={(e) => setWalkInService(e.target.value)}
-                    className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none cursor-pointer"
+                    className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none cursor-pointer"
                   >
                     <option value="Medical & Longevity Consultation">Medical Consultation ($150)</option>
                     <option value="Whole-Body Cryo & Assessment">Whole-Body Cryotherapy ($85)</option>
@@ -2677,11 +2675,11 @@ export default function App() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[#908fa0] mb-1 font-medium">Assigned Specialist</label>
+                  <label className="block text-[#8c8c8c] mb-1 font-medium">Assigned Specialist</label>
                   <select
                     value={walkInDoctor}
                     onChange={(e) => setWalkInDoctor(e.target.value)}
-                    className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none cursor-pointer"
+                    className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none cursor-pointer"
                   >
                     <option value="Dr. Marcus Vance">Dr. Marcus Vance (Longevity)</option>
                     <option value="Dr. Ananya Ray">Dr. Ananya Ray (Aesthetics)</option>
@@ -2692,21 +2690,21 @@ export default function App() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[#908fa0] mb-1 font-medium">Date *</label>
+                  <label className="block text-[#8c8c8c] mb-1 font-medium">Date *</label>
                   <input
                     type="date"
                     required
                     value={walkInDate}
                     onChange={(e) => setWalkInDate(e.target.value)}
-                    className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none"
+                    className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none"
                   />
                 </div>
                 <div>
-                  <label className="block text-[#908fa0] mb-1 font-medium">Time Slot (IST) *</label>
+                  <label className="block text-[#8c8c8c] mb-1 font-medium">Time Slot (IST) *</label>
                   <select
                     value={walkInTime}
                     onChange={(e) => setWalkInTime(e.target.value)}
-                    className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none cursor-pointer"
+                    className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none cursor-pointer"
                   >
                     <option value="10:00">10:00 AM</option>
                     <option value="11:00">11:00 AM</option>
@@ -2721,28 +2719,28 @@ export default function App() {
               </div>
 
               <div>
-                <label className="block text-[#908fa0] mb-1 font-medium">Front Desk Notes</label>
+                <label className="block text-[#8c8c8c] mb-1 font-medium">Front Desk Notes</label>
                 <textarea
                   rows={2}
                   value={walkInNotes}
                   onChange={(e) => setWalkInNotes(e.target.value)}
                   placeholder="e.g. Walk-in customer at reception, requested Dr. Vance."
-                  className="w-full bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                  className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
                 />
               </div>
 
-              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[#1e293b]">
+              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[#313131]">
                 <button
                   type="button"
                   onClick={() => setShowWalkInModal(false)}
-                  className="px-4 py-2 rounded-xl text-[#908fa0] hover:bg-[#1e293b] transition cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-[#8c8c8c] hover:bg-[#1e293b] transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isCreatingWalkIn}
-                  className="px-4 py-2 rounded-xl bg-[#6366f1] hover:bg-[#818cf8] text-white font-semibold transition cursor-pointer disabled:opacity-50 flex items-center space-x-1.5"
+                  className="px-4 py-2 rounded-xl bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white font-semibold transition cursor-pointer disabled:opacity-50 flex items-center space-x-1.5"
                 >
                   {isCreatingWalkIn ? (
                     <>

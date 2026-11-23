@@ -249,17 +249,18 @@ export default function StandaloneWidget({
             right: '24px',
             zIndex: 999999,
             cursor: 'pointer',
-            padding: '2px',
-            borderRadius: '18px',
-            background: `linear-gradient(135deg, ${activeConfig.primaryColor}, #818cf8, ${activeConfig.accentColor})`,
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 0 20px -3px rgba(99, 102, 241, 0.4)',
+            padding: '0',
+            borderRadius: '16px',
+            background: '#181818',
+            border: '1px solid #313131',
+            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.5)',
             transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
           }}
           onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
           onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
         >
           <div style={{
-            background: '#030712',
+            background: '#181818',
             padding: '10px 16px',
             borderRadius: '16px',
             display: 'flex',
@@ -303,11 +304,9 @@ export default function StandaloneWidget({
           height: '630px',
           maxHeight: 'calc(100vh - 48px)',
           borderRadius: '24px',
-          background: 'rgba(11, 15, 25, 0.96)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(30, 41, 59, 0.9)',
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 30px -5px rgba(99, 102, 241, 0.2)',
+          background: '#181818',
+          border: '1px solid #313131',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.85)',
           display: 'flex',
           flexDirection: 'column',
           overflow: 'hidden',
@@ -316,8 +315,8 @@ export default function StandaloneWidget({
           {/* Header */}
           <div style={{
             padding: '16px',
-            background: 'rgba(15, 19, 29, 0.85)',
-            borderBottom: '1px solid rgba(30, 41, 59, 0.8)',
+            background: '#181818',
+            borderBottom: '1px solid #313131',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-in-between'
@@ -469,10 +468,9 @@ export default function StandaloneWidget({
                     borderRadius: '16px',
                     borderTopRightRadius: m.role === 'user' ? '2px' : '16px',
                     borderTopLeftRadius: m.role === 'user' ? '16px' : '2px',
-                    background: m.role === 'user' ? activeConfig.primaryColor : '#171b26',
-                    color: m.role === 'user' ? '#ffffff' : '#dfe2f1',
-                    border: m.role === 'user' ? 'none' : '1px solid rgba(30, 41, 59, 0.8)',
-                    boxShadow: m.role === 'user' ? '0 4px 12px rgba(99, 102, 241, 0.25)' : 'none',
+                    background: m.role === 'user' ? activeConfig.primaryColor : '#272727',
+                    color: m.role === 'user' ? '#ffffff' : '#f5f5f5',
+                    border: m.role === 'user' ? 'none' : '1px solid #313131',
                     lineHeight: '1.5'
                   }}>
                     {m.content}
@@ -494,8 +492,8 @@ export default function StandaloneWidget({
                             minWidth: '130px',
                             padding: '10px',
                             borderRadius: '12px',
-                            background: '#0f172a',
-                            border: '1px solid #1e293b',
+                            background: '#1f1f1f',
+                            border: '1px solid #313131',
                             display: 'flex',
                             flexDirection: 'column',
                             justifyContent: 'space-between',
@@ -503,8 +501,8 @@ export default function StandaloneWidget({
                           }}
                         >
                           <div>
-                            <div style={{ fontSize: '13px', fontWeight: 700, color: '#ffffff' }}>{slot.time}</div>
-                            <div style={{ fontSize: '10px', color: '#908fa0', marginTop: '2px' }}>{slot.doctor}</div>
+                            <div style={{ fontSize: '13px', fontWeight: 600, color: '#ffffff' }}>{slot.time}</div>
+                            <div style={{ fontSize: '10px', color: '#8c8c8c', marginTop: '2px' }}>{slot.doctor}</div>
                           </div>
                           <button
                             onClick={() => handleSend(`I'll take the ${slot.time} slot with ${slot.doctor}.`)}
@@ -553,9 +551,9 @@ export default function StandaloneWidget({
                   padding: '10px 14px',
                   borderRadius: '16px',
                   borderTopLeftRadius: '2px',
-                  background: '#171b26',
-                  border: '1px solid #1e293b',
-                  color: '#908fa0',
+                  background: '#272727',
+                  border: '1px solid #313131',
+                  color: '#8c8c8c',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px'
@@ -577,8 +575,8 @@ export default function StandaloneWidget({
           {/* Quick Action Chips */}
           <div style={{
             padding: '8px 16px',
-            borderTop: '1px solid rgba(30, 41, 59, 0.6)',
-            background: 'rgba(10, 14, 24, 0.4)',
+            borderTop: '1px solid #313131',
+            background: '#181818',
             display: 'flex',
             gap: '6px',
             overflowX: 'auto'
@@ -592,9 +590,9 @@ export default function StandaloneWidget({
                   padding: '5px 10px',
                   borderRadius: '9999px',
                   fontSize: '11px',
-                  background: 'rgba(30, 41, 59, 0.7)',
-                  border: '1px solid #1e293b',
-                  color: '#dfe2f1',
+                  background: '#272727',
+                  border: '1px solid #313131',
+                  color: '#d6d6d6',
                   cursor: 'pointer'
                 }}
               >
@@ -606,8 +604,8 @@ export default function StandaloneWidget({
           {/* Input Dock */}
           <div style={{
             padding: '12px 16px',
-            borderTop: '1px solid #1e293b',
-            background: 'rgba(15, 19, 29, 0.9)'
+            borderTop: '1px solid #313131',
+            background: '#181818'
           }}>
             <form
               onSubmit={(e) => {
@@ -623,9 +621,9 @@ export default function StandaloneWidget({
                 placeholder="Ask questions or request appointment..."
                 style={{
                   flex: 1,
-                  background: '#030712',
-                  border: '1px solid #1e293b',
-                  borderRadius: '12px',
+                  background: '#1f1f1f',
+                  border: '1px solid #313131',
+                  borderRadius: '8px',
                   padding: '10px 14px',
                   fontSize: '12px',
                   color: '#ffffff',
@@ -639,10 +637,10 @@ export default function StandaloneWidget({
                 title="Voice Note Input"
                 style={{
                   padding: '10px',
-                  borderRadius: '12px',
-                  background: isTranscribing ? 'rgba(244, 63, 94, 0.2)' : '#1e293b',
-                  border: isTranscribing ? '1px solid #f43f5e' : '1px solid #1e293b',
-                  color: isTranscribing ? '#f43f5e' : '#dfe2f1',
+                  borderRadius: '8px',
+                  background: isTranscribing ? 'rgba(239, 68, 68, 0.2)' : '#272727',
+                  border: isTranscribing ? '1px solid #ef4444' : '1px solid #313131',
+                  color: isTranscribing ? '#ef4444' : '#f5f5f5',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',

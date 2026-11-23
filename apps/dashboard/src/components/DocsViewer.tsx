@@ -514,25 +514,25 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
         w-full lg:w-80 shrink-0 bg-[#0b0f19] border border-[#1e293b] rounded-2xl p-4 flex flex-col h-fit lg:sticky lg:top-6
       `}>
         {/* Navigation Header */}
-        <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#1e293b]">
+        <div className="flex items-center justify-between mb-3 pb-3 border-b border-[#313131]">
           <div className="flex items-center space-x-2">
             <BookOpen className="h-4 w-4 text-[#818cf8]" />
-            <span className="text-xs font-bold text-white uppercase tracking-wider">Documentation Navigation</span>
+            <span className="text-xs font-semibold text-white tracking-wide">Documentation navigation</span>
           </div>
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[#6366f1]/15 text-[#818cf8] border border-[#6366f1]/30">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#272727] text-[#818cf8] border border-[#313131]">
             {DOCS_INDEX.length} Specs
           </span>
         </div>
 
         {/* Live Search Filter Input */}
         <div className="relative mb-4">
-          <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#908fa0]" />
+          <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-[#8c8c8c]" />
           <input
             type="text"
             placeholder="Search specs, APIs, guides..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-[#030712] border border-[#1e293b] rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none transition"
+            className="w-full bg-[#1f1f1f] border border-[#313131] rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-[#8c8c8c] focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1] outline-none transition"
           />
         </div>
 
@@ -540,7 +540,7 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
         <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
           {categories.map(([catKey, group]) => (
             <div key={catKey}>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-[#908fa0] px-2 mb-1.5 flex items-center justify-between">
+              <div className="text-[10px] font-semibold text-[#8c8c8c] px-2 mb-1.5 flex items-center justify-between">
                 <span>{group.label}</span>
                 <span className="text-[9px] font-mono">{group.docs.length}</span>
               </div>
@@ -555,19 +555,19 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
                         setSelectedFilename(doc.filename);
                         setIsMobileMenuOpen(false);
                       }}
-                      className={`w-full text-left px-3 py-2 rounded-xl transition flex items-center justify-between group cursor-pointer ${
+                      className={`w-full text-left px-3 py-2 rounded-lg transition flex items-center justify-between group cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1] ${
                         isSelected
-                          ? 'bg-[#6366f1]/20 border border-[#6366f1]/40 text-white'
-                          : 'hover:bg-[#1e293b]/40 text-[#908fa0] hover:text-white border border-transparent'
+                          ? 'bg-[#272727] border border-[#313131] text-white font-medium'
+                          : 'hover:bg-[#1f1f1f] text-[#8c8c8c] hover:text-white border border-transparent'
                       }`}
                     >
                       <div className="flex items-center space-x-2.5 truncate">
-                        <Icon className={`h-3.5 w-3.5 shrink-0 ${isSelected ? 'text-[#818cf8]' : 'text-[#908fa0] group-hover:text-white'}`} />
+                        <Icon className={`h-3.5 w-3.5 shrink-0 ${isSelected ? 'text-[#818cf8]' : 'text-[#8c8c8c] group-hover:text-white'}`} />
                         <div className="truncate">
-                          <div className={`text-xs font-medium truncate ${isSelected ? 'text-white' : ''}`}>
+                          <div className={`text-xs truncate ${isSelected ? 'text-white' : ''}`}>
                             {doc.title.split('(')[0].trim()}
                           </div>
-                          <div className="text-[10px] font-mono text-[#908fa0] opacity-80">
+                          <div className="text-[10px] font-mono text-[#8c8c8c] opacity-80">
                             {doc.filename}
                           </div>
                         </div>
@@ -583,13 +583,10 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
       </div>
 
       {/* Main Document Content Pane */}
-      <div className="flex-1 bg-[#0b0f19] border border-[#1e293b] rounded-2xl p-6 sm:p-8 flex flex-col relative overflow-hidden">
-        {/* Subtle Decorative Ambient Background Glow */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-[#6366f1]/5 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="flex-1 bg-[#181818] border border-[#313131] rounded-2xl p-6 sm:p-8 flex flex-col relative overflow-hidden">
         {/* Top Breadcrumb & Metadata Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-[#1e293b] gap-3">
-          <div className="flex items-center space-x-2 text-xs text-[#908fa0]">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-6 border-b border-[#313131] gap-3">
+          <div className="flex items-center space-x-2 text-xs text-[#8c8c8c]">
             <BookOpen className="h-3.5 w-3.5 text-[#818cf8]" />
             <span>Docs</span>
             <span>/</span>
@@ -599,13 +596,13 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
           </div>
 
           <div className="flex items-center space-x-2">
-            <span className="flex items-center space-x-1 text-[11px] text-[#908fa0] bg-[#030712] px-2.5 py-1 rounded-lg border border-[#1e293b]">
+            <span className="flex items-center space-x-1 text-[11px] text-[#8c8c8c] bg-[#1f1f1f] px-2.5 py-1 rounded-md border border-[#313131]">
               <Clock className="h-3 w-3 text-[#818cf8]" />
               <span>{activeDoc.readTimeMinutes} min read</span>
             </span>
             <button
               onClick={handleCopyMarkdown}
-              className="flex items-center space-x-1 px-3 py-1 rounded-lg bg-[#1e293b] hover:bg-[#334155] text-white text-xs font-medium transition cursor-pointer"
+              className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-[#272727] hover:bg-[#313131] border border-[#313131] text-white text-xs font-medium transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]"
               title="Copy entire raw markdown"
             >
               {copiedDoc ? (
@@ -615,24 +612,24 @@ export default function DocsViewer({ initialDoc = 'PRD.md' }: DocsViewerProps) {
                 </>
               ) : (
                 <>
-                  <Copy className="h-3.5 w-3.5 text-[#908fa0]" />
-                  <span>Copy Markdown</span>
+                  <Copy className="h-3.5 w-3.5 text-[#8c8c8c]" />
+                  <span>Copy markdown</span>
                 </>
               )}
             </button>
             <button
               onClick={handleDownloadDoc}
-              className="p-1 rounded-lg bg-[#1e293b] hover:bg-[#334155] text-white transition cursor-pointer"
+              className="p-1.5 rounded-lg bg-[#272727] hover:bg-[#313131] border border-[#313131] text-white transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]"
               title="Download Markdown file"
             >
-              <Download className="h-3.5 w-3.5 text-[#908fa0]" />
+              <Download className="h-3.5 w-3.5 text-[#8c8c8c]" />
             </button>
           </div>
         </div>
 
         {/* Document Tags */}
         <div className="flex flex-wrap items-center gap-1.5 mb-6">
-          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#6366f1]/20 text-[#818cf8] border border-[#6366f1]/40 font-semibold">
+          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[#272727] text-[#818cf8] border border-[#313131] font-semibold">
             {activeDoc.badge || 'Document'}
           </span>
           {activeDoc.tags.map(t => (

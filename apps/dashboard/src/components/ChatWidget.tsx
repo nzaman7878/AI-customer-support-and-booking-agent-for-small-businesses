@@ -175,15 +175,15 @@ export default function ChatWidget() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-gradient-to-r from-[#6366f1] via-[#818cf8] to-[#10b981] p-[1.5px] shadow-2xl shadow-[#6366f1]/40 hover:scale-105 transition-all duration-300 cursor-pointer group"
+          className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-2xl bg-[#181818] border border-[#313131] hover:bg-[#272727] shadow-xl text-white transition cursor-pointer group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1] focus-visible:ring-offset-2 focus-visible:ring-offset-[#000000]"
         >
-          <div className="bg-[#030712] px-3.5 py-2 rounded-[14px] flex items-center space-x-2.5">
+          <div className="flex items-center space-x-2.5">
             <span className="relative flex h-2.5 w-2.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#10b981] opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#10b981]"></span>
             </span>
             <Bot className="h-4 w-4 text-[#818cf8] group-hover:rotate-12 transition-transform" />
-            <span className="text-xs font-semibold text-white tracking-tight">
+            <span className="text-xs font-semibold text-[#f5f5f5] tracking-tight">
               Apex AI Concierge
             </span>
           </div>
@@ -192,19 +192,19 @@ export default function ChatWidget() {
 
       {/* Floating Chat Drawer */}
       {isOpen && (
-        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-w-[420px] h-[calc(100vh-5rem)] max-h-[620px] rounded-2xl sm:rounded-3xl bg-[#0b0f19]/95 border border-[#1e293b] shadow-2xl shadow-black/80 flex flex-col backdrop-blur-2xl overflow-hidden font-sans">
+        <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-w-[420px] h-[calc(100vh-5rem)] max-h-[620px] rounded-2xl bg-[#181818] border border-[#313131] shadow-2xl flex flex-col overflow-hidden font-sans">
           {/* Header */}
-          <div className="p-4 bg-[#0f131d]/90 border-b border-[#1e293b] flex items-center justify-between">
+          <div className="p-4 bg-[#181818] border-b border-[#313131] flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="h-9 w-9 rounded-xl bg-[#6366f1]/20 border border-[#6366f1]/40 flex items-center justify-center">
+              <div className="h-9 w-9 rounded-xl bg-[#272727] border border-[#313131] flex items-center justify-center">
                 <Bot className="h-5 w-5 text-[#818cf8]" />
               </div>
               <div>
                 <div className="flex items-center space-x-1.5">
-                  <h4 className="text-xs font-bold text-white tracking-tight">Apex Concierge AI</h4>
+                  <h4 className="text-xs font-semibold text-[#f5f5f5] tracking-tight">Apex concierge AI</h4>
                   <span className="h-1.5 w-1.5 rounded-full bg-[#10b981]"></span>
                 </div>
-                <p className="text-[10px] text-[#908fa0]">Online • Avg reply &lt;1s</p>
+                <p className="text-[10px] text-[#8c8c8c]">Online • Instant verified response</p>
               </div>
             </div>
 
@@ -265,10 +265,10 @@ export default function ChatWidget() {
                 {/* Message Bubble */}
                 <div className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div
-                    className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed ${
+                    className={`max-w-[85%] p-3.5 rounded-xl text-xs leading-relaxed ${
                       m.role === 'user'
-                        ? 'bg-[#6366f1] text-white rounded-tr-xs shadow-md shadow-[#6366f1]/20'
-                        : 'bg-[#171b26] border border-[#1e293b] text-[#dfe2f1] rounded-tl-xs'
+                        ? 'bg-[#6366f1] text-white rounded-tr-sm'
+                        : 'bg-[#272727] border border-[#313131] text-[#f5f5f5] rounded-tl-sm'
                     }`}
                   >
                     {m.content}
@@ -280,23 +280,23 @@ export default function ChatWidget() {
                   <div className="mt-2 space-y-1.5">
                     <div className="text-[10px] font-semibold text-[#818cf8] flex items-center space-x-1">
                       <Calendar className="h-3 w-3" />
-                      <span>Available Consultation Slots • Friday, Oct 2</span>
+                      <span>Available consultation slots</span>
                     </div>
                     <div className="flex space-x-2 overflow-x-auto pb-1">
                       {m.slots.map((slot, sIdx) => (
                         <div
                           key={sIdx}
-                          className="min-w-[130px] p-2.5 rounded-xl bg-[#0f172a] border border-[#1e293b] hover:border-[#6366f1]/60 transition flex flex-col justify-between"
+                          className="min-w-[130px] p-2.5 rounded-lg bg-[#1f1f1f] border border-[#313131] hover:border-[#6366f1] transition flex flex-col justify-between"
                         >
                           <div>
-                            <div className="text-xs font-bold text-white">{slot.time}</div>
-                            <div className="text-[9px] text-[#908fa0] mt-0.5">{slot.doctor}</div>
+                            <div className="text-xs font-semibold text-white">{slot.time}</div>
+                            <div className="text-[10px] text-[#8c8c8c] mt-0.5">{slot.doctor}</div>
                           </div>
                           <button
                             onClick={() => handleSend(`I'll book the ${slot.time} slot with ${slot.doctor}.`)}
-                            className="mt-2 w-full py-1 rounded-lg bg-[#6366f1] hover:bg-[#818cf8] text-white text-[10px] font-semibold transition cursor-pointer"
+                            className="mt-2 w-full py-1.5 rounded-md bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-[10px] font-semibold transition cursor-pointer"
                           >
-                            Book Slot
+                            Book slot
                           </button>
                         </div>
                       ))}
@@ -306,7 +306,7 @@ export default function ChatWidget() {
 
                 {/* Human Takeover Alert */}
                 {m.requiresTakeover && (
-                  <div className="p-2.5 rounded-xl bg-[#f43f5e]/15 border border-[#f43f5e]/30 text-[11px] text-[#ffb4ab] flex items-center space-x-2">
+                  <div className="p-2.5 rounded-xl bg-[#ef4444]/15 border border-[#ef4444]/30 text-[11px] text-[#ffb4ab] flex items-center space-x-2">
                     <UserCheck className="h-4 w-4 shrink-0 text-[#ffb4ab]" />
                     <span>Human intervention requested. Our clinic director has been alerted.</span>
                   </div>
@@ -316,7 +316,7 @@ export default function ChatWidget() {
 
             {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-[#171b26] border border-[#1e293b] rounded-2xl rounded-tl-xs p-3 text-xs text-[#908fa0] flex items-center space-x-2">
+                <div className="bg-[#272727] border border-[#313131] rounded-xl rounded-tl-sm p-3 text-xs text-[#8c8c8c] flex items-center space-x-2">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#6366f1] opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-[#6366f1]"></span>
@@ -329,7 +329,7 @@ export default function ChatWidget() {
           </div>
 
           {/* Quick Action Suggestion Chips */}
-          <div className="px-4 py-2 border-t border-[#1e293b]/60 flex space-x-1.5 overflow-x-auto bg-[#0a0e18]/40">
+          <div className="px-4 py-2 border-t border-[#313131] flex space-x-1.5 overflow-x-auto bg-[#1f1f1f]">
             {[
               'Book an appointment',
               'Check service pricing',
@@ -339,7 +339,7 @@ export default function ChatWidget() {
               <button
                 key={idx}
                 onClick={() => handleSend(chip)}
-                className="whitespace-nowrap px-2.5 py-1 rounded-full text-[10px] font-medium bg-[#1e293b]/80 hover:bg-[#6366f1]/20 hover:border-[#6366f1]/50 border border-[#1e293b] text-[#dfe2f1] transition cursor-pointer"
+                className="whitespace-nowrap px-2.5 py-1 rounded-md text-[10px] font-medium bg-[#272727] hover:bg-[#313131] border border-[#313131] text-[#d6d6d6] transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]"
               >
                 {chip}
               </button>
@@ -347,10 +347,10 @@ export default function ChatWidget() {
           </div>
 
           {/* Bottom Input Dock */}
-          <div className="p-3 border-t border-[#1e293b] bg-[#0f131d]/90">
+          <div className="p-3 border-t border-[#313131] bg-[#181818]">
             {isTranscribing && (
-              <div className="mb-2 px-3 py-1.5 rounded-lg bg-[#6366f1]/15 border border-[#6366f1]/30 text-[10px] text-[#818cf8] flex items-center space-x-2 animate-pulse">
-                <Mic className="h-3 w-3 text-[#f43f5e]" />
+              <div className="mb-2 px-3 py-1.5 rounded-lg bg-[#ef4444]/15 border border-[#ef4444]/30 text-[10px] text-[#ffb4ab] flex items-center space-x-2">
+                <Mic className="h-3 w-3 text-[#ef4444]" />
                 <span>Transcribing incoming voice note with STT...</span>
               </div>
             )}
@@ -366,7 +366,7 @@ export default function ChatWidget() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 placeholder={selectedLang === 'hi' ? 'Kuch bhi poochein ya book karein...' : (selectedLang === 'es' ? 'Pregunte o reserve una cita...' : 'Ask about treatments, pricing, or book a slot...')}
-                className="flex-1 bg-[#030712] border border-[#1e293b] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-[#908fa0] focus:outline-none focus:border-[#6366f1]"
+                className="flex-1 bg-[#1f1f1f] border border-[#313131] rounded-lg px-3.5 py-2 text-xs text-[#f5f5f5] placeholder-[#8c8c8c] focus:outline-none focus:border-[#6366f1] focus:ring-1 focus:ring-[#6366f1]"
               />
 
               <button
@@ -374,10 +374,10 @@ export default function ChatWidget() {
                 onClick={handleVoiceInput}
                 disabled={isTranscribing || isLoading}
                 title="Speak / Voice Note Transcription"
-                className={`p-2.5 rounded-xl border transition cursor-pointer ${
+                className={`p-2 rounded-lg border transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1] ${
                   isTranscribing
-                    ? 'bg-[#f43f5e]/20 border-[#f43f5e] text-[#f43f5e] animate-pulse'
-                    : 'bg-[#1e293b] hover:bg-[#334155] border-[#1e293b] text-[#dfe2f1]'
+                    ? 'bg-[#ef4444]/20 border-[#ef4444] text-[#ef4444]'
+                    : 'bg-[#272727] hover:bg-[#313131] border-[#313131] text-[#f5f5f5]'
                 }`}
               >
                 <Mic className="h-3.5 w-3.5" />
@@ -386,7 +386,7 @@ export default function ChatWidget() {
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="p-2.5 bg-[#6366f1] hover:bg-[#818cf8] disabled:opacity-40 text-white rounded-xl transition cursor-pointer"
+                className="p-2 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6366f1]"
               >
                 <Send className="h-3.5 w-3.5" />
               </button>
