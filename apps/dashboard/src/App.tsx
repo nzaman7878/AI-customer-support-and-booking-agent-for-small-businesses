@@ -715,7 +715,7 @@ export default function App() {
   // Public High-Converting Marketing Landing Showcase
   if (currentView === 'landing') {
     return (
-      <div className="min-h-screen bg-[#000000] text-[#f5f5f5] flex flex-col font-sans selection:bg-[#6366f1] selection:text-white">
+      <div className="min-h-screen bg-[#FBF9F5] text-[#1C1917] flex flex-col font-sans selection:bg-[#1E3A2F] selection:text-white">
         <LandingPage
           onLaunchDemo={() => {
             setCurrentView('admin');
