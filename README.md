@@ -71,6 +71,30 @@ Freelancers and agencies sell this system to small businesses because it deliver
 
 ---
 
+## 📚 Complete Engineering Documentation & Specifications
+
+The repository includes a comprehensive 15-document technical specification suite, directly accessible in the repo and through the interactive **Docs & Architecture Specs** dashboard navigation tab:
+
+| Category | Document | Focus & Key Deliverables |
+| :--- | :--- | :--- |
+| **Core Specs** | [PRD.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/PRD.md) | Business objectives, personas, functional requirements, success metrics. |
+| **Core Specs** | [ARCHITECTURE.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/ARCHITECTURE.md) | LangGraph state machine, dual-channel ingress, Atlas Vector RAG, microservices. |
+| **Core Specs** | [DESIGN.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/DESIGN.md) | Obsidian Autonomous Command design system, Tailwind v4 tokens, drawer clamps. |
+| **Core Specs** | [MCP.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/MCP.md) | Model Context Protocol servers (Neon Postgres, Google Stitch) & tooling. |
+| **APIs & Data** | [API.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/API.md) | Exhaustive REST API reference with request/response schemas for all endpoints. |
+| **APIs & Data** | [INTEGRATIONS.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/INTEGRATIONS.md) | Google Calendar FreeBusy, Meta WhatsApp Cloud API, and CRM webhooks. |
+| **APIs & Data** | [DATABASE.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/DATABASE.md) | MongoDB Atlas operational models, vector search index (`vector_index`), fallbacks. |
+| **Security & Ops** | [AUTH_SECURITY.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/AUTH_SECURITY.md) | HMAC-SHA256 magic-link signatures, WhatsApp verification, prompt shields. |
+| **Security & Ops** | [DEBUGGING.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/DEBUGGING.md) | Diagnostic runbooks for WhatsApp 403, slot collisions, and RAG fallbacks. |
+| **Security & Ops** | [TESTING.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/TESTING.md) | 20-Scenario Golden Evaluation suite, Phase A-D tests, and CI/CD pipelines. |
+| **Setup & Dev** | [SETUP.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/SETUP.md) | Zero-to-one local installation, environment variables template, dev commands. |
+| **Setup & Dev** | [FEATURE_DEVELOPMENT.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/FEATURE_DEVELOPMENT.md) | Developer guide for adding verticals, LangGraph tools, and golden evals. |
+| **Setup & Dev** | [IMPLEMENTATION_PLAN.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/IMPLEMENTATION_PLAN.md) | Full architectural blueprint, phased milestones, and delivery timeline. |
+| **Setup & Dev** | [PRODUCTION_LAUNCH_ROADMAP.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/PRODUCTION_LAUNCH_ROADMAP.md) | Phased production rollout schedule, staging bake periods, monitoring SLAs. |
+| **Setup & Dev** | [PRODUCTION_GO_LIVE_SIGNOFF.md](file:///c:/Users/nuruz/Desktop/AI-customer-support-and-booking-agent-for-small-businesses/docs/PRODUCTION_GO_LIVE_SIGNOFF.md) | Formal production sign-off matrix, security audit, and stakeholder approvals. |
+
+---
+
 ## 📂 Repository Structure
 
 ```

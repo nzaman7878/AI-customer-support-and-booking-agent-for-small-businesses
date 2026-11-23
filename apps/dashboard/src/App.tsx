@@ -42,11 +42,13 @@ import {
   HeartHandshake,
   Search,
   Filter,
-  SlidersHorizontal
+  SlidersHorizontal,
+  FileText
 } from 'lucide-react';
 import { FeedbackSubmission, FeedbackOverview } from '@ai-agent/shared';
 import ChatWidget from './components/ChatWidget.js';
 import SelfServicePortal from './components/SelfServicePortal.js';
+import DocsViewer from './components/DocsViewer.js';
 
 interface BusinessConfig {
   id: string;
@@ -99,7 +101,7 @@ interface ChatSession {
 }
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'live' | 'knowledge' | 'appointments' | 'evals' | 'whitelabel' | 'analytics' | 'reputation'>('live');
+  const [activeTab, setActiveTab] = useState<'live' | 'knowledge' | 'appointments' | 'evals' | 'whitelabel' | 'analytics' | 'reputation' | 'docs'>('live');
   const [health, setHealth] = useState<SystemHealth | null>(null);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [selectedSessionId, setSelectedSessionId] = useState<string>('sess_1');
@@ -771,6 +773,7 @@ export default function App() {
             { id: 'whitelabel', label: 'White-Label & Embed Script', icon: Palette, badge: `${(businessConfig?.industry || 'clinic').toUpperCase()}` },
             { id: 'analytics', label: 'ROI & Conversion Intelligence', icon: TrendingUp, badge: `${analyticsData?.bookingConversionRate || 33}% Conv` },
             { id: 'reputation', label: 'Reputation & Google Reviews', icon: Star, badge: `${feedbackOverview?.csatScore || 86}% CSAT` },
+            { id: 'docs', label: 'Docs & Architecture Specs', icon: FileText, badge: '15 Specs' },
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -2452,6 +2455,11 @@ export default function App() {
               </div>
             </div>
           </div>
+        )}
+
+        {/* DOCUMENTATION & ARCHITECTURE SPECS TAB */}
+        {activeTab === 'docs' && (
+          <DocsViewer />
         )}
       </main>
 
