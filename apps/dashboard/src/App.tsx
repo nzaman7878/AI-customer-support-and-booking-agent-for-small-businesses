@@ -49,6 +49,7 @@ import { FeedbackSubmission, FeedbackOverview } from '@ai-agent/shared';
 import ChatWidget from './components/ChatWidget.js';
 import SelfServicePortal from './components/SelfServicePortal.js';
 import DocsViewer from './components/DocsViewer.js';
+import LandingPage from './components/LandingPage.js';
 
 interface BusinessConfig {
   id: string;
@@ -101,6 +102,15 @@ interface ChatSession {
 }
 
 export default function App() {
+  const [currentView, setCurrentView] = useState<'landing' | 'admin'>(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get('view') === 'admin' || searchParams.get('tab')) {
+        return 'admin';
+      }
+    }
+    return 'landing';
+  });
   const [activeTab, setActiveTab] = useState<'live' | 'knowledge' | 'appointments' | 'evals' | 'whitelabel' | 'analytics' | 'reputation' | 'docs'>('live');
   const [health, setHealth] = useState<SystemHealth | null>(null);
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -699,6 +709,26 @@ export default function App() {
     );
   }
 
+  // Public High-Converting Marketing Landing Showcase
+  if (currentView === 'landing') {
+    return (
+      <div className="min-h-screen bg-[#000000] text-[#f5f5f5] flex flex-col font-sans selection:bg-[#6366f1] selection:text-white">
+        <LandingPage
+          onLaunchDemo={() => {
+            setCurrentView('admin');
+            setActiveTab('live');
+          }}
+          onOpenAdmin={() => setCurrentView('admin')}
+          onOpenDocs={() => {
+            setCurrentView('admin');
+            setActiveTab('docs');
+          }}
+        />
+        <ChatWidget />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#000000] text-[#f5f5f5] flex flex-col font-sans selection:bg-[#6366f1] selection:text-white">
       {/* Top Command Deck Header */}
@@ -724,8 +754,19 @@ export default function App() {
             </div>
           </div>
 
-          {/* Telemetry Chips */}
+          {/* Telemetry Chips & Public View Switcher */}
           <div className="flex items-center space-x-3">
+            {/* View Public Landing Page Switcher */}
+            <button
+              onClick={() => {
+                window.history.pushState({}, '', '/');
+                setCurrentView('landing');
+              }}
+              className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#1f1f1f] hover:bg-[#272727] active:bg-[#181818] border border-[#313131] text-xs text-[#d6d6d6] hover:text-white transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] active:scale-[0.98] cursor-pointer"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-[#818cf8]" />
+              <span>Public landing page</span>
+            </button>
             {/* Atlas Vector Store */}
             <div className="hidden md:flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-[#1f1f1f] border border-[#313131] text-xs">
               <Database className="h-3.5 w-3.5 text-[#10b981]" />
