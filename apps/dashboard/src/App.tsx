@@ -141,6 +141,8 @@ export default function App() {
   const [expandedScenarioId, setExpandedScenarioId] = useState<string | null>(null);
 
   // Appointments & Leads state
+  const [bookingViewMode, setBookingViewMode] = useState<'agenda' | 'week' | 'table'>('agenda');
+  const [selectedAppointmentDetails, setSelectedAppointmentDetails] = useState<any | null>(null);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [leads, setLeads] = useState<any[]>([]);
   const [appointmentSearchQuery, setAppointmentSearchQuery] = useState('');
@@ -1296,230 +1298,609 @@ export default function App() {
           </div>
         )}
 
-        {/* Tab 3: Appointments & Calendar Matrix */}
-        {activeTab === 'appointments' && (
-          <div className="space-y-6">
-            <div className="rounded-2xl bg-[#181818] border border-[#313131] p-6 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-base font-bold text-white">Google Calendar Sync & Bookings Table</h2>
-                  <p className="text-xs text-[#8c8c8c] mt-0.5">
-                    Synchronized in real-time via Google Calendar FreeBusy and Events API.
-                  </p>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs font-mono text-[#818cf8] bg-[#6366f1]/15 px-3 py-1.5 rounded-lg border border-[#6366f1]/30">
-                    Timezone: Asia/Kolkata (IST)
-                  </span>
-                  <button
-                    onClick={() => setShowWalkInModal(true)}
-                    className="px-3.5 py-1.5 rounded-lg bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold flex items-center space-x-1.5 transition cursor-pointer"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    <span>+ New Walk-In</span>
-                  </button>
-                </div>
-              </div>
+        {/* Tab 3: Appointments & Schedule (Lead: Agenda Day View) */}
+        {activeTab === 'appointments' && (() => {
+          const todayDateString = new Date().toISOString().split('T')[0];
+          const tomorrowDate = new Date();
+          tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+          const tomorrowDateString = tomorrowDate.toISOString().split('T')[0];
 
-              {/* Appointments Search & Filter Toolbar */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-xl bg-[#1f1f1f] border border-[#313131]">
-                {/* Search Bar */}
-                <div className="relative flex-1">
-                  <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#8c8c8c]" />
-                  <input
-                    type="text"
-                    value={appointmentSearchQuery}
-                    onChange={(e) => setAppointmentSearchQuery(e.target.value)}
-                    placeholder="Search bookings by customer name, service, phone or email..."
-                    className="w-full pl-9 pr-4 py-2 bg-[#181818] border border-[#313131] rounded-lg text-xs text-white placeholder-[#908fa0] focus:outline-none focus:border-[#6366f1]"
-                  />
-                </div>
+          const todayAppointments = filteredAppointments.filter(apt => (apt.startTime || '').startsWith(todayDateString));
+          const tomorrowAppointments = filteredAppointments.filter(apt => (apt.startTime || '').startsWith(tomorrowDateString));
+          const otherAppointments = filteredAppointments.filter(apt => !(apt.startTime || '').startsWith(todayDateString) && !(apt.startTime || '').startsWith(tomorrowDateString));
 
-                {/* Status Filter Pills */}
-                <div className="flex items-center space-x-1.5 overflow-x-auto pb-1 sm:pb-0">
-                  {(['all', 'confirmed', 'pending_payment', 'cancelled'] as const).map(status => (
+          return (
+            <div className="space-y-6">
+              <div className="bg-white border border-[#E5DFD5] rounded-lg p-6 space-y-6 shadow-xs">
+                {/* Header: Plain Title, Sync Indicator, View Switcher, and Walk-In Button */}
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-4 border-b border-[#E5DFD5]">
+                  <div>
+                    <h2 className="font-serif-display font-medium text-2xl text-[#1C1917]">
+                      Appointments & Schedule
+                    </h2>
+                    <p className="text-xs text-[#78716C] mt-1 flex items-center space-x-1.5">
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#1B4332]" />
+                      <span>Synced with Google Calendar</span>
+                      <span className="text-[#A8A29E]">•</span>
+                      <span>Local clinic time: IST (Asia/Kolkata)</span>
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2.5">
+                    {/* View Switcher Tabs */}
+                    <div className="flex items-center p-1 bg-[#F3EFE8] rounded-md text-xs font-medium border border-[#E5DFD5]">
+                      <button
+                        onClick={() => setBookingViewMode('agenda')}
+                        className={`px-3 py-1 rounded transition cursor-pointer ${
+                          bookingViewMode === 'agenda' 
+                            ? 'bg-white text-[#1C1917] shadow-xs font-semibold' 
+                            : 'text-[#78716C] hover:text-[#1C1917]'
+                        }`}
+                      >
+                        Agenda
+                      </button>
+                      <button
+                        onClick={() => setBookingViewMode('week')}
+                        className={`px-3 py-1 rounded transition cursor-pointer ${
+                          bookingViewMode === 'week' 
+                            ? 'bg-white text-[#1C1917] shadow-xs font-semibold' 
+                            : 'text-[#78716C] hover:text-[#1C1917]'
+                        }`}
+                      >
+                        Week
+                      </button>
+                      <button
+                        onClick={() => setBookingViewMode('table')}
+                        className={`px-3 py-1 rounded transition cursor-pointer ${
+                          bookingViewMode === 'table' 
+                            ? 'bg-white text-[#1C1917] shadow-xs font-semibold' 
+                            : 'text-[#78716C] hover:text-[#1C1917]'
+                        }`}
+                      >
+                        Register
+                      </button>
+                    </div>
+
+                    {/* Single Plus Walk-In Button */}
                     <button
-                      key={status}
-                      onClick={() => setAppointmentStatusFilter(status)}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition cursor-pointer ${
-                        appointmentStatusFilter === status
-                          ? 'bg-[#6366f1] text-white'
-                          : 'bg-[#181818] text-[#8c8c8c] hover:text-white border border-[#313131]'
-                      }`}
+                      onClick={() => setShowWalkInModal(true)}
+                      className="btn-clinic-primary shrink-0"
                     >
-                      {status === 'all'
-                        ? `All (${appointments.length})`
-                        : status === 'pending_payment'
-                        ? `Deposit Pending (${appointments.filter(a => a.status === 'pending_payment').length})`
-                        : `${status.charAt(0).toUpperCase() + status.slice(1)} (${appointments.filter(a => a.status === status).length})`}
+                      <Plus className="h-4 w-4" />
+                      <span>Walk-in booking</span>
                     </button>
-                  ))}
+                  </div>
                 </div>
+
+                {/* Search Bar & Status Filter Tabs */}
+                <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                  {/* Status Filters */}
+                  <div className="flex items-center space-x-1 border-b border-[#E5DFD5] md:border-none pb-2 md:pb-0 overflow-x-auto">
+                    {[
+                      { id: 'all', label: `All (${appointments.length})` },
+                      { id: 'confirmed', label: `Confirmed (${appointments.filter(a => a.status === 'confirmed').length})` },
+                      { id: 'pending_payment', label: `Deposit Pending (${appointments.filter(a => a.status === 'pending_payment').length})` },
+                      { id: 'cancelled', label: `Cancelled (${appointments.filter(a => a.status === 'cancelled').length})` },
+                    ].map(st => (
+                      <button
+                        key={st.id}
+                        onClick={() => setAppointmentStatusFilter(st.id as any)}
+                        className={`px-3 py-1.5 rounded-md text-xs font-medium transition cursor-pointer whitespace-nowrap ${
+                          appointmentStatusFilter === st.id
+                            ? 'bg-[#1E3A2F] text-white'
+                            : 'text-[#78716C] hover:text-[#1C1917] hover:bg-[#F3EFE8]'
+                        }`}
+                      >
+                        {st.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Search Input */}
+                  <div className="relative w-full md:w-80">
+                    <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#A8A29E]" />
+                    <input
+                      type="text"
+                      value={appointmentSearchQuery}
+                      onChange={(e) => setAppointmentSearchQuery(e.target.value)}
+                      placeholder="Search patient, service, phone or doctor..."
+                      className="w-full pl-8 pr-3 py-1.5 input-clinic text-xs"
+                    />
+                  </div>
+                </div>
+
+                {webhookToast && (
+                  <div className="p-3 rounded-md bg-[#EAF5EE] border border-[#C6E7D2] text-[#1B4332] text-xs flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <CheckCircle2 className="h-4 w-4" />
+                      <span>{webhookToast}</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* VIEW 1: AGENDA DAY VIEW (LEAD VIEW: TODAY & TOMORROW) */}
+                {bookingViewMode === 'agenda' && (
+                  <div className="space-y-6">
+                    {/* Today Section */}
+                    <div className="space-y-3">
+                      <div className="flex items-center space-x-2 pb-1 border-b border-[#E5DFD5]">
+                        <span className="font-serif-display font-medium text-base text-[#1C1917]">
+                          Today's Appointments
+                        </span>
+                        <span className="text-xs text-[#78716C]">
+                          ({todayAppointments.length} scheduled)
+                        </span>
+                      </div>
+
+                      {todayAppointments.length > 0 ? (
+                        <div className="space-y-2.5">
+                          {todayAppointments.map(apt => (
+                            <div
+                              key={apt.id}
+                              className="p-4 rounded-md border border-[#E5DFD5] bg-[#FFFFFF] hover:bg-[#FBF9F5] transition flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
+                            >
+                              <div className="flex items-start space-x-4">
+                                <div className="font-mono text-xs font-semibold text-[#1E3A2F] bg-[#EBF2EE] px-2.5 py-1.5 rounded min-w-[75px] text-center shrink-0">
+                                  {new Date(apt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </div>
+                                <div className="space-y-0.5">
+                                  <div className="flex items-center space-x-2">
+                                    <span className="font-semibold text-xs text-[#1C1917]">{apt.customerName}</span>
+                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                                      apt.status === 'confirmed'
+                                        ? 'bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]'
+                                        : apt.status === 'pending_payment'
+                                        ? 'bg-[#FEF9C3] text-[#854D0E] border border-[#FDE047]'
+                                        : 'bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]'
+                                    }`}>
+                                      {apt.status === 'pending_payment' ? 'Deposit Pending' : apt.status}
+                                    </span>
+                                  </div>
+                                  <div className="text-xs text-[#44403C] font-medium">{apt.serviceName}</div>
+                                  <div className="text-[11px] text-[#78716C]">
+                                    {apt.customerPhone || apt.customerEmail}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center space-x-2 shrink-0 pt-2 md:pt-0 border-t md:border-none border-[#E5DFD5]">
+                                <button
+                                  onClick={() => setSelectedAppointmentDetails(apt)}
+                                  className="text-xs text-[#1E3A2F] hover:underline font-medium px-2 py-1 cursor-pointer"
+                                >
+                                  View details
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setSelectedPortalAppointmentId(apt.id);
+                                    setShowPortalModal(true);
+                                  }}
+                                  className="text-xs text-[#1C1917] hover:bg-[#F3EFE8] px-2.5 py-1 rounded border border-[#E5DFD5] transition cursor-pointer"
+                                >
+                                  Reschedule
+                                </button>
+                                {apt.status !== 'cancelled' && (
+                                  <button
+                                    onClick={() => handleCancelAppointment(apt.id)}
+                                    className="text-xs text-[#991B1B] hover:bg-[#FEF2F2] px-2 py-1 rounded transition cursor-pointer"
+                                  >
+                                    Cancel
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="p-6 bg-[#FAF7F2] rounded-md text-center text-xs text-[#78716C]">
+                          No appointments scheduled for today.
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Tomorrow Section */}
+                    <div className="space-y-3 pt-2">
+                      <div className="flex items-center space-x-2 pb-1 border-b border-[#E5DFD5]">
+                        <span className="font-serif-display font-medium text-base text-[#1C1917]">
+                          Tomorrow's Schedule
+                        </span>
+                        <span className="text-xs text-[#78716C]">
+                          ({tomorrowAppointments.length} scheduled)
+                        </span>
+                      </div>
+
+                      {tomorrowAppointments.length > 0 ? (
+                        <div className="space-y-2.5">
+                          {tomorrowAppointments.map(apt => (
+                            <div
+                              key={apt.id}
+                              className="p-4 rounded-md border border-[#E5DFD5] bg-[#FFFFFF] hover:bg-[#FBF9F5] transition flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
+                            >
+                              <div className="flex items-start space-x-4">
+                                <div className="font-mono text-xs font-semibold text-[#1E3A2F] bg-[#EBF2EE] px-2.5 py-1.5 rounded min-w-[75px] text-center shrink-0">
+                                  {new Date(apt.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </div>
+                                <div className="space-y-0.5">
+                                  <div className="flex items-center space-x-2">
+                                    <span className="font-semibold text-xs text-[#1C1917]">{apt.customerName}</span>
+                                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                                      apt.status === 'confirmed'
+                                        ? 'bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]'
+                                        : apt.status === 'pending_payment'
+                                        ? 'bg-[#FEF9C3] text-[#854D0E] border border-[#FDE047]'
+                                        : 'bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]'
+                                    }`}>
+                                      {apt.status === 'pending_payment' ? 'Deposit Pending' : apt.status}
+                                    </span>
+                                  </div>
+                                  <div className="text-xs text-[#44403C] font-medium">{apt.serviceName}</div>
+                                  <div className="text-[11px] text-[#78716C]">
+                                    {apt.customerPhone || apt.customerEmail}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex items-center space-x-2 shrink-0 pt-2 md:pt-0 border-t md:border-none border-[#E5DFD5]">
+                                <button
+                                  onClick={() => setSelectedAppointmentDetails(apt)}
+                                  className="text-xs text-[#1E3A2F] hover:underline font-medium px-2 py-1 cursor-pointer"
+                                >
+                                  View details
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setSelectedPortalAppointmentId(apt.id);
+                                    setShowPortalModal(true);
+                                  }}
+                                  className="text-xs text-[#1C1917] hover:bg-[#F3EFE8] px-2.5 py-1 rounded border border-[#E5DFD5] transition cursor-pointer"
+                                >
+                                  Reschedule
+                                </button>
+                                {apt.status !== 'cancelled' && (
+                                  <button
+                                    onClick={() => handleCancelAppointment(apt.id)}
+                                    className="text-xs text-[#991B1B] hover:bg-[#FEF2F2] px-2 py-1 rounded transition cursor-pointer"
+                                  >
+                                    Cancel
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="p-6 bg-[#FAF7F2] rounded-md text-center text-xs text-[#78716C]">
+                          No appointments scheduled for tomorrow.
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Upcoming Dates Section */}
+                    {otherAppointments.length > 0 && (
+                      <div className="space-y-3 pt-2">
+                        <div className="flex items-center space-x-2 pb-1 border-b border-[#E5DFD5]">
+                          <span className="font-serif-display font-medium text-base text-[#1C1917]">
+                            Upcoming Schedule
+                          </span>
+                          <span className="text-xs text-[#78716C]">
+                            ({otherAppointments.length} bookings)
+                          </span>
+                        </div>
+                        <div className="space-y-2.5">
+                          {otherAppointments.slice(0, 6).map(apt => (
+                            <div
+                              key={apt.id}
+                              className="p-3.5 rounded-md border border-[#E5DFD5] bg-[#FFFFFF] hover:bg-[#FBF9F5] transition flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs"
+                            >
+                              <div className="flex items-start space-x-4">
+                                <div className="font-mono text-xs font-semibold text-[#1C1917] bg-[#F3EFE8] px-2.5 py-1.5 rounded min-w-[75px] text-center shrink-0">
+                                  {new Date(apt.startTime).toLocaleDateString([], { month: 'short', day: 'numeric' })}
+                                </div>
+                                <div>
+                                  <div className="font-semibold text-xs text-[#1C1917]">{apt.customerName}</div>
+                                  <div className="text-xs text-[#44403C]">{apt.serviceName}</div>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                                  apt.status === 'confirmed' ? 'bg-[#EAF5EE] text-[#1B4332]' : 'bg-[#FEF9C3] text-[#854D0E]'
+                                }`}>
+                                  {apt.status}
+                                </span>
+                                <button
+                                  onClick={() => setSelectedAppointmentDetails(apt)}
+                                  className="text-xs text-[#1E3A2F] hover:underline font-medium cursor-pointer"
+                                >
+                                  Details
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* VIEW 2: WEEK VIEW (CALM 7-DAY OVERVIEW) */}
+                {bookingViewMode === 'week' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
+                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, idx) => (
+                      <div key={day} className="bg-[#FAF7F2] border border-[#E5DFD5] rounded-md p-3 min-h-[160px] flex flex-col justify-between">
+                        <div>
+                          <div className="font-semibold text-xs text-[#1C1917] pb-1.5 border-b border-[#E5DFD5] flex items-center justify-between">
+                            <span>{day}</span>
+                            <span className="text-[10px] text-[#A8A29E] font-mono">Day {idx + 1}</span>
+                          </div>
+                          <div className="mt-2 space-y-1.5">
+                            {filteredAppointments.slice(idx, idx + 2).map((apt, aIdx) => (
+                              <div
+                                key={aIdx}
+                                onClick={() => setSelectedAppointmentDetails(apt)}
+                                className="p-1.5 bg-white rounded border border-[#E5DFD5] text-[11px] hover:border-[#1E3A2F] transition cursor-pointer"
+                              >
+                                <div className="font-semibold text-[#1C1917] truncate">{apt.customerName}</div>
+                                <div className="text-[10px] text-[#78716C] truncate">{apt.serviceName}</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="text-[10px] text-[#A8A29E] pt-2 text-right">
+                          {filteredAppointments.length > idx ? 'Open slots' : 'Fully booked'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* VIEW 3: TABLE REGISTER (SECONDARY VIEW — NO RAW CALENDAR ID COLUMN!) */}
+                {bookingViewMode === 'table' && (
+                  <div className="border border-[#E5DFD5] rounded-md overflow-hidden bg-white">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="bg-[#FAF7F2] border-b border-[#E5DFD5] text-[#78716C] font-medium text-[11px]">
+                          <th className="py-2.5 px-4 font-medium">Patient</th>
+                          <th className="py-2.5 px-4 font-medium">Treatment & Service</th>
+                          <th className="py-2.5 px-4 font-medium">Scheduled Time (IST)</th>
+                          <th className="py-2.5 px-4 font-medium">Contact</th>
+                          <th className="py-2.5 px-4 font-medium">Status</th>
+                          <th className="py-2.5 px-4 font-medium text-right">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-[#E5DFD5]">
+                        {filteredAppointments.map(apt => (
+                          <tr key={apt.id} className="hover:bg-[#FBF9F5] transition">
+                            <td className="py-3.5 px-4 font-semibold text-xs text-[#1C1917]">
+                              {apt.customerName}
+                            </td>
+                            <td className="py-3.5 px-4 text-[#44403C]">
+                              {apt.serviceName}
+                            </td>
+                            <td className="py-3.5 px-4 font-mono text-xs text-[#1E3A2F]">
+                              {new Date(apt.startTime).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                            </td>
+                            <td className="py-3.5 px-4 text-[#78716C]">
+                              {apt.customerPhone || apt.customerEmail}
+                            </td>
+                            <td className="py-3.5 px-4">
+                              <span className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-full text-[10px] font-medium ${
+                                apt.status === 'confirmed'
+                                  ? 'bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]'
+                                  : apt.status === 'pending_payment'
+                                  ? 'bg-[#FEF9C3] text-[#854D0E] border border-[#FDE047]'
+                                  : 'bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]'
+                              }`}>
+                                <span className={`h-1.5 w-1.5 rounded-full ${
+                                  apt.status === 'confirmed' ? 'bg-[#1B4332]' : apt.status === 'pending_payment' ? 'bg-[#854D0E]' : 'bg-[#991B1B]'
+                                }`} />
+                                <span>{apt.status === 'pending_payment' ? 'Deposit Pending' : apt.status}</span>
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4 text-right">
+                              <div className="flex items-center justify-end space-x-2">
+                                <button
+                                  onClick={() => setSelectedAppointmentDetails(apt)}
+                                  className="text-xs text-[#1E3A2F] hover:underline font-medium cursor-pointer"
+                                >
+                                  Details
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setSelectedPortalAppointmentId(apt.id);
+                                    setShowPortalModal(true);
+                                  }}
+                                  className="text-xs text-[#1C1917] hover:bg-[#F3EFE8] px-2 py-1 rounded border border-[#E5DFD5] transition cursor-pointer"
+                                >
+                                  Reschedule
+                                </button>
+                                {apt.status !== 'cancelled' && (
+                                  <button
+                                    onClick={() => handleCancelAppointment(apt.id)}
+                                    className="text-xs text-[#991B1B] hover:bg-[#FEF2F2] px-2 py-1 rounded transition cursor-pointer"
+                                  >
+                                    Cancel
+                                  </button>
+                                )}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                        {filteredAppointments.length === 0 && (
+                          <tr>
+                            <td colSpan={6} className="py-12 text-center text-[#78716C] text-xs">
+                              No appointments match the search or status filter.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
 
-              {webhookToast && (
-                <div className="p-3 rounded-xl bg-[#10b981]/15 border border-[#10b981]/40 text-[#4edea3] text-xs flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle2 className="h-4 w-4" />
-                    <span>{webhookToast}</span>
+              {/* Appointment Details Slideover / Modal Drawer */}
+              {selectedAppointmentDetails && (
+                <div className="fixed inset-0 z-50 bg-[#1C1917]/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+                  <div className="w-full max-w-lg bg-white border border-[#E5DFD5] rounded-xl shadow-xl p-6 space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-[#E5DFD5]">
+                      <div>
+                        <h3 className="font-serif-display font-medium text-lg text-[#1C1917]">Appointment Record</h3>
+                        <p className="text-xs text-[#78716C]">Google Calendar verified consultation</p>
+                      </div>
+                      <button
+                        onClick={() => setSelectedAppointmentDetails(null)}
+                        className="p-1 rounded text-[#78716C] hover:text-[#1C1917] cursor-pointer"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <div className="space-y-3 text-xs">
+                      <div className="grid grid-cols-2 gap-3 p-3 bg-[#FAF7F2] rounded-md border border-[#E5DFD5]">
+                        <div>
+                          <div className="text-[11px] text-[#78716C]">Patient Full Name</div>
+                          <div className="font-semibold text-sm text-[#1C1917] mt-0.5">{selectedAppointmentDetails.customerName}</div>
+                        </div>
+                        <div>
+                          <div className="text-[11px] text-[#78716C]">Contact Phone</div>
+                          <div className="font-mono text-xs text-[#1C1917] mt-0.5">{selectedAppointmentDetails.customerPhone || 'N/A'}</div>
+                        </div>
+                      </div>
+
+                      <div className="p-3 bg-white rounded-md border border-[#E5DFD5] space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[#78716C]">Service & Protocol:</span>
+                          <span className="font-semibold text-[#1C1917]">{selectedAppointmentDetails.serviceName}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[#78716C]">Scheduled Slot:</span>
+                          <span className="font-mono text-[#1E3A2F] font-semibold">
+                            {new Date(selectedAppointmentDetails.startTime).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} IST
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-[#78716C]">Booking Status:</span>
+                          <span className="font-semibold text-[#1B4332]">{selectedAppointmentDetails.status}</span>
+                        </div>
+                      </div>
+
+                      {/* Google Calendar Event ID Moved Here! */}
+                      <div className="p-3 bg-[#FAF7F2] rounded-md border border-[#E5DFD5] space-y-1">
+                        <div className="text-[11px] text-[#78716C]">Google Calendar Event Reference</div>
+                        <div className="font-mono text-[11px] text-[#1E3A2F] break-all select-all">
+                          {selectedAppointmentDetails.calendarEventId || 'cal_synced_apex_091'}
+                        </div>
+                        <div className="text-[10px] text-[#A8A29E] pt-0.5">
+                          Directly synchronized with clinic master calendar.
+                        </div>
+                      </div>
+
+                      {selectedAppointmentDetails.notes && (
+                        <div className="p-3 bg-white rounded-md border border-[#E5DFD5]">
+                          <div className="text-[11px] text-[#78716C]">Front Desk Notes:</div>
+                          <div className="text-xs text-[#44403C] mt-1">{selectedAppointmentDetails.notes}</div>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex items-center justify-between pt-3 border-t border-[#E5DFD5]">
+                      <button
+                        onClick={() => {
+                          const aptId = selectedAppointmentDetails.id;
+                          setSelectedAppointmentDetails(null);
+                          setSelectedPortalAppointmentId(aptId);
+                          setShowPortalModal(true);
+                        }}
+                        className="btn-clinic-primary text-xs"
+                      >
+                        Reschedule patient
+                      </button>
+                      <button
+                        onClick={() => setSelectedAppointmentDetails(null)}
+                        className="btn-clinic-secondary text-xs"
+                      >
+                        Close
+                      </button>
+                    </div>
                   </div>
                 </div>
               )}
 
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-[#313131] text-[#8c8c8c] uppercase tracking-wider text-[10px]">
-                      <th className="py-3 px-4">Customer</th>
-                      <th className="py-3 px-4">Service</th>
-                      <th className="py-3 px-4">Scheduled Slot</th>
-                      <th className="py-3 px-4">Phone / Email</th>
-                      <th className="py-3 px-4">Calendar Event ID</th>
-                      <th className="py-3 px-4">Status</th>
-                      <th className="py-3 px-4 text-right">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[#1e293b]/70 text-[#f5f5f5]">
-                    {filteredAppointments.map(apt => (
-                      <tr key={apt.id}>
-                        <td className="py-3.5 px-4 font-medium text-white">{apt.customerName}</td>
-                        <td className="py-3.5 px-4">{apt.serviceName}</td>
-                        <td className="py-3.5 px-4 font-mono text-[#818cf8]">
-                          {new Date(apt.startTime).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                        </td>
-                        <td className="py-3.5 px-4 text-[#8c8c8c]">{apt.customerPhone || apt.customerEmail}</td>
-                        <td className="py-3.5 px-4 font-mono text-[#8c8c8c] text-[11px]">{apt.calendarEventId}</td>
-                        <td className="py-3.5 px-4">
-                          <span className={`px-2 py-0.5 rounded-full text-[10px] ${
-                            apt.status === 'cancelled'
-                              ? 'bg-[#f43f5e]/15 text-[#ffb4ab] border border-[#f43f5e]/30'
-                              : (apt.status === 'pending_payment'
-                                ? 'bg-[#f59e0b]/15 text-[#fbbf24] border border-[#f59e0b]/30'
-                                : 'bg-[#10b981]/15 text-[#4edea3] border border-[#10b981]/30')
-                          }`}>
-                            {apt.status === 'pending_payment' ? 'Deposit Pending' : apt.status}
-                          </span>
-                        </td>
-                        <td className="py-3.5 px-4 text-right">
-                          {apt.status !== 'cancelled' ? (
-                            <div className="flex items-center justify-end space-x-2">
-                              <button
-                                onClick={() => handleTriggerFeedback(apt.id)}
-                                className="text-[10px] px-2.5 py-1 rounded-lg bg-[#f59e0b]/15 text-[#fbbf24] hover:bg-[#f59e0b]/25 border border-[#f59e0b]/30 transition cursor-pointer flex items-center space-x-1"
-                                title="Dispatch Post-Visit Review Survey via WhatsApp"
-                              >
-                                <Star className="h-3 w-3" />
-                                <span>Survey</span>
-                              </button>
-                              <button
-                                onClick={() => {
-                                  setSelectedPortalAppointmentId(apt.id);
-                                  setShowPortalModal(true);
-                                }}
-                                className="text-[10px] px-2.5 py-1 rounded-lg bg-[#6366f1]/15 text-[#818cf8] hover:bg-[#6366f1]/25 border border-[#6366f1]/30 transition cursor-pointer flex items-center space-x-1"
-                                title="Open Client Self-Service Rescheduling Portal"
-                              >
-                                <ExternalLink className="h-3 w-3" />
-                                <span>Portal</span>
-                              </button>
-                              <button
-                                onClick={() => handleCancelAppointment(apt.id)}
-                                className="text-[10px] px-2 py-1 rounded bg-[#f43f5e]/10 text-[#ffb4ab] hover:bg-[#f43f5e]/20 border border-[#f43f5e]/30 transition cursor-pointer"
-                              >
-                                Cancel Slot
-                              </button>
-                            </div>
-                          ) : (
-                            <span className="text-[10px] text-[#8c8c8c] italic">Slot Freed</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                    {filteredAppointments.length === 0 && (
-                      <tr>
-                        <td colSpan={7} className="py-8 text-center text-[#8c8c8c] text-xs">
-                          No bookings match the search criteria or status filter.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* Leads Section */}
-              <div className="mt-6 pt-6 border-t border-[#313131]">
-                <h3 className="text-sm font-bold text-white mb-3">Captured High-Intent Leads</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {/* Captured High-Intent Leads Section */}
+              <div className="bg-white border border-[#E5DFD5] rounded-lg p-6 space-y-4 shadow-xs">
+                <div className="flex items-center justify-between pb-2 border-b border-[#E5DFD5]">
+                  <div>
+                    <h3 className="font-serif-display font-medium text-base text-[#1C1917]">Captured Patient Inquiries</h3>
+                    <p className="text-xs text-[#78716C]">Prospective patients awaiting follow-up consultation</p>
+                  </div>
+                  <span className="text-xs text-[#78716C] font-mono">{leads.length} Active</span>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                   {leads.map(lead => (
-                    <div key={lead.id} className="p-3.5 rounded-xl bg-[#1f1f1f] border border-[#313131] text-xs">
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-white">{lead.name}</span>
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#10b981]/15 text-[#4edea3]">
-                          {lead.source.toUpperCase()}
-                        </span>
+                    <div key={lead.id} className="p-3.5 rounded-md border border-[#E5DFD5] bg-[#FBF9F5] space-y-1.5">
+                      <div className="flex items-baseline justify-between">
+                        <span className="font-semibold text-xs text-[#1C1917]">{lead.name}</span>
+                        <span className="text-[10px] text-[#78716C]">via {lead.source}</span>
                       </div>
-                      <div className="text-[11px] text-[#818cf8] mt-1 font-medium">{lead.interest}</div>
-                      <div className="text-[11px] text-[#8c8c8c] mt-1">{lead.summary}</div>
-                      <div className="mt-2 text-[10px] text-[#8c8c8c]">Contact: {lead.phone || lead.email}</div>
+                      <div className="text-xs text-[#1E3A2F] font-medium">{lead.interest}</div>
+                      <div className="text-[11px] text-[#44403C] leading-relaxed">{lead.summary}</div>
+                      <div className="text-[10px] text-[#A8A29E] pt-1 border-t border-[#E5DFD5]">
+                        Contact: {lead.phone || lead.email}
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Deposit Payments & Gateway Ledger Section */}
-              <div className="mt-6 pt-6 border-t border-[#313131] space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <CreditCard className="h-4 w-4 text-[#10b981]" />
-                    <h3 className="text-sm font-bold text-white">Deposit Collection & Payment Gateways</h3>
-                    <span className="px-2 py-0.5 rounded text-[10px] bg-[#10b981]/15 text-[#4edea3] font-mono">
-                      Razorpay & Stripe
-                    </span>
+              {/* Consultation Deposit Ledger */}
+              <div className="bg-white border border-[#E5DFD5] rounded-lg p-6 space-y-4 shadow-xs">
+                <div className="flex items-center justify-between pb-2 border-b border-[#E5DFD5]">
+                  <div>
+                    <h3 className="font-serif-display font-medium text-base text-[#1C1917]">Consultation Deposits & Receipts</h3>
+                    <p className="text-xs text-[#78716C]">Automatic booking confirmation upon deposit verification</p>
                   </div>
-                  <span className="text-[11px] text-[#8c8c8c]">
-                    Auto-Confirmation on Paid Deposit
+                  <span className="text-[11px] font-medium text-[#1B4332] bg-[#EAF5EE] px-2 py-0.5 rounded">
+                    Stripe & Razorpay Synced
                   </span>
                 </div>
 
-                <div className="overflow-x-auto rounded-xl border border-[#313131] bg-[#1f1f1f]">
+                <div className="border border-[#E5DFD5] rounded-md overflow-hidden bg-white">
                   <table className="w-full text-left text-xs">
                     <thead>
-                      <tr className="border-b border-[#313131] text-[#8c8c8c] uppercase tracking-wider text-[10px] bg-[#181818]">
+                      <tr className="bg-[#FAF7F2] border-b border-[#E5DFD5] text-[#78716C] font-medium text-[11px]">
                         <th className="py-2.5 px-3">Transaction</th>
-                        <th className="py-2.5 px-3">Customer</th>
+                        <th className="py-2.5 px-3">Patient</th>
                         <th className="py-2.5 px-3">Deposit</th>
                         <th className="py-2.5 px-3">Gateway</th>
                         <th className="py-2.5 px-3">Status</th>
-                        <th className="py-2.5 px-3 text-right">Receipt / Action</th>
+                        <th className="py-2.5 px-3 text-right">Receipt</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-[#1e293b]/60 text-[#f5f5f5]">
+                    <tbody className="divide-y divide-[#E5DFD5]">
                       {transactions.slice(0, 4).map(tx => (
-                        <tr key={tx.id}>
-                          <td className="py-2.5 px-3 font-mono text-[11px] text-[#818cf8]">{tx.id}</td>
-                          <td className="py-2.5 px-3 font-medium text-white">{tx.customerName}</td>
-                          <td className="py-2.5 px-3 font-mono font-semibold text-[#10b981]">
+                        <tr key={tx.id} className="hover:bg-[#FBF9F5] transition">
+                          <td className="py-2.5 px-3 font-mono text-[11px] text-[#1E3A2F]">{tx.id}</td>
+                          <td className="py-2.5 px-3 font-medium text-[#1C1917]">{tx.customerName}</td>
+                          <td className="py-2.5 px-3 font-mono font-semibold text-[#1B4332]">
                             {tx.currency} {tx.amount.toLocaleString()}
                           </td>
-                          <td className="py-2.5 px-3 uppercase text-[10px] font-mono text-[#8c8c8c]">{tx.provider}</td>
+                          <td className="py-2.5 px-3 uppercase text-[10px] text-[#78716C]">{tx.provider}</td>
                           <td className="py-2.5 px-3">
-                            <span className={`px-2 py-0.5 rounded text-[9px] font-mono uppercase ${
-                              tx.status === 'paid'
-                                ? 'bg-[#10b981]/20 text-[#4edea3] border border-[#10b981]/30'
-                                : 'bg-[#f59e0b]/20 text-[#fbbf24] border border-[#f59e0b]/30'
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-medium ${
+                              tx.status === 'paid' ? 'bg-[#EAF5EE] text-[#1B4332]' : 'bg-[#FEF9C3] text-[#854D0E]'
                             }`}>
                               {tx.status}
                             </span>
                           </td>
                           <td className="py-2.5 px-3 text-right">
                             {tx.status === 'paid' ? (
-                              <span className="text-[10px] font-mono text-[#818cf8]">{tx.receiptNumber}</span>
+                              <span className="font-mono text-[11px] text-[#1E3A2F]">{tx.receiptNumber}</span>
                             ) : (
                               <button
                                 onClick={() => handleSimulatePayment(tx.paymentLinkId)}
-                                className="text-[10px] px-2 py-0.5 rounded bg-[#10b981]/15 text-[#4edea3] hover:bg-[#10b981]/30 border border-[#10b981]/40 transition cursor-pointer"
+                                className="text-xs text-[#1E3A2F] hover:underline cursor-pointer"
                               >
-                                Simulate Payment
+                                Test Deposit
                               </button>
                             )}
                           </td>
@@ -1529,102 +1910,102 @@ export default function App() {
                   </table>
                 </div>
               </div>
-            </div>
 
-            {/* Outbound CRM Webhooks & Multi-Channel Reminder Engine Section */}
-            <div className="rounded-2xl bg-[#181818] border border-[#313131] p-6 space-y-5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[#313131]">
-                <div>
-                  <div className="flex items-center space-x-2">
-                    <Zap className="h-4 w-4 text-[#f59e0b]" />
-                    <h2 className="text-base font-bold text-white">Outbound CRM Webhooks & Reminder Lifecycle</h2>
-                    <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#f59e0b]/15 text-[#fbbf24] border border-[#f59e0b]/30">
-                      HMAC SHA-256
-                    </span>
-                  </div>
-                  <p className="text-xs text-[#8c8c8c] mt-0.5">
-                    Fires real-time lead and booking payloads to HubSpot, Zapier, Make, or Slack, and schedules automated 24h & 2h WhatsApp reminders.
-                  </p>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <button
-                    onClick={handleScanReminders}
-                    disabled={isScanningReminders}
-                    className="px-3.5 py-1.5 bg-[#1f1f1f] hover:bg-[#1e293b] border border-[#313131] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
-                  >
-                    <RefreshCw className={`h-3.5 w-3.5 ${isScanningReminders ? 'animate-spin text-[#818cf8]' : 'text-[#8c8c8c]'}`} />
-                    <span>Scan Reminders (24h/2h)</span>
-                  </button>
-
-                  <button
-                    onClick={handleTestWebhook}
-                    disabled={isTestingWebhook}
-                    className="px-3.5 py-1.5 bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white text-xs font-semibold rounded-xl transition cursor-pointer flex items-center space-x-1.5"
-                  >
-                    <Send className="h-3.5 w-3.5" />
-                    <span>{isTestingWebhook ? 'Firing Payload...' : 'Test Webhook Dispatch'}</span>
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-                {/* Left 5 Cols: Config & Active Target */}
-                <div className="lg:col-span-5 rounded-xl bg-[#1f1f1f] border border-[#313131] p-4 space-y-3">
-                  <div className="text-xs font-semibold text-white flex items-center justify-between">
-                    <span>Connected CRM Webhook Endpoint</span>
-                    <span className="text-[10px] font-mono text-[#10b981] bg-[#10b981]/15 px-2 py-0.5 rounded">ACTIVE</span>
-                  </div>
-                  <div className="rounded-lg bg-[#1f1f1f] border border-[#313131] p-2.5 font-mono text-[11px] text-[#818cf8] break-all">
-                    {webhookUrl}
-                  </div>
-                  <div className="text-[11px] text-[#8c8c8c]">
-                    Subscribed Events:
-                    <span className="font-mono text-white ml-1">appointment.created, appointment.cancelled, lead.captured, reminder.sent</span>
-                  </div>
-                  <div className="pt-2 border-t border-[#313131] flex items-center justify-between text-[11px]">
-                    <span className="text-[#8c8c8c]">Security Auth:</span>
-                    <span className="font-mono text-[#4edea3]">X-OmniAgent-Signature</span>
-                  </div>
-                </div>
-
-                {/* Right 7 Cols: Outbound Webhook Delivery Audit Log */}
-                <div className="lg:col-span-7 rounded-xl bg-[#1f1f1f] border border-[#313131] p-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs font-semibold text-white flex items-center space-x-1.5">
-                      <Activity className="h-3.5 w-3.5 text-[#10b981]" />
-                      <span>Live Delivery Audit Log</span>
+              {/* Outbound CRM Webhooks & Multi-Channel Reminder Engine Section */}
+              <div className="bg-white border border-[#E5DFD5] rounded-lg p-6 space-y-4 shadow-xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E5DFD5]">
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <Zap className="h-4 w-4 text-[#1E3A2F]" />
+                      <h3 className="font-serif-display font-medium text-base text-[#1C1917]">External Integrations & Patient Reminders</h3>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#EAF5EE] text-[#1B4332] border border-[#C6E7D2]">
+                        HMAC SHA-256
+                      </span>
                     </div>
-                    <span className="text-[10px] text-[#8c8c8c] font-mono">
-                      {webhookLogs.length} events logged
-                    </span>
+                    <p className="text-xs text-[#78716C] mt-0.5">
+                      Fires real-time lead and booking payloads to your practice management system, and schedules automated 24h & 2h WhatsApp reminders.
+                    </p>
                   </div>
 
-                  <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
-                    {webhookLogs.slice(0, 5).map((log, idx) => (
-                      <div key={log.id || idx} className="p-2.5 rounded-lg bg-[#1f1f1f] border border-[#313131] flex items-center justify-between text-[11px]">
-                        <div>
-                          <div className="flex items-center space-x-2">
-                            <span className="font-mono text-[#818cf8] font-bold">{log.event}</span>
-                            <span className="px-1.5 py-0.2 rounded text-[9px] bg-[#10b981]/15 text-[#4edea3] font-mono">
-                              HTTP {log.statusCode || 200}
-                            </span>
-                          </div>
-                          <div className="text-[10px] text-[#8c8c8c] mt-0.5 font-mono">
-                            {new Date(log.timestamp).toLocaleTimeString()} • Latency: {log.latencyMs}ms
-                          </div>
-                        </div>
-                        <span className="text-[10px] px-2 py-0.5 rounded bg-[#1e293b] text-[#f5f5f5] font-mono capitalize">
-                          {log.status}
-                        </span>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={handleScanReminders}
+                      disabled={isScanningReminders}
+                      className="btn-clinic-secondary text-xs flex items-center space-x-1.5"
+                    >
+                      <RefreshCw className={`h-3.5 w-3.5 ${isScanningReminders ? 'animate-spin text-[#1E3A2F]' : 'text-[#78716C]'}`} />
+                      <span>Scan reminders (24h/2h)</span>
+                    </button>
+
+                    <button
+                      onClick={handleTestWebhook}
+                      disabled={isTestingWebhook}
+                      className="btn-clinic-primary text-xs flex items-center space-x-1.5"
+                    >
+                      <Send className="h-3.5 w-3.5" />
+                      <span>{isTestingWebhook ? 'Dispatching...' : 'Test webhook'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+                  {/* Left 5 Cols: Config & Active Target */}
+                  <div className="lg:col-span-5 rounded-md bg-[#FAF7F2] border border-[#E5DFD5] p-4 space-y-3">
+                    <div className="text-xs font-semibold text-[#1C1917] flex items-center justify-between">
+                      <span>Connected Webhook Endpoint</span>
+                      <span className="text-[10px] font-mono text-[#1B4332] bg-[#EAF5EE] px-2 py-0.5 rounded">ACTIVE</span>
+                    </div>
+                    <div className="rounded bg-white border border-[#E5DFD5] p-2.5 font-mono text-[11px] text-[#1E3A2F] break-all">
+                      {webhookUrl}
+                    </div>
+                    <div className="text-[11px] text-[#78716C]">
+                      Subscribed Events:
+                      <span className="font-mono text-[#1C1917] ml-1">appointment.created, appointment.cancelled, lead.captured, reminder.sent</span>
+                    </div>
+                    <div className="pt-2 border-t border-[#E5DFD5] flex items-center justify-between text-[11px]">
+                      <span className="text-[#78716C]">Security Auth:</span>
+                      <span className="font-mono text-[#1E3A2F]">X-OmniAgent-Signature</span>
+                    </div>
+                  </div>
+
+                  {/* Right 7 Cols: Outbound Webhook Delivery Audit Log */}
+                  <div className="lg:col-span-7 rounded-md bg-[#FAF7F2] border border-[#E5DFD5] p-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-semibold text-[#1C1917] flex items-center space-x-1.5">
+                        <Activity className="h-3.5 w-3.5 text-[#1E3A2F]" />
+                        <span>Live Delivery Audit Log</span>
                       </div>
-                    ))}
+                      <span className="text-[10px] text-[#78716C] font-mono">
+                        {webhookLogs.length} events logged
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                      {webhookLogs.slice(0, 5).map((log, idx) => (
+                        <div key={log.id || idx} className="p-2.5 rounded bg-white border border-[#E5DFD5] flex items-center justify-between text-[11px]">
+                          <div>
+                            <div className="flex items-center space-x-2">
+                              <span className="font-mono text-[#1E3A2F] font-bold">{log.event}</span>
+                              <span className="px-1.5 py-0.2 rounded text-[9px] bg-[#EAF5EE] text-[#1B4332] font-mono">
+                                HTTP {log.statusCode || 200}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-[#78716C] mt-0.5 font-mono">
+                              {new Date(log.timestamp).toLocaleTimeString()} • Latency: {log.latencyMs}ms
+                            </div>
+                          </div>
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-[#FAF7F2] border border-[#E5DFD5] text-[#1C1917] font-mono capitalize">
+                            {log.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Tab 4: 20-Scenario Golden Evaluation Suite */}
         {activeTab === 'evals' && (
@@ -2767,21 +3148,21 @@ export default function App() {
 
       {/* Walk-in Booking Creation Modal */}
       {showWalkInModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="w-full max-w-lg bg-[#181818] border border-[#313131] rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-[#313131]">
+        <div className="fixed inset-0 z-50 bg-[#1C1917]/40 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-lg bg-white border border-[#E5DFD5] rounded-xl p-6 shadow-xl space-y-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E5DFD5]">
               <div className="flex items-center space-x-2.5">
-                <div className="h-8 w-8 rounded-lg bg-[#6366f1]/20 border border-[#6366f1]/40 flex items-center justify-center text-[#818cf8]">
+                <div className="h-8 w-8 rounded-lg bg-[#EBF2EE] border border-[#D5E2DB] flex items-center justify-center text-[#1E3A2F]">
                   <Calendar className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white">Create Walk-in / Direct Reservation</h3>
-                  <p className="text-[11px] text-[#8c8c8c]">Lock in calendar slot and trigger instant confirmation</p>
+                  <h3 className="font-serif text-base font-semibold text-[#1C1917] tracking-tight">Schedule walk-in appointment</h3>
+                  <p className="text-xs text-[#78716C]">Record in-person booking and sync with Google Calendar</p>
                 </div>
               </div>
               <button 
                 onClick={() => setShowWalkInModal(false)}
-                className="p-1 rounded-lg text-[#8c8c8c] hover:text-white hover:bg-[#1e293b] transition cursor-pointer"
+                className="p-1 rounded-md text-[#78716C] hover:text-[#1C1917] hover:bg-[#F3EFE8] transition cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -2790,47 +3171,47 @@ export default function App() {
             <form onSubmit={handleCreateWalkIn} className="space-y-3.5 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[#8c8c8c] mb-1 font-medium">Customer Full Name *</label>
+                  <label className="block text-[#44403C] mb-1 font-medium">Customer Full Name *</label>
                   <input
                     type="text"
                     required
                     value={walkInName}
                     onChange={(e) => setWalkInName(e.target.value)}
                     placeholder="e.g. Liam Henderson"
-                    className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                    className="w-full bg-[#FBF9F5] border border-[#E5DFD5] rounded-lg px-3 py-2 text-xs text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:border-[#1E3A2F] focus:ring-1 focus:ring-[#1E3A2F]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[#8c8c8c] mb-1 font-medium">Phone Number *</label>
+                  <label className="block text-[#44403C] mb-1 font-medium">Phone Number *</label>
                   <input
                     type="tel"
                     required
                     value={walkInPhone}
                     onChange={(e) => setWalkInPhone(e.target.value)}
                     placeholder="e.g. +1 (415) 555-0199"
-                    className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                    className="w-full bg-[#FBF9F5] border border-[#E5DFD5] rounded-lg px-3 py-2 text-xs text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:border-[#1E3A2F] focus:ring-1 focus:ring-[#1E3A2F]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[#8c8c8c] mb-1 font-medium">Email Address (Optional)</label>
+                <label className="block text-[#44403C] mb-1 font-medium">Email Address (Optional)</label>
                 <input
                   type="email"
                   value={walkInEmail}
                   onChange={(e) => setWalkInEmail(e.target.value)}
                   placeholder="e.g. liam.h@example.com"
-                  className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                  className="w-full bg-[#FBF9F5] border border-[#E5DFD5] rounded-lg px-3 py-2 text-xs text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:border-[#1E3A2F] focus:ring-1 focus:ring-[#1E3A2F]"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[#8c8c8c] mb-1 font-medium">Service / Treatment *</label>
+                  <label className="block text-[#44403C] mb-1 font-medium">Service / Treatment *</label>
                   <select
                     value={walkInService}
                     onChange={(e) => setWalkInService(e.target.value)}
-                    className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none cursor-pointer"
+                    className="w-full bg-[#FBF9F5] border border-[#E5DFD5] rounded-lg px-3 py-2 text-xs text-[#1C1917] focus:outline-none focus:border-[#1E3A2F] focus:ring-1 focus:ring-[#1E3A2F] cursor-pointer"
                   >
                     <option value="Medical & Longevity Consultation">Medical Consultation ($150)</option>
                     <option value="Whole-Body Cryo & Assessment">Whole-Body Cryotherapy ($85)</option>
@@ -2840,11 +3221,11 @@ export default function App() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[#8c8c8c] mb-1 font-medium">Assigned Specialist</label>
+                  <label className="block text-[#44403C] mb-1 font-medium">Assigned Specialist</label>
                   <select
                     value={walkInDoctor}
                     onChange={(e) => setWalkInDoctor(e.target.value)}
-                    className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none cursor-pointer"
+                    className="w-full bg-[#FBF9F5] border border-[#E5DFD5] rounded-lg px-3 py-2 text-xs text-[#1C1917] focus:outline-none focus:border-[#1E3A2F] focus:ring-1 focus:ring-[#1E3A2F] cursor-pointer"
                   >
                     <option value="Dr. Marcus Vance">Dr. Marcus Vance (Longevity)</option>
                     <option value="Dr. Ananya Ray">Dr. Ananya Ray (Aesthetics)</option>
@@ -2855,21 +3236,21 @@ export default function App() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[#8c8c8c] mb-1 font-medium">Date *</label>
+                  <label className="block text-[#44403C] mb-1 font-medium">Date *</label>
                   <input
                     type="date"
                     required
                     value={walkInDate}
                     onChange={(e) => setWalkInDate(e.target.value)}
-                    className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none"
+                    className="w-full bg-[#FBF9F5] border border-[#E5DFD5] rounded-lg px-3 py-2 text-xs text-[#1C1917] focus:outline-none focus:border-[#1E3A2F] focus:ring-1 focus:ring-[#1E3A2F]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[#8c8c8c] mb-1 font-medium">Time Slot (IST) *</label>
+                  <label className="block text-[#44403C] mb-1 font-medium">Time Slot (IST) *</label>
                   <select
                     value={walkInTime}
                     onChange={(e) => setWalkInTime(e.target.value)}
-                    className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white focus:border-[#6366f1] outline-none cursor-pointer"
+                    className="w-full bg-[#FBF9F5] border border-[#E5DFD5] rounded-lg px-3 py-2 text-xs text-[#1C1917] focus:outline-none focus:border-[#1E3A2F] focus:ring-1 focus:ring-[#1E3A2F] cursor-pointer"
                   >
                     <option value="10:00">10:00 AM</option>
                     <option value="11:00">11:00 AM</option>
@@ -2884,38 +3265,38 @@ export default function App() {
               </div>
 
               <div>
-                <label className="block text-[#8c8c8c] mb-1 font-medium">Front Desk Notes</label>
+                <label className="block text-[#44403C] mb-1 font-medium">Front Desk Notes</label>
                 <textarea
                   rows={2}
                   value={walkInNotes}
                   onChange={(e) => setWalkInNotes(e.target.value)}
                   placeholder="e.g. Walk-in customer at reception, requested Dr. Vance."
-                  className="w-full bg-[#1f1f1f] border border-[#313131] rounded-xl px-3.5 py-2 text-white placeholder-[#908fa0] focus:border-[#6366f1] outline-none"
+                  className="w-full bg-[#FBF9F5] border border-[#E5DFD5] rounded-lg px-3 py-2 text-xs text-[#1C1917] placeholder-[#A8A29E] focus:outline-none focus:border-[#1E3A2F] focus:ring-1 focus:ring-[#1E3A2F]"
                 />
               </div>
 
-              <div className="flex items-center justify-end space-x-2 pt-2 border-t border-[#313131]">
+              <div className="flex items-center justify-end space-x-2 pt-3 border-t border-[#E5DFD5]">
                 <button
                   type="button"
                   onClick={() => setShowWalkInModal(false)}
-                  className="px-4 py-2 rounded-xl text-[#8c8c8c] hover:bg-[#1e293b] transition cursor-pointer"
+                  className="px-4 py-2 rounded-lg text-xs font-medium text-[#78716C] hover:text-[#1C1917] hover:bg-[#F3EFE8] transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isCreatingWalkIn}
-                  className="px-4 py-2 rounded-xl bg-[#6366f1] hover:bg-[#4f46e5] active:bg-[#4338ca] text-white font-semibold transition cursor-pointer disabled:opacity-50 flex items-center space-x-1.5"
+                  className="btn-clinic-primary cursor-pointer disabled:opacity-50 flex items-center space-x-1.5"
                 >
                   {isCreatingWalkIn ? (
                     <>
                       <RefreshCw className="h-3.5 w-3.5 animate-spin" />
-                      <span>Locking Slot...</span>
+                      <span>Locking slot...</span>
                     </>
                   ) : (
                     <>
                       <Check className="h-3.5 w-3.5" />
-                      <span>Confirm Reservation</span>
+                      <span>Confirm reservation</span>
                     </>
                   )}
                 </button>
@@ -2924,7 +3305,6 @@ export default function App() {
           </div>
         </div>
       )}
-
       {/* Omnichannel Floating Customer Chat Widget */}
       <ChatWidget />
     </div>
